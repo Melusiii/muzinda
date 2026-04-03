@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1E6B3C;
+  --color-primary-light: #4CAF6E;
+  --color-primary-dark: #145229;
+  --color-accent-gold: #D4A017;
+  --color-accent-amber: #C0522A;
+  --color-accent-yellow: #F59E0B;
+  --color-surface-bright: #F4F8F5;
+  --font-manrope: "Manrope", sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-surface-bright text-[#191C1C] font-dm-sans;
+  }
+}
+
+/* Obsidian Glass Effects */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.font-manrope {
+  font-family: var(--font-manrope);
+}
+
+.font-dm-sans {
+  font-family: var(--font-dm-sans);
+}
