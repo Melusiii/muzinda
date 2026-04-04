@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.properties (
     available_rooms INTEGER NOT NULL,
     occupancy_count INTEGER DEFAULT 0 NOT NULL,
     monthly_revenue DECIMAL DEFAULT 0 NOT NULL,
+    gender_preference TEXT CHECK (gender_preference IN ('Male Only', 'Female Only', 'Mixed')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

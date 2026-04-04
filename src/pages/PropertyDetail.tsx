@@ -3,20 +3,21 @@ import { Layout } from '../components/Layout'
 import { useProperty, submitApplication, useFavorites } from '../hooks/useSupabase'
 import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  ChevronLeft, 
-  Star, 
-  MapPin, 
-  ShieldCheck, 
-  Wifi, 
-  Zap, 
-  Wind, 
+import {
+  ChevronLeft,
+  Star,
+  MapPin,
+  ShieldCheck,
+  Wifi,
+  Zap,
+  Wind,
   Coffee,
   CheckCircle2,
   Calendar,
   MessageSquare,
   ArrowRight,
   Loader2,
+  Phone
   Camera,
   Heart,
   Share2,
@@ -27,6 +28,14 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { getImageUrl } from '../utils/supabase-helpers'
+
+// Extract phone number embedded in description by PostListingModal
+const parseDescription = (desc: string) => {
+  const phoneMatch = desc.match(/📞 Contact: (.+)\n\n/)
+  const phone = phoneMatch ? phoneMatch[1] : null
+  const body = desc.replace(/📞 Contact: .+\n\n/, '').trim()
+  return { phone, body }
+}
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>()
@@ -76,6 +85,39 @@ const PropertyDetail = () => {
     }
   }
 
+  const { phone: landlordPhone, body: cleanDescription } = parseDescription(property.description)
+
+  return (
+    <Layout>
+      <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto space-y-12">
+        {/* Navigation */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-primary-dark/40 font-bold hover:text-primary transition-colors group"
+        >
+          <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+          Back to Results
+        </button>
+
+        {/* Hero Gallery */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:h-[500px]">
+          <div className="md:col-span-8 h-[300px] md:h-auto rounded-[3rem] overflow-hidden shadow-2xl relative group">
+             <img
+               src={property.image_url}
+               alt={property.title}
+               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+             />
+             <div className="absolute top-8 left-8">
+                {property.verified ? (
+                  <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 shadow-xl">
+                    <ShieldCheck size={18} className="text-[#4F7C2C]" />
+                    <span className="text-xs font-black text-primary-dark uppercase tracking-widest">AU Verified</span>
+                  </div>
+                ) : (
+                  <div className="bg-amber-500/90 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 shadow-xl">
+                    <ShieldCheck size={18} className="text-white" />
+                    <span className="text-xs font-black text-white uppercase tracking-widest">Pending Verification</span>
+                  </div>
   const amenities = [
     { icon: Wifi, label: 'High-speed Fiber' },
     { icon: Zap, label: 'Solar Power' },
@@ -183,6 +225,12 @@ const PropertyDetail = () => {
                  ))}
               </div>
 
+            <div className="space-y-6">
+               <h3 className="text-2xl font-manrope font-black text-primary-dark">About this property</h3>
+               <p className="text-lg text-primary-dark/60 leading-relaxed font-dm-sans max-w-3xl">
+                 {cleanDescription}
+               </p>
+            </div>
               {/* Description Bento */}
               <div className="bg-white p-12 rounded-[4rem] border border-primary/5 shadow-sm relative overflow-hidden group">
                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -227,6 +275,31 @@ const PropertyDetail = () => {
                          <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 shadow-xl"><Check size={28} className="text-accent-gold" /></div>
                       </div>
 
+               <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-4 bg-[#F8F9F8] rounded-2xl border border-primary/5">
+                     <Calendar className="text-primary" size={20} />
+                     <div>
+                        <p className="text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">Lease Term</p>
+                        <p className="text-sm font-bold text-primary-dark">Semester Based (Flexible)</p>
+                     </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-[#F8F9F8] rounded-2xl border border-primary/5">
+                     <ShieldCheck className="text-primary" size={20} />
+                     <div>
+                        <p className="text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">Protection</p>
+                        <p className="text-sm font-bold text-primary-dark">Muzinda Secured Payment</p>
+                     </div>
+                  </div>
+                  {landlordPhone && (
+                    <div className="flex items-center gap-3 p-4 bg-[#F8F9F8] rounded-2xl border border-primary/5">
+                       <Phone className="text-primary" size={20} />
+                       <div>
+                          <p className="text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">Contact Landlord</p>
+                          <p className="text-sm font-bold text-primary-dark">{landlordPhone}</p>
+                       </div>
+                    </div>
+                  )}
+               </div>
                       <div className="space-y-8">
                          {[
                            { label: 'Lease Start', value: 'Next Semester', icon: Calendar },

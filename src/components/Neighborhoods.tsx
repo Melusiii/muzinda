@@ -3,9 +3,14 @@ import { MapPin, ArrowUpRight } from 'lucide-react'
 import { useProperties } from '../hooks/useSupabase'
 import { Link } from 'react-router-dom'
 
+const isNew = (created_at?: string) => {
+  if (!created_at) return false
+  return (Date.now() - new Date(created_at).getTime()) / (1000 * 60 * 60) < 24
+}
+
 export const Neighborhoods = () => {
   const { properties, loading } = useProperties()
-  
+
   // Calculate counts for each unique location
   const counts = properties.reduce((acc: any, p) => {
     acc[p.location] = (acc[p.location] || 0) + 1
@@ -13,14 +18,19 @@ export const Neighborhoods = () => {
   }, {})
 
   const neighborhoods = Object.entries(counts).map(([name, count]) => {
-    // Find the first property in this neighborhood to use its image
-    const propInHood = properties.find(p => p.location === name);
+    // Find the most recent property in this neighborhood
+    const propsInHood = properties.filter(p => p.location === name)
+    const newest = propsInHood.sort((a, b) =>
+      new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+    )[0]
     return {
       name,
       count: count as number,
-      image: propInHood?.image_url || 'https://images.unsplash.com/photo-1592591502264-745a727dca82?q=80&w=2070&auto=format&fit=crop'
+      image: newest?.image_url || 'https://images.unsplash.com/photo-1592591502264-745a727dca82?q=80&w=2070&auto=format&fit=crop',
+      hasNew: isNew(newest?.created_at)
     }
-  }).slice(0, 4) // Show top 4
+  }).slice(0, 4)
+
 
   return (
     <section className="py-24 px-6 bg-white overflow-hidden">
@@ -51,11 +61,17 @@ export const Neighborhoods = () => {
                 transition={{ delay: idx * 0.1 }}
                 className="group relative h-[400px] rounded-[3rem] overflow-hidden cursor-pointer shadow-xl shadow-primary/5"
               >
-                <img 
-                  src={n.image} 
-                  alt={n.name} 
+                <img
+                  src={n.image}
+                  alt={n.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
+                {/* NEW badge */}
+                {n.hasNew && (
+                  <div className="absolute top-4 right-4 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg animate-pulse z-10">
+                    NEW
+                  </div>
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white space-y-2">
                    <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
