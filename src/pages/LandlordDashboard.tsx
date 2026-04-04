@@ -1,5 +1,6 @@
 import { Sidebar } from '../components/Sidebar'
-import { Bell, ShieldCheck, PlusCircle, MapPin, TrendingUp, Users, Home, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Bell, ShieldCheck, PlusCircle, MapPin, TrendingUp, Users, Home, Eye, EyeOff, Loader2, AlertCircle, ArrowRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
@@ -51,6 +52,29 @@ const LandlordDashboard = () => {
                    </button>
                 </div>
               </div>
+
+              <AnimatePresence>
+                {user?.verificationStatus !== 'verified' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-orange-500/5 border border-orange-500/10 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center gap-6 group hover:bg-orange-500/10 transition-colors"
+                  >
+                    <div className="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500 shadow-inner shrink-0">
+                       <AlertCircle size={28} />
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                       <h4 className="text-lg font-manrope font-black text-primary-dark tracking-tight leading-none uppercase">Account Status: Unvetted</h4>
+                       <p className="text-[10px] font-bold text-primary-dark/40 uppercase mt-2 tracking-widest leading-relaxed">
+                          Your listings are visible, but branded as "Standard Member". Get institutionally verified to gain the "Verified Oasis" badge and increase trust by 85%.
+                       </p>
+                    </div>
+                    <button className="bg-orange-500 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-orange-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                       Start Verification <ArrowRight size={14} />
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                  {dashboardStats.map((stat, idx) => (
@@ -156,16 +180,34 @@ const LandlordDashboard = () => {
                 </div>
 
                 {/* Account Status / Security */}
-                <div className="bg-primary-dark p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
-                   <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000" />
-                   <ShieldCheck className="text-accent-gold mb-6" size={32} />
-                   <h4 className="text-xl font-manrope font-extrabold mb-2 tracking-tight italic">Muzinda Secured</h4>
-                   <p className="text-white/40 text-xs font-dm-sans mb-8 leading-relaxed">Your property portfolio is fully protected by AU-Verified verification standards.</p>
-                   <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-accent-gold w-full" />
-                   </div>
-                   <p className="text-[10px] font-black text-accent-gold uppercase mt-3 tracking-widest">Account Status: Gold</p>
-                </div>
+                 <div className="bg-primary-dark p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
+                    <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000" />
+                    {user?.verificationStatus === 'verified' ? (
+                       <ShieldCheck className="text-accent-gold mb-6" size={32} />
+                    ) : (
+                       <AlertCircle className="text-orange-500 mb-6" size={32} />
+                    )}
+                    <h4 className="text-xl font-manrope font-extrabold mb-2 tracking-tight italic">
+                       {user?.verificationStatus === 'verified' ? 'Muzinda Secured' : 'Awaiting Vetting'}
+                    </h4>
+                    <p className="text-white/40 text-xs font-dm-sans mb-8 leading-relaxed">
+                       {user?.verificationStatus === 'verified' 
+                         ? 'Your property portfolio is fully protected by Muzinda verification standards.' 
+                         : 'Complete your institutional vetting to unlock premium ranking and the Verified Oasis badge.'}
+                    </p>
+                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                       <div className={cn(
+                         "h-full transition-all duration-1000",
+                         user?.verificationStatus === 'verified' ? "bg-accent-gold w-full" : "bg-orange-500 w-1/3"
+                       )} />
+                    </div>
+                    <p className={cn(
+                      "text-[10px] font-black uppercase mt-3 tracking-widest",
+                      user?.verificationStatus === 'verified' ? "text-accent-gold" : "text-orange-500"
+                    )}>
+                       Account Status: {user?.verificationStatus === 'verified' ? 'Gold' : 'Standard'}
+                    </p>
+                 </div>
               </aside>
             </div>
           </>

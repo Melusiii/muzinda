@@ -8,7 +8,7 @@ export const Footer = () => {
       <div className="flex flex-wrap justify-center gap-8">
         <Link to="/support" className="text-primary-dark/70 hover:text-primary transition-colors text-sm font-medium">Support</Link>
         <Link to="/privacy" className="text-primary-dark/70 hover:text-primary transition-colors text-sm font-medium">Privacy Policy</Link>
-        <Link to="/au-portal" className="text-primary-dark/70 hover:text-primary transition-colors text-sm font-medium">Africa University Portal</Link>
+        <Link to="/support" className="text-primary-dark/70 hover:text-primary transition-colors text-sm font-medium">Support Center</Link>
         <Link to="/partner" className="text-primary-dark/70 hover:text-primary transition-colors text-sm font-medium">Partner with Us</Link>
       </div>
       <p className="text-primary-dark/50 text-xs mt-4">

@@ -26,7 +26,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
 
   if (allowedRoles && user && !allowedRoles.includes(user.role as any)) {
     // If user doesn't have the required role, redirect to their default dashboard
-    const defaultDash = user.role === 'student' ? '/dashboard' : `/${user.role}`;
+    let defaultDash = '/dashboard';
+    if (user.role === 'landlord') defaultDash = '/landlord';
+    else if (user.role === 'provider') {
+      defaultDash = user.category === 'transport' ? '/transport-hub' : '/provider';
+    }
     return <Navigate to={defaultDash} replace />;
   }
 

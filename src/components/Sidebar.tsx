@@ -1,21 +1,19 @@
-import { LayoutDashboard, Compass, Bus, Map, MessageSquare, Settings, LogOut, Wrench, ShieldCheck, Heart, CheckCircle2 } from 'lucide-react'
+import { LayoutDashboard, Compass, Bus, MessageSquare, Settings, LogOut, Wrench, ShieldCheck, Heart, CheckCircle2 } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
 import { Logo } from './Logo'
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { SettingsModal } from './SettingsModal'
-import { MapModal } from './MapModal'
 
 export const Sidebar = () => {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [isMapOpen, setIsMapOpen] = useState(false)
 
   const getMenuItems = () => {
     const baseItems = [
-      { icon: LayoutDashboard, label: 'Overview', href: user?.role === 'student' ? '/dashboard' : `/${user?.role === 'provider' ? 'provider' : user?.role}` },
+      { icon: LayoutDashboard, label: 'Home', href: user?.role === 'student' ? '/dashboard' : `/${user?.role === 'provider' ? 'provider' : user?.role}` },
       { icon: MessageSquare, label: 'Messages', href: '/messages' },
     ]
 
@@ -26,7 +24,6 @@ export const Sidebar = () => {
         { icon: Heart, label: 'Favorites', href: '/favorites' },
         { icon: Compass, label: 'Explorer', href: '/explorer' },
         { icon: Bus, label: 'Shuttle', href: '/transport' },
-        { icon: Map, label: 'AU Map', onClick: () => setIsMapOpen(true) },
       ]
     }
 
@@ -41,7 +38,7 @@ export const Sidebar = () => {
     if (user?.role === 'provider') {
       return [
         ...baseItems,
-        { icon: Compass, label: 'Gig Finder', href: '/marketplace' },
+        { icon: Bus, label: 'Transport Hub', href: '/transport-hub' },
         { icon: Wrench, label: 'Earnings', href: '/earnings' },
       ]
     }
@@ -120,7 +117,6 @@ export const Sidebar = () => {
       </aside>
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-      <MapModal isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
     </>
   )
 }

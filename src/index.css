@@ -18,6 +18,19 @@
   }
 }
 
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/10;
+  }
+}
+
+/* Global Mobile Navigation Padding */
+@media (max-width: 767px) {
+  main, .flex-1, .min-h-screen {
+    padding-bottom: 0 !important;
+  }
+}
+
 /* Obsidian Glass Effects */
 .glass {
   background: rgba(255, 255, 255, 0.7);

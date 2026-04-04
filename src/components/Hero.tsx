@@ -30,7 +30,7 @@ export const Hero = () => {
               <span className="text-[#4F7C2C]">Student Living.</span>
             </h1>
             <p className="text-primary-dark/60 text-lg md:text-xl max-w-xl leading-relaxed font-dm-sans text-balance">
-              The premium concierge for Africa University students. Find trusted housing and essential services in Mutare with editorial clarity and guaranteed safety.
+              The premium concierge for discerning students. Find trusted housing and essential services with editorial clarity and guaranteed safety.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export const Hero = () => {
               </div>
             </div>
             <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary-dark/40 mb-1">Africa University</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary-dark/40 mb-1">Muzinda Premium</p>
               <p className="font-manrope font-extrabold text-primary-dark text-lg leading-none">100% Certified</p>
             </div>
           </motion.div>

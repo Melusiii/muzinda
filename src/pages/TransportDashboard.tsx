@@ -1,170 +1,226 @@
 import { Sidebar } from '../components/Sidebar'
-import { ShieldCheck, MapPin, Bus, ArrowRight, CheckCircle2, QrCode } from 'lucide-react'
-import { cn } from '../utils/cn'
+import { ShieldCheck, MapPin, Bus, CheckCircle2, Edit3, Users, XCircle, MessageCircle, Info } from 'lucide-react'
+import { useProviderService, useServiceApplications, updateServiceApplicationStatus } from '../hooks/useSupabase'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ManageServiceModal } from '../components/ManageServiceModal'
 
 const TransportDashboard = () => {
+  const navigate = useNavigate()
+  const { service, loading: serviceLoading, refetch: refetchService } = useProviderService()
+  const { applications, loading: appsLoading, refetch: refetchApps } = useServiceApplications(service?.id)
+  
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
+
+  const handleAppStatus = async (appId: string, status: 'approved' | 'rejected') => {
+    try {
+      await updateServiceApplicationStatus(appId, status)
+      refetchApps()
+      refetchService()
+    } catch (err: any) { alert(err.message) }
+  }
+
+  const pendingApps = applications.filter(a => a.status === 'pending')
+  const approvedCustomers = applications.filter(a => a.status === 'approved')
+  
+  const totalCapacity = service?.capacity || 14
+  const seatsTaken = approvedCustomers.length
+  const seatsAvailable = Math.max(0, totalCapacity - seatsTaken)
+
   return (
-    <div className="flex bg-surface-bright min-h-screen">
+    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 md:p-12">
+      <main className="flex-1 md:ml-64 p-6 md:p-12 pb-32">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/10">
               <ShieldCheck size={14} fill="currentColor" />
-              <span className="text-[10px] font-extrabold uppercase tracking-widest font-manrope">Verified Driver</span>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest font-manrope">Verified Provider</span>
             </div>
-            <h1 className="text-5xl font-extrabold tracking-tighter text-primary-dark font-manrope">Transport Hub</h1>
+            <h1 className="text-5xl font-extrabold tracking-tighter text-primary-dark font-manrope">Partner Dashboard</h1>
             <p className="text-primary-dark/50 font-dm-sans max-w-xl">
-              Connecting Africa University students from Chikanga, Hobhouse, and Dangamvura to campus with reliability.
+              Manage your monthly car subscription service and your student roster.
             </p>
-          </div>
-          <div className="flex gap-4">
-             <button className="px-6 py-3 rounded-2xl bg-white border border-primary/5 text-primary font-bold text-sm shadow-sm hover:translate-y-[-2px] transition-all">
-                Update Live Map
-             </button>
-             <button className="px-6 py-3 rounded-2xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                Check-in Students
-             </button>
           </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main Timetable */}
-          <section className="lg:col-span-8 space-y-8">
-            <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
-              <div className="flex items-center justify-between mb-10">
-                <div>
-                  <h3 className="text-2xl font-manrope font-extrabold text-primary-dark">Campus Shuttle Schedule</h3>
-                  <p className="text-xs text-primary-dark/40 font-bold uppercase mt-1">Live timetable • Today, Oct 24th</p>
-                </div>
-                <div className="flex items-center gap-2 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                  <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">Active Now</span>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {[
-                  { time: '07:15', loc: 'Chikanga Shopping Center', dest: 'AU Main Gate', booked: '14/22', active: true },
-                  { time: '09:30', loc: 'Hobhouse Turnoff', dest: 'AU Main Gate', booked: '22/22', full: true, active: true },
-                  { time: '14:00', loc: 'Africa University (Return)', dest: 'Chikanga & Hobhouse', booked: '0/22', future: true },
-                ].map((slot, idx) => (
-                  <div key={idx} className={cn(
-                    "group p-6 rounded-2xl flex items-center gap-8 border transition-all",
-                    slot.active ? "bg-surface-bright border-primary/10 border-l-4 border-l-primary" : "bg-white border-primary/5 opacity-50"
-                  )}>
-                    <div className="text-center min-w-[80px]">
-                      <p className={cn("text-3xl font-black font-manrope", slot.active ? "text-primary" : "text-primary-dark/30")}>{slot.time}</p>
-                      <p className="text-[9px] font-extrabold text-primary-dark/40 uppercase tracking-widest">Departure</p>
-                    </div>
-                    <div className="flex-1 border-x border-primary/5 px-8 space-y-2">
-                       <div className="flex items-center gap-2">
-                          <MapPin size={14} className="text-primary-dark/30" />
-                          <p className="text-sm font-bold text-primary-dark">{slot.loc}</p>
-                       </div>
-                       <div className="flex items-center gap-2">
-                          <Bus size={14} className="text-primary" />
-                          <p className="text-xs font-medium text-primary-dark/50">To: {slot.dest}</p>
-                       </div>
-                    </div>
-                    <div className="text-right min-w-[100px]">
-                       <p className={cn("text-xl font-black font-manrope", slot.full ? "text-accent-amber" : "text-primary")}>{slot.booked}</p>
-                       <p className="text-[9px] font-extrabold text-primary-dark/40 uppercase tracking-widest">{slot.full ? 'FULL' : 'BOOKED'}</p>
-                    </div>
-                    <button className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-primary-dark/20 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                       <ArrowRight size={20} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Attendance Section */}
-            <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
-                <div className="flex justify-between items-center mb-10">
+          <div className="lg:col-span-8 space-y-8">
+            {/* MONTHLY SERVICE STATUS */}
+            <section className="bg-primary-dark rounded-[3rem] p-10 text-white relative overflow-hidden shadow-2xl">
+               <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
+               <div className="relative z-10">
+                 <div className="flex justify-between items-start mb-10">
                    <div>
-                    <h3 className="text-2xl font-manrope font-extrabold text-primary-dark">Active Check-in: 07:15 Route</h3>
-                    <p className="text-sm text-primary-dark/40 font-dm-sans">Scanning student digital IDs for accountability</p>
+                     <h2 className="text-[10px] font-black text-accent-gold uppercase tracking-[0.3em] mb-3">Service Profile</h2>
+                     <h3 className="text-4xl font-manrope font-black tracking-tighter italic">
+                       {service?.name || "Your Car Service"}
+                     </h3>
                    </div>
-                   <div className="flex items-center gap-3 bg-primary-dark text-white px-6 py-2.5 rounded-2xl border border-white/10 shadow-lg">
-                      <QrCode size={18} />
-                      <span className="text-xs font-bold uppercase tracking-widest">Ready to Scan</span>
-                   </div>
-                </div>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-                   {[1, 2, 3, 4, 5].map(i => (
-                     <div key={i} className="flex flex-col items-center gap-3 p-4 rounded-3xl bg-surface-bright border-b-4 border-primary/20">
-                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                           <img src={`https://i.pravatar.cc/100?u=${i + 10}`} alt="student" />
-                        </div>
-                        <div className="text-center">
-                           <p className="text-sm font-bold text-primary-dark">Farai G.</p>
-                           <span className="text-[10px] font-extrabold text-primary border-b border-primary/30 uppercase tracking-widest">Checked In</span>
-                        </div>
-                     </div>
-                   ))}
-                </div>
-            </div>
-          </section>
+                   <button 
+                    onClick={() => setIsServiceModalOpen(true)}
+                    className="p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all flex items-center gap-2 text-xs font-bold"
+                   >
+                     <Edit3 size={16} /> Manage Business
+                   </button>
+                 </div>
 
-          {/* Sidebar */}
-          <aside className="lg:col-span-4 space-y-8">
-             <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
-                <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-xl font-manrope font-extrabold text-primary-dark">New Requests</h3>
-                   <span className="bg-primary text-white text-[10px] font-extrabold px-3 py-1 rounded-full">4 New</span>
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                   <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Monthly Fee</p>
+                      <p className="text-4xl font-manrope font-black text-accent-gold">${service?.price || '0'}</p>
+                   </div>
+                   <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm">
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Seats Taken</p>
+                      <p className="text-4xl font-manrope font-black text-white">{seatsTaken}<span className="text-lg text-white/20 font-black">/{totalCapacity}</span></p>
+                   </div>
+                   <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm relative group">
+                      {service?.image_url ? (
+                        <div className="absolute inset-0 rounded-[2rem] overflow-hidden opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700">
+                          <img src={service.image_url} alt="Service" className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-white/20">
+                          <Bus size={32} strokeWidth={1} />
+                        </div>
+                      )}
+                      <p className="relative z-10 text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Vehicle Photo</p>
+                      <p className="relative z-10 text-xs font-bold">{service?.image_url ? 'Photo Uploaded' : 'Missing Photo'}</p>
+                   </div>
+                 </div>
+               </div>
+            </section>
+
+            {/* CAPACITY OVERVIEW */}
+            <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
+              <div className="flex items-center justify-between mb-10">
+                <h3 className="text-2xl font-manrope font-extrabold text-primary-dark italic tracking-tight">Vehicle Availability</h3>
+                <div className="flex items-center gap-2 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">
+                  <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">{seatsAvailable} Seats Left</span>
                 </div>
-                <div className="space-y-4">
-                  {[
-                    { name: 'Tatenda N.', loc: 'Dangamvura' },
-                    { name: 'Rudo M.', loc: 'Yeovil Gardens' },
-                  ].map((req, idx) => (
-                    <div key={idx} className="p-5 rounded-2xl bg-surface-bright flex items-center gap-4 group">
-                       <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary font-bold">
-                          {req.name[0]}
-                       </div>
-                       <div className="flex-1">
-                          <p className="text-sm font-bold text-primary-dark">{req.name}</p>
-                          <p className="text-[10px] text-primary-dark/40 font-bold uppercase">{req.loc}</p>
-                       </div>
-                       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-2 bg-primary text-white rounded-lg shadow-sm">
-                             <CheckCircle2 size={16} />
+              </div>
+              
+              <div className="p-10 bg-surface-bright rounded-[2rem] border border-primary/5 flex flex-col items-center text-center gap-6">
+                <div className="relative w-32 h-32 flex items-center justify-center">
+                  <svg className="w-full h-full -rotate-90">
+                    <circle cx="64" cy="64" r="60" fill="transparent" stroke="currentColor" strokeWidth="8" className="text-primary/10" />
+                    <circle 
+                      cx="64" cy="64" r="60" fill="transparent" stroke="currentColor" strokeWidth="8" 
+                      strokeDasharray={377} 
+                      strokeDashoffset={377 - (377 * (seatsTaken / totalCapacity))} 
+                      className="text-primary transition-all duration-1000" 
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-3xl font-black text-primary-dark">{Math.round((seatsTaken / totalCapacity) * 100)}%</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-lg font-manrope font-black text-primary-dark">Monthly Capacity Usage</h4>
+                  <p className="text-xs font-bold text-primary-dark/40 mt-1 italic">
+                    {seatsTaken} active subscriptions out of {totalCapacity} total seats
+                  </p>
+                </div>
+                {seatsAvailable === 0 && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                    <XCircle size={14} /> Full Capacity Reached
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          <aside className="lg:col-span-4 space-y-8">
+            {/* PENDING APPLICATIONS */}
+            <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
+               <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-xl font-manrope font-extrabold text-primary-dark">New Applicants</h3>
+                  <span className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">{pendingApps.length} New</span>
+               </div>
+               <div className="space-y-4">
+                  {appsLoading ? (
+                    <div className="p-4 text-center text-primary-dark/20 text-xs font-bold">Loading requests...</div>
+                  ) : pendingApps.length > 0 ? pendingApps.map((app) => (
+                    <div key={app.id} className="p-5 rounded-2xl bg-surface-bright flex flex-col gap-4 border border-transparent hover:border-primary/5 hover:bg-white hover:shadow-xl transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-white border border-primary/5 flex items-center justify-center text-primary font-black text-lg">
+                          {app.student?.full_name[0]}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-black text-primary-dark">{app.student?.full_name}</p>
+                          <p className="text-[10px] text-primary-dark/30 font-black uppercase tracking-widest">Subscription Request</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button 
+                            disabled={seatsAvailable === 0}
+                            onClick={() => handleAppStatus(app.id, 'approved')} 
+                            className="p-2 bg-primary text-white rounded-xl shadow-lg shadow-primary/20 hover:scale-110 active:scale-95 transition-all disabled:opacity-20"
+                          >
+                            <CheckCircle2 size={16} />
                           </button>
-                       </div>
+                          <button onClick={() => handleAppStatus(app.id, 'rejected')} className="p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                            <XCircle size={16} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="bg-white/50 p-3 rounded-xl border border-primary/5">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest mb-1">
+                          <MapPin size={12} /> Residing At
+                        </div>
+                        <p className="text-xs font-bold text-primary-dark/60">{app.student_residing_at || 'Not specified'}</p>
+                        {app.message && (
+                          <p className="text-[10px] italic text-primary-dark/40 mt-2 border-t border-primary/5 pt-2">"{app.message}"</p>
+                        )}
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="py-10 text-center text-primary-dark/20 text-[10px] font-black uppercase tracking-widest border-2 border-dashed border-primary/5 rounded-2xl italic">
+                      No pending requests
+                    </div>
+                  )}
+               </div>
+            </section>
+
+            {/* APPROVED CUSTOMERS */}
+            <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
+               <div className="flex items-center gap-4 mb-8">
+                  <Users className="text-primary" size={20} />
+                  <h3 className="text-xl font-manrope font-extrabold text-primary-dark">Monthly Roster</h3>
+               </div>
+               <div className="space-y-3">
+                  {approvedCustomers.map((app) => (
+                    <div key={app.id} className="p-4 rounded-xl border border-primary/5 flex items-center gap-4 group">
+                      <div className="w-8 h-8 rounded-lg bg-surface-bright flex items-center justify-center text-primary font-black text-[10px]">
+                        {app.student?.full_name[0]}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-primary-dark">{app.student?.full_name}</p>
+                        <p className="text-[8px] text-primary-dark/30 font-black uppercase tracking-tighter">Residing: {app.student_residing_at}</p>
+                      </div>
+                      <button 
+                        onClick={() => navigate('/messages')}
+                        className="p-2 text-primary-dark/20 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                      >
+                        <MessageCircle size={18} />
+                      </button>
                     </div>
                   ))}
-                </div>
-             </div>
-
-             <div className="bg-primary-dark p-8 h-[400px] rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl" />
-                <div className="relative z-10 flex flex-col h-full justify-between">
-                   <div>
-                    <h3 className="text-2xl font-manrope font-extrabold">Route Analysis</h3>
-                    <p className="text-sm text-white/40 mt-2">Optimization for Mutare Eastern Suburbs</p>
-                   </div>
-                   
-                   <div className="space-y-6">
-                      <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                         <span className="text-sm font-medium text-white/60">Chikanga Demand</span>
-                         <span className="text-2xl font-black text-accent-gold">High</span>
-                      </div>
-                      <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                         <span className="text-sm font-medium text-white/60">Fuel Efficiency</span>
-                         <span className="text-2xl font-black">88%</span>
-                      </div>
-                      <button className="w-full py-4 bg-white text-primary-dark rounded-2xl font-bold text-sm shadow-xl hover:scale-[1.02] transition-all">
-                        Adjust Daily Routes
-                      </button>
-                   </div>
-                </div>
-             </div>
+                  {approvedCustomers.length === 0 && (
+                    <p className="text-center py-4 text-[10px] font-black text-primary-dark/20 uppercase tracking-widest">No regular customers yet</p>
+                  )}
+               </div>
+            </section>
           </aside>
         </div>
       </main>
+
+      <ManageServiceModal 
+        isOpen={isServiceModalOpen} 
+        onClose={() => setIsServiceModalOpen(false)} 
+        service={service} 
+        onUpdate={refetchService} 
+      />
     </div>
   )
 }

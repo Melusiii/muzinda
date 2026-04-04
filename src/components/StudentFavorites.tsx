@@ -1,6 +1,7 @@
 import { Star } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useProperties } from '../hooks/useSupabase'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 export const StudentFavorites = () => {
   const { properties, loading } = useProperties()
@@ -11,8 +12,8 @@ export const StudentFavorites = () => {
     name: p.name,
     price: p.price,
     reviewer: i === 0 ? "Rudo M." : "Tinashe G.",
-    review: i === 0 ? "Best study environment in Mutare. The backup solar power makes exam week stress-free." : "Great community vibe and very close to the shuttle stop. The kitchen is always clean.",
-    image: p.image_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop',
+    review: p.description || (i === 0 ? "Best study environment in Mutare. The backup solar power makes exam week stress-free." : "Great community vibe and very close to the shuttle stop. The kitchen is always clean."),
+    image: getImageUrl(p.image_url),
     badge: i === 0 ? "Top Rated" : "Most Popular",
     tag: p.type === 'hostel' ? 'Includes Laundry' : 'Shared Kitchen'
   })) || []

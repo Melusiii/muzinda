@@ -1,11 +1,33 @@
+import { useState } from 'react'
 import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
-import { AlertCircle, Clock, Loader2, CheckCircle2, XCircle } from 'lucide-react'
-import { useUserApplications } from '../hooks/useSupabase'
+import { AlertCircle, Clock, Loader2, CheckCircle2, XCircle, ArrowRight, MapPin, X, Info } from 'lucide-react'
+import { useUserApplications, deleteApplication } from '../hooks/useSupabase'
 import { cn } from '../utils/cn'
+import { motion, AnimatePresence } from 'framer-motion'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 const StudentApplications = () => {
-  const { applications, loading } = useUserApplications()
+  const { applications, loading, refetch } = useUserApplications()
+  const [selectedApp, setSelectedApp] = useState<any>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleWithdraw = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!window.confirm("Are you sure you want to withdraw this application?")) return
+    
+    setIsDeleting(true)
+    try {
+      await deleteApplication(id)
+      if (refetch) refetch()
+      setSelectedApp(null)
+    } catch (err) {
+      console.error(err)
+      alert("Failed to withdraw application.")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
@@ -14,14 +36,15 @@ const StudentApplications = () => {
       </div>
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative">
         <header className="mb-12">
-          <h1 className="text-5xl font-black tracking-tighter text-primary-dark font-manrope leading-none mb-4">
-            Applications Status
+          <div className="flex gap-2 items-center text-primary mb-2">
+             <div className="w-8 h-[2px] bg-current opacity-20" />
+             <span className="text-[10px] font-black uppercase tracking-[0.3em]">Track Progress</span>
+          </div>
+          <h1 className="text-5xl font-black tracking-tighter text-primary-dark font-manrope leading-none">
+            My Applications
           </h1>
-          <p className="text-primary-dark/40 font-bold uppercase tracking-widest text-[10px]">
-            Track your property applications across Mutare
-          </p>
         </header>
 
         {loading ? (
@@ -29,55 +52,171 @@ const StudentApplications = () => {
              <Loader2 size={40} className="animate-spin text-primary" />
           </div>
         ) : applications.length > 0 ? (
-          <div className="space-y-6 max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
             {applications.map((app) => (
-              <div key={app.id} className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center gap-8">
-                 {/* Status Icon */}
-                 <div className={cn(
-                    "w-20 h-20 shrink-0 rounded-[1.5rem] flex items-center justify-center shadow-lg",
-                    app.status === 'approved' ? "bg-primary text-white" : 
-                    app.status === 'rejected' ? "bg-accent-amber text-white" : 
-                    "bg-primary-dark text-accent-gold"
-                 )}>
-                    {app.status === 'approved' ? <CheckCircle2 size={32} /> : 
-                     app.status === 'rejected' ? <XCircle size={32} /> : 
-                     <Clock size={32} />}
-                 </div>
+              <motion.div 
+                key={app.id} 
+                layoutId={`app-${app.id}`}
+                onClick={() => setSelectedApp(app)}
+                className="group bg-white rounded-[3rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 cursor-pointer relative"
+              >
+                 {/* Property Image Preview */}
+                 <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={getImageUrl(app.property?.image_url)} 
+                      alt={app.property?.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    
+                    {/* Status Badge Over Image */}
+                    <div className="absolute top-6 right-6">
+                       <div className={cn(
+                          "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border backdrop-blur-md shadow-lg",
+                          app.status === 'approved' ? "bg-primary/20 text-white border-primary/20" : 
+                          app.status === 'rejected' ? "bg-red-500/20 text-white border-red-500/20" : 
+                          "bg-primary-dark/40 text-accent-gold border-white/10"
+                       )}>
+                          {app.status}
+                       </div>
+                    </div>
 
-                 <div className="flex-1 text-center md:text-left w-full">
-                    <h3 className="text-2xl font-black font-manrope text-primary-dark tracking-tight">{app.property?.title}</h3>
-                    <p className="text-[10px] font-bold text-primary-dark/40 uppercase tracking-widest mt-1">
-                      Submitted on {new Date(app.created_at).toLocaleDateString()}
-                    </p>
-                 </div>
-
-                 <div className="shrink-0 w-full md:w-auto text-center md:text-right">
-                    <p className="text-[10px] font-bold text-primary-dark/40 uppercase tracking-widest mb-1">Status</p>
-                    <div className={cn(
-                       "px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest border",
-                       app.status === 'approved' ? "bg-primary/5 text-primary border-primary/10" : 
-                       app.status === 'rejected' ? "bg-accent-amber/5 text-accent-amber border-accent-amber/10" : 
-                       "bg-primary-dark/5 text-primary-dark border-primary-dark/10"
-                    )}>
-                       {app.status}
+                    <div className="absolute bottom-6 left-8 right-8">
+                       <h3 className="text-xl font-black font-manrope text-white tracking-tight leading-tight truncate">{app.property?.title}</h3>
+                       <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest mt-1 flex items-center gap-1.5">
+                          <MapPin size={10} className="text-primary-light" /> {app.property?.location}
+                       </p>
                     </div>
                  </div>
 
-                 {app.status === 'approved' && (
-                    <button className="w-full md:w-auto px-8 py-3 bg-primary text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:scale-105 transition-all">
-                       Proceed to Pay
-                    </button>
-                 )}
-              </div>
+                 <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between pt-0">
+                       <div className="space-y-1 text-left">
+                          <p className="text-[9px] font-black text-primary uppercase tracking-widest">Submitted</p>
+                          <p className="text-sm font-bold text-primary-dark">{new Date(app.created_at).toLocaleDateString()}</p>
+                       </div>
+                       
+                       <div className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[9px] group-hover:gap-4 transition-all">
+                          Manage <ArrowRight size={14} />
+                       </div>
+                    </div>
+                 </div>
+
+                 {/* Withdraw Action (Floating) */}
+                 <button 
+                  onClick={(e) => handleWithdraw(app.id, e)}
+                  disabled={isDeleting}
+                  className="absolute top-6 left-6 p-2 bg-white/20 backdrop-blur-md rounded-xl text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500"
+                  title="Withdraw Application"
+                 >
+                    <X size={16} />
+                 </button>
+              </motion.div>
             ))}
           </div>
         ) : (
-          <div className="bg-white p-12 rounded-[3rem] text-center max-w-2xl mx-auto shadow-sm border border-primary/5 mt-12">
+          <div className="bg-white p-12 rounded-[3rem] text-center max-w-2xl shadow-sm border border-primary/5 mt-12 overflow-hidden relative">
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
             <AlertCircle size={48} className="mx-auto text-primary/20 mb-6" />
-            <h2 className="text-3xl font-black font-manrope text-primary-dark mb-4 tracking-tighter">No applications yet</h2>
-            <p className="text-primary-dark/50 font-dm-sans">You haven't submitted any background checks or applications for properties. Browse our verified listings to secure your accommodation.</p>
+            <h2 className="text-3xl font-black font-manrope text-primary-dark mb-4 tracking-tighter">Start your journey</h2>
+            <p className="text-primary-dark/50 font-dm-sans max-w-sm mx-auto mb-10">You haven't applied for any units yet. Browse the Explorer to find your verified campus home.</p>
+            <button className="px-12 py-5 bg-primary text-white rounded-2xl font-black font-manrope transition-all hover:scale-105 shadow-xl shadow-primary/20">
+              Browse Properties
+            </button>
           </div>
         )}
+
+        {/* Application Detail Overly (Modern Drawer-style Panel) */}
+        <AnimatePresence>
+          {selectedApp && (
+            <>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedApp(null)}
+                className="fixed inset-0 bg-primary-dark/60 backdrop-blur-sm z-[100]"
+              />
+              <motion.div 
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed top-0 right-0 h-full w-full max-w-lg bg-surface-bright z-[101] shadow-2xl overflow-y-auto"
+              >
+                 <div className="p-8 lg:p-12 space-y-12">
+                    <div className="flex justify-between items-center">
+                       <button onClick={() => setSelectedApp(null)} className="p-4 bg-white rounded-2xl text-primary-dark/40 hover:text-primary transition-all">
+                          <X size={24} />
+                       </button>
+                       <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Application Detail</span>
+                    </div>
+
+                    <div className="space-y-8">
+                       <div className="aspect-video w-full rounded-[2.5rem] overflow-hidden shadow-xl">
+                          <img 
+                            src={getImageUrl(selectedApp.property?.image_url)} 
+                            alt={selectedApp.property?.title}
+                            className="w-full h-full object-cover"
+                          />
+                       </div>
+
+                       <div className="space-y-2">
+                          <h2 className="text-4xl font-black font-manrope text-primary-dark tracking-tighter">{selectedApp.property?.title}</h2>
+                          <div className="flex items-center gap-2 text-primary-dark/40 font-bold uppercase tracking-widest text-xs">
+                             <MapPin size={14} className="text-primary" /> {selectedApp.property?.location}
+                          </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-white p-6 rounded-3xl border border-primary/5">
+                             <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">Status</p>
+                             <div className="flex items-center gap-2">
+                                <div className={cn("w-2 h-2 rounded-full", selectedApp.status === 'approved' ? 'bg-primary' : 'bg-accent-amber')} />
+                                <p className="text-sm font-black text-primary-dark uppercase">{selectedApp.status}</p>
+                             </div>
+                          </div>
+                          <div className="bg-white p-6 rounded-3xl border border-primary/5">
+                             <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">Rent</p>
+                             <p className="text-sm font-black text-primary-dark">${selectedApp.property?.price}<span className="text-xs opacity-40">/mo</span></p>
+                          </div>
+                       </div>
+
+                       <div className="space-y-4">
+                          <div className="flex items-center gap-2 text-primary-dark/40 font-black uppercase text-[10px] tracking-widest">
+                             <Info size={14} /> My Message to Landlord
+                          </div>
+                          <div className="bg-white p-8 rounded-[2rem] border border-primary/5 relative italic text-primary-dark/60 font-dm-sans leading-relaxed">
+                             "{selectedApp.message || "Hello, I am interested in this property."}"
+                          </div>
+                       </div>
+
+                       {selectedApp.status === 'approved' && (
+                         <div className="space-y-6">
+                            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/10 border-dashed">
+                               <p className="text-xs text-primary font-bold text-center">Your application has been approved! Proceed to the next step to secure your spot.</p>
+                            </div>
+                            <button className="w-full py-6 bg-primary text-white rounded-2xl font-black font-manrope text-lg shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                              Pay Security Deposit
+                            </button>
+                         </div>
+                       )}
+
+                       {selectedApp.status === 'pending' && (
+                         <button 
+                          onClick={(e) => handleWithdraw(selectedApp.id, e)}
+                          disabled={isDeleting}
+                          className="w-full py-5 bg-white text-red-500 rounded-2xl font-black font-manrope text-xs border border-red-500/10 hover:bg-red-500/5 transition-all uppercase tracking-widest"
+                         >
+                           Withdraw Application
+                         </button>
+                       )}
+                    </div>
+                 </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   )

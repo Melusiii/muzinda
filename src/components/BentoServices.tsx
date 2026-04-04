@@ -38,7 +38,7 @@ export const BentoServices = () => {
               </div>
               <h3 className="font-manrope text-4xl font-black mb-4 tracking-tight">Shuttle & Transport</h3>
               <p className="text-white/50 font-dm-sans text-lg mb-8 leading-relaxed max-w-sm">
-                Reliable commutes to Africa University campus. Safety-tracked rides for night studies and weekend supply runs.
+                Reliable commutes to campus. Safety-tracked rides for night studies and weekend supply runs.
               </p>
             </div>
             <Link 
@@ -55,7 +55,7 @@ export const BentoServices = () => {
           <div className="space-y-4 text-center lg:text-left flex-1">
             <h3 className="font-manrope text-4xl font-black text-primary-dark tracking-tight italic">Partner with Muzinda</h3>
             <p className="text-primary-dark/50 text-lg font-dm-sans leading-relaxed">
-              Are you a landlord or service provider in Mutare? List your property or service and reach thousands of AU students instantly.
+              Are you a landlord or service provider? List your property or service and reach thousands of students instantly.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
