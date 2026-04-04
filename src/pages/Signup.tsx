@@ -39,7 +39,9 @@ const Signup = () => {
         category: selectedCategory,
       })
       setLoading(false)
-      // We don't navigate here anymore; the useEffect above handles it
+      // Navigate to login page upon success, as requested
+      alert("Registration successful! Please log in with your new credentials.")
+      navigate('/auth', { replace: true })
     } catch (err: any) {
       console.error("Signup: error", err)
       setLoading(false)
