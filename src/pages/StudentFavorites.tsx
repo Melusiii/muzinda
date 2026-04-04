@@ -1,12 +1,12 @@
 import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
-import { Heart, MapPin, Loader2, ArrowRight } from 'lucide-react'
+import { Heart, MapPin, ArrowRight } from 'lucide-react'
 import { useFavorites } from '../hooks/useSupabase'
 import { useNavigate } from 'react-router-dom'
 
 const StudentFavorites = () => {
   const navigate = useNavigate()
-  const { favorites, loading, refetch } = useFavorites()
+  const { favorites } = useFavorites()
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
@@ -25,37 +25,33 @@ const StudentFavorites = () => {
           </p>
         </header>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-             <Loader2 size={40} className="animate-spin text-primary" />
-          </div>
-        ) : favorites.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {favorites.map((fav) => {
-              const prop = fav.property;
-              if (!prop) return null;
-
-              return (
-                <div key={fav.id} className="group cursor-pointer" onClick={() => navigate(`/property/${prop.id}`)}>
-                  <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-primary/5 h-full flex flex-col">
-                    <div className="relative h-64 overflow-hidden">
-                      <img 
-                        src={prop.image_url} 
-                        alt={prop.title} 
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                      />
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          import('../lib/supabase').then(({ supabase }) => {
-                             supabase.from('favorites').delete().eq('id', fav.id).then(() => refetch());
-                          })
-                        }}
-                        className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-md rounded-2xl text-accent-amber shadow-lg hover:bg-accent-amber hover:text-white transition-all transform hover:scale-110"
-                      >
-                        <Heart size={20} fill="currentColor" />
-                      </button>
-                    </div>
+        {favorites.length > 0 ? (
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+             {favorites.map((fav) => {
+               const prop = fav.property;
+               if (!prop) return null;
+ 
+               return (
+                 <div key={fav.id} className="group cursor-pointer" onClick={() => navigate(`/property/${prop.id}`)}>
+                   <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-primary/5 h-full flex flex-col">
+                     <div className="relative h-64 overflow-hidden">
+                       <img 
+                         src={prop.image_url} 
+                         alt={prop.title} 
+                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                       />
+                       <button 
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           import('../lib/supabase').then(({ supabase }) => {
+                              supabase.from('favorites').delete().eq('id', fav.id).then(() => window.location.reload());
+                           })
+                         }}
+                         className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-md rounded-2xl text-accent-amber shadow-lg hover:bg-accent-amber hover:text-white transition-all transform hover:scale-110"
+                       >
+                         <Heart size={20} fill="currentColor" />
+                       </button>
+                     </div>
                     <div className="p-8 flex flex-col flex-grow">
                       <div className="flex justify-between items-start mb-4 gap-4">
                          <div className="min-w-0 flex-1">

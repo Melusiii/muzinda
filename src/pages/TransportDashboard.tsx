@@ -1,5 +1,5 @@
 import { Sidebar } from '../components/Sidebar'
-import { ShieldCheck, MapPin, Bus, CheckCircle2, Edit3, Users, XCircle, MessageCircle, Info } from 'lucide-react'
+import { ShieldCheck, MapPin, Bus, CheckCircle2, Edit3, Users, MessageCircle, XCircle } from 'lucide-react'
 import { useProviderService, useServiceApplications, updateServiceApplicationStatus } from '../hooks/useSupabase'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,7 +7,7 @@ import { ManageServiceModal } from '../components/ManageServiceModal'
 
 const TransportDashboard = () => {
   const navigate = useNavigate()
-  const { service, loading: serviceLoading, refetch: refetchService } = useProviderService()
+  const { service, refetch: refetchService } = useProviderService()
   const { applications, loading: appsLoading, refetch: refetchApps } = useServiceApplications(service?.id)
   
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)

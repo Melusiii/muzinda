@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
-import { AlertCircle, Clock, Loader2, CheckCircle2, XCircle, ArrowRight, MapPin, X, Info } from 'lucide-react'
+import { Loader2, MapPin, X, Info, ArrowRight, AlertCircle } from 'lucide-react'
 import { useUserApplications, deleteApplication } from '../hooks/useSupabase'
 import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -63,7 +63,7 @@ const StudentApplications = () => {
                  {/* Property Image Preview */}
                  <div className="relative h-48 overflow-hidden">
                     <img 
-                      src={getImageUrl(app.property?.image_url)} 
+                      src={getImageUrl(app.property?.image_url || '')} 
                       alt={app.property?.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
@@ -155,7 +155,7 @@ const StudentApplications = () => {
                     <div className="space-y-8">
                        <div className="aspect-video w-full rounded-[2.5rem] overflow-hidden shadow-xl">
                           <img 
-                            src={getImageUrl(selectedApp.property?.image_url)} 
+                            src={getImageUrl(selectedApp.property?.image_url || '')} 
                             alt={selectedApp.property?.title}
                             className="w-full h-full object-cover"
                           />

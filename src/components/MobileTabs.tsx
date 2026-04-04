@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Home, Compass, Bus, User, Building, MessageSquare, Wrench, ShieldCheck, FileText, Star, LogOut, X, Settings, ArrowRight, Bell, Shield } from 'lucide-react'
+import { Home, Compass, Bus, User, Building, MessageSquare, Wrench, ShieldCheck, FileText, Star, LogOut, X, Settings, ArrowRight, Bell } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
@@ -52,8 +52,8 @@ export const MobileTabs = () => {
   const moreLinks = [
     { label: 'Favorites', icon: Star, path: '/favorites', roles: ['student'] },
     { label: 'Messages', icon: MessageSquare, path: '/messages', roles: ['student'] },
-    { label: 'Notifications', icon: Bell },
-    { label: 'Security', icon: ShieldCheck },
+    { label: 'Notifications', icon: Bell, action: () => {} },
+    { label: 'Security', icon: ShieldCheck, action: () => {} },
     { label: 'Applications', icon: FileText, path: '/applications', roles: ['landlord'] },
     { label: 'Settings', icon: Settings, action: () => { setIsSettingsOpen(true); setIsMoreOpen(false); } },
   ].filter(link => !link.roles || link.roles.includes(user.role))
