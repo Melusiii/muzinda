@@ -5,11 +5,13 @@ import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { useLandlordStats } from '../hooks/useSupabase'
 import { Navbar } from '../components/Navbar'
+import { PostListingModal } from '../components/PostListingModal'
 
 const LandlordDashboard = () => {
   const { user } = useAuth()
-  const { stats, loading } = useLandlordStats()
+  const { stats, loading, refetch } = useLandlordStats()
   const [reviewsVisible, setReviewsVisible] = useState(true)
+  const [showPostModal, setShowPostModal] = useState(false)
 
   const dashboardStats = [
     { label: 'Total Revenue', value: stats ? `$${stats.revenue}` : '$0', trend: '+12%', icon: TrendingUp, color: 'text-primary' },
@@ -40,7 +42,10 @@ const LandlordDashboard = () => {
                    <button className="p-3 bg-white rounded-2xl border border-primary/5 text-primary-dark/40 hover:text-primary transition-all shadow-sm">
                      <Bell size={20} />
                    </button>
-                   <button className="bg-primary text-white px-6 py-3 rounded-2xl font-black font-manrope flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                   <button
+                     onClick={() => setShowPostModal(true)}
+                     className="bg-primary text-white px-6 py-3 rounded-2xl font-black font-manrope flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                   >
                      <PlusCircle size={20} />
                      Post Listing
                    </button>
@@ -90,11 +95,14 @@ const LandlordDashboard = () => {
                       <div key={prop.id} className="group bg-white rounded-[2.5rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-xl transition-all duration-500">
                         <div className="relative h-44 overflow-hidden">
                           <img src={prop.image_url} alt={prop.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                          {/* Verified / Unverified badge */}
                           <div className={cn(
                             "absolute top-4 right-4 px-3 py-1.5 rounded-full text-[9px] font-black tracking-[0.15em] shadow-lg backdrop-blur-md uppercase",
-                            prop.status === "occupied" ? "bg-white/90 text-primary" : "bg-accent-amber text-white"
+                            prop.verified
+                              ? "bg-white/90 text-[#4F7C2C]"
+                              : "bg-accent-amber/90 text-white"
                           )}>
-                            {prop.status}
+                            {prop.verified ? '✓ Verified' : 'Pending Verification'}
                           </div>
                         </div>
                         <div className="p-8">
@@ -114,7 +122,7 @@ const LandlordDashboard = () => {
                     ))}
                     {!stats?.properties?.length && (
                        <div className="col-span-full py-12 text-center bg-white rounded-[2.5rem] border border-dashed border-primary/10">
-                          <p className="text-primary-dark/40 font-bold uppercase tracking-widest text-xs">No properties listed yet.</p>
+                          <p className="text-primary-dark/40 font-bold uppercase tracking-widest text-xs">No properties listed yet. Click "Post Listing" to add your first property.</p>
                        </div>
                     )}
                   </div>
@@ -163,6 +171,12 @@ const LandlordDashboard = () => {
           </>
         )}
       </main>
+
+      <PostListingModal
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
+        onSuccess={() => refetch()}
+      />
     </div>
   )
 }

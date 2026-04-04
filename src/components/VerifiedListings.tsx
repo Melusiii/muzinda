@@ -1,7 +1,12 @@
 import { motion } from 'framer-motion'
-import { Star, ArrowRight } from 'lucide-react'
+import { Star, ArrowRight, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useProperties } from '../hooks/useSupabase'
+
+const isNew = (created_at: string) => {
+  const diffHours = (Date.now() - new Date(created_at).getTime()) / (1000 * 60 * 60)
+  return diffHours < 24
+}
 
 export const VerifiedListings = () => {
   const { properties, loading, error } = useProperties()
@@ -45,10 +50,22 @@ export const VerifiedListings = () => {
                       alt={prop.title} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
+                    {/* Verified / Pending badge */}
                     <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
-                      <Star size={14} className="text-accent-gold fill-accent-gold" />
-                      <span className="text-[11px] font-bold text-primary-dark">{prop.rating || '4.8'} ({prop.reviews_count || '12'} Reviews)</span>
+                      {prop.verified ? (
+                        <><Star size={14} className="text-accent-gold fill-accent-gold" />
+                        <span className="text-[11px] font-bold text-primary-dark">AU Verified</span></>
+                      ) : (
+                        <><ShieldCheck size={14} className="text-amber-500" />
+                        <span className="text-[11px] font-bold text-amber-600">Pending</span></>
+                      )}
                     </div>
+                    {/* NEW badge for fresh listings */}
+                    {prop.created_at && isNew(prop.created_at) && (
+                      <div className="absolute top-4 right-4 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg animate-pulse">
+                        NEW
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex justify-between items-start px-2">

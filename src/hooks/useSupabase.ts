@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 export interface Property {
   id: string;
   title: string;
-  name?: string; 
+  name?: string;
   type: 'studio' | 'shared' | 'apartment' | 'hostel';
   price: number;
   currency: string;
@@ -21,11 +21,12 @@ export interface Property {
   amenities: string[];
   total_rooms: number;
   available_rooms: number;
-  rating?: number; 
+  rating?: number;
   reviews_count?: number;
   gender_preference?: 'Male Only' | 'Female Only' | 'Mixed';
   monthly_revenue?: number;
   occupancy_count?: number;
+  created_at?: string;
 }
 
 export interface TransportTrip {
@@ -62,30 +63,44 @@ export const useProperties = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        console.log('useProperties: Fetching properties from Supabase...');
-        const { data, error } = await supabase
-          .from('properties')
-          .select('*')
-          .order('created_at', { ascending: false });
+  // Unique channel name per hook instance — prevents crash when two components
+  // on the same page (e.g. VerifiedListings + Neighborhoods) both call useProperties
+  const channelName = useRef(`properties-${Math.random().toString(36).slice(2)}`).current;
 
-        if (error) {
-          console.error('useProperties: Supabase error', error);
-          throw error;
-        }
-        console.log('useProperties: Successfully fetched', data?.length, 'properties');
-        setProperties(data as Property[]);
-      } catch (err: any) {
-        console.error('useProperties: Error fetching properties', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const fetchProperties = async () => {
+    try {
+      console.log('useProperties: Fetching properties from Supabase...');
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('useProperties: Supabase error', error);
+        throw error;
       }
-    };
+      console.log('useProperties: Successfully fetched', data?.length, 'properties');
+      setProperties(data as Property[]);
+    } catch (err: any) {
+      console.error('useProperties: Error fetching properties', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProperties();
+
+    // Real-time: refresh whenever any property changes (new listing posted)
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, () => {
+        fetchProperties();
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   return { properties, loading, error };
@@ -321,39 +336,54 @@ export const useLandlordStats = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetch = async (userId: string) => {
+    const { data: props, error: pError } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('landlord_id', userId);
+
+    if (pError) {
+      console.error(pError);
+    } else {
+      const totalRevenue = props.reduce((acc, p) => acc + (Number(p.monthly_revenue) || 0), 0);
+      const occupancy = props.length > 0
+        ? (props.reduce((acc, p) => acc + p.occupancy_count, 0) / props.reduce((acc, p) => acc + p.total_rooms, 0)) * 100
+        : 0;
+
+      setStats({
+        revenue: totalRevenue,
+        occupancy: Math.round(occupancy),
+        listings: props.length,
+        properties: props
+      });
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetch = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: props, error: pError } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('landlord_id', user.id);
-
-      if (pError) {
-        console.error(pError);
-      } else {
-        const totalRevenue = props.reduce((acc, p) => acc + (Number(p.monthly_revenue) || 0), 0);
-        const occupancy = props.length > 0 
-          ? (props.reduce((acc, p) => acc + p.occupancy_count, 0) / props.reduce((acc, p) => acc + p.total_rooms, 0)) * 100 
-          : 0;
-        
-        setStats({
-          revenue: totalRevenue,
-          occupancy: Math.round(occupancy),
-          listings: props.length,
-          properties: props
-        });
-      }
+    if (!user) {
       setLoading(false);
-    };
-    fetch();
-  }, []);
+      return;
+    }
 
-  return { stats, loading };
+    fetch(user.id);
+
+    // Real-time: re-fetch whenever a property for this landlord changes
+    const channel = supabase
+      .channel(`landlord-properties-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'properties', filter: `landlord_id=eq.${user.id}` },
+        () => { fetch(user.id); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
+
+  const refetch = () => { if (user) fetch(user.id); };
+
+  return { stats, loading, refetch };
 };
 
 export const useTransportTrips = () => {
