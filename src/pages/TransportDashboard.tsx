@@ -4,6 +4,7 @@ import { useProviderService, useServiceApplications, updateServiceApplicationSta
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ManageServiceModal } from '../components/ManageServiceModal'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 const TransportDashboard = () => {
   const navigate = useNavigate()
@@ -78,7 +79,7 @@ const TransportDashboard = () => {
                    <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm relative group">
                       {service?.image_url ? (
                         <div className="absolute inset-0 rounded-[2rem] overflow-hidden opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700">
-                          <img src={service.image_url} alt="Service" className="w-full h-full object-cover" />
+                          <img src={getImageUrl(service.image_url)} alt="Service" className="w-full h-full object-cover" />
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full text-white/20">

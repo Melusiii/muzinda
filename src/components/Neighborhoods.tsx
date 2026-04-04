@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { MapPin, ArrowUpRight } from 'lucide-react'
 import { useProperties } from '../hooks/useSupabase'
 import { Link } from 'react-router-dom'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 export const Neighborhoods = () => {
   const { properties, loading } = useProperties()
@@ -18,7 +19,7 @@ export const Neighborhoods = () => {
     return {
       name,
       count: count as number,
-      image: propInHood?.image_url || 'https://images.unsplash.com/photo-1592591502264-745a727dca82?q=80&w=2070&auto=format&fit=crop'
+      image: getImageUrl(propInHood?.image_url || null)
     }
   }).slice(0, 4) // Show top 4
 

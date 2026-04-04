@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { useLandlordStats } from '../hooks/useSupabase'
 import { Navbar } from '../components/Navbar'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 const LandlordDashboard = () => {
   const { user } = useAuth()
@@ -113,7 +114,7 @@ const LandlordDashboard = () => {
                     {stats?.properties?.map((prop: any) => (
                       <div key={prop.id} className="group bg-white rounded-[2.5rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-xl transition-all duration-500">
                         <div className="relative h-44 overflow-hidden">
-                          <img src={prop.image_url} alt={prop.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                          <img src={getImageUrl(prop.image_url)} alt={prop.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                           <div className={cn(
                             "absolute top-4 right-4 px-3 py-1.5 rounded-full text-[9px] font-black tracking-[0.15em] shadow-lg backdrop-blur-md uppercase",
                             prop.status === "occupied" ? "bg-white/90 text-primary" : "bg-accent-amber text-white"

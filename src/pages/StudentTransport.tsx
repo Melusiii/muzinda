@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useServices, useStudentServiceApplications } from '../hooks/useSupabase'
 import { ApplyServiceModal } from '../components/ApplyServiceModal'
 import { Navbar } from '../components/Navbar'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 import { ManageSubscriptionModal } from '../components/ManageSubscriptionModal'
 
@@ -334,7 +335,7 @@ const StudentTransport = () => {
                      >
                         <div className="relative aspect-video overflow-hidden bg-gray-50 border-b border-primary/5">
                            {s.image_url ? (
-                             <img src={s.image_url} alt={s.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                             <img src={getImageUrl(s.image_url)} alt={s.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                            ) : (
                              <div className="w-full h-full flex items-center justify-center text-primary-dark/10">
                                <Bus size={64} />

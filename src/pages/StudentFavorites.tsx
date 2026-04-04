@@ -3,6 +3,7 @@ import { Navbar } from '../components/Navbar'
 import { Heart, MapPin, ArrowRight } from 'lucide-react'
 import { useFavorites } from '../hooks/useSupabase'
 import { useNavigate } from 'react-router-dom'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 const StudentFavorites = () => {
   const navigate = useNavigate()
@@ -36,7 +37,7 @@ const StudentFavorites = () => {
                    <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-primary/5 h-full flex flex-col">
                      <div className="relative h-64 overflow-hidden">
                        <img 
-                         src={prop.image_url} 
+                         src={getImageUrl(prop.image_url)} 
                          alt={prop.title} 
                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                        />
