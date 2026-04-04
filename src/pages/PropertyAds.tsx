@@ -9,7 +9,7 @@ const PropertyAds = () => {
          <header className="mb-12 flex justify-between items-center">
             <div>
                <h1 className="text-4xl font-extrabold tracking-tighter text-primary-dark font-manrope">Property Ads</h1>
-               <p className="text-primary-dark/50 font-dm-sans">Manage your featured listings and promotions.</p>
+               <p className="text-white/40 text-xs font-dm-sans mb-8 leading-relaxed">Your property portfolio is fully protected by Muzinda verification standards.</p>
             </div>
             <button className="bg-primary text-white px-6 py-3 rounded-2xl font-bold font-manrope flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                <Plus size={20} />
@@ -23,7 +23,7 @@ const PropertyAds = () => {
             </div>
             <h2 className="text-2xl font-extrabold tracking-tighter text-primary-dark font-manrope">No Active Ad Campaigns</h2>
             <p className="text-primary-dark/40 max-w-sm mt-2 font-dm-sans">
-               Promote your properties to the top of the AU search results to increase visibility.
+               Promote your properties to the top of the search results to increase visibility.
             </p>
             
             <div className="mt-12 p-6 bg-surface-bright rounded-2xl border border-primary/5 flex items-start gap-4 text-left max-w-md">
@@ -31,7 +31,7 @@ const PropertyAds = () => {
                   <Info size={16} />
                </div>
                <div>
-                 <p className="text-xs font-bold text-primary-dark uppercase tracking-widest mb-1">Coming Soon</p>
+                 <p className="text-[10px] font-extrabold text-primary-dark/60 mt-6 uppercase tracking-wider">Top 5% in District</p>
                  <p className="text-[11px] text-primary-dark/50 leading-relaxed">
                    The Muzinda Ad Console is currently being finalized. Landlords with verified professional profiles will be the first to access the beta.
                  </p>

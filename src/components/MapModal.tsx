@@ -71,7 +71,7 @@ export const MapModal = ({ isOpen, onClose }: MapModalProps) => {
                      <Navigation size={20} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-primary-dark font-manrope">AU Mutare Campus</p>
+                    <p className="text-xs font-bold text-primary-dark font-manrope">Muzinda Campus</p>
                     <p className="text-[9px] font-extrabold text-primary-dark/40 uppercase tracking-widest leading-none mt-1">Satellite View Active</p>
                   </div>
                </div>
@@ -83,7 +83,7 @@ export const MapModal = ({ isOpen, onClose }: MapModalProps) => {
             <div className="flex justify-between items-start mb-8">
                <div>
                   <h2 className="text-2xl font-manrope font-extrabold text-primary-dark leading-tight">Campus Navigator</h2>
-                  <p className="text-xs text-primary-dark/40 font-dm-sans mt-1 italic">V1.0 Africa University</p>
+                  <p className="text-xs text-primary-dark/40 font-dm-sans mt-1 italic">V1.0 Independent Hub</p>
                </div>
                <button onClick={onClose} className="p-2 hover:bg-surface-bright rounded-xl text-primary-dark/20 hover:text-primary-dark transition-all">
                  <X size={20} />

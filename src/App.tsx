@@ -16,10 +16,13 @@ import Signup from './pages/Signup'
 import PropertyDetail from './pages/PropertyDetail'
 import StudentApplications from './pages/StudentApplications'
 import StudentFavorites from './pages/StudentFavorites'
+import TransportDashboard from './pages/TransportDashboard'
+import { MobileTabs } from './components/MobileTabs'
 
 function App() {
   return (
     <AuthProvider>
+      <MobileTabs />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
@@ -113,6 +116,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['provider']}>
               <Earnings />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/transport-hub" 
+          element={
+            <ProtectedRoute allowedRoles={['provider']}>
+              <TransportDashboard />
             </ProtectedRoute>
           } 
         />

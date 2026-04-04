@@ -2,7 +2,7 @@ import { Layout } from '../components/Layout'
 import { motion, AnimatePresence } from 'framer-motion'
 import { School, Building, Briefcase, Wrench, Bus, ArrowRight, ShieldCheck, Mail, Lock, User as UserIcon } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 import { useEffect } from 'react'
@@ -14,10 +14,23 @@ const Signup = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [gender, setGender] = useState<'male' | 'female' | 'preferred_not_to_say'>('preferred_not_to_say')
   const [loading, setLoading] = useState(false)
   
   const navigate = useNavigate()
+  const location = useLocation()
   const { signup, isAuthenticated, user, loading: authLoading } = useAuth()
+
+  // Hydrate role from navigation state (persistence)
+  useEffect(() => {
+    if (location.state?.role) {
+      const role = location.state.role;
+      setSelectedRole(role)
+      // Automatically advance step if role is already known from previous page
+      if (role === 'provider') setStep(2)
+      else setStep(3)
+    }
+  }, [location.state]);
 
   // Automated redirection once authenticated and profile is ready
   useEffect(() => {
@@ -31,12 +44,18 @@ const Signup = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    if (password.length < 6) {
+      setLoading(false);
+      alert("Password must be at least 6 characters long.");
+      return;
+    }
     try {
       console.log("Signup: Starting registration process");
       await signup(email, password, {
         name: name || email.split('@')[0],
         role: selectedRole,
         category: selectedCategory,
+        gender: selectedRole === 'student' ? gender : undefined
       })
       setLoading(false)
       // Navigate to login page upon success, as requested
@@ -50,7 +69,7 @@ const Signup = () => {
   }
 
   const roleOptions = [
-    { id: 'student', title: "I'm a Student", icon: School, desc: "Search and secure AU housing.", theme: 'green' },
+    { id: 'student', title: "I'm a Student", icon: School, desc: "Search and secure Premium housing.", theme: 'green' },
     { id: 'landlord', title: "I'm a Landlord", icon: Building, desc: "List and manage your properties.", theme: 'dark' },
     { id: 'provider', title: "Service Provider", icon: Briefcase, desc: "Offer maintenance or transport.", theme: 'dark' },
   ]
@@ -65,21 +84,26 @@ const Signup = () => {
       <div className="pt-32 pb-20 px-6 min-h-screen bg-[#F8F9F8] flex items-center justify-center">
         <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-stretch">
           
-          {/* Left Column: Role Selection (Shared with Auth) */}
-          <div className="flex flex-col gap-6">
+          {/* Left Column: Role Selection */}
+          <div className={cn("flex flex-col gap-6", (step > 1) ? "hidden lg:flex" : "flex")}>
             <h2 className="text-3xl font-manrope font-black text-primary-dark mb-2 px-2">Join Muzinda</h2>
             <div className="grid gap-6 flex-1">
               {roleOptions.map((role) => (
                 <button
                   key={role.id}
-                  disabled={step > 1}
-                  onClick={() => setSelectedRole(role.id as any)}
+                  disabled={step > 3}
+                  onClick={() => {
+                    setSelectedRole(role.id as any)
+                    // Auto-advance on mobile/desktop to streamline flow
+                    if (role.id === 'provider') setStep(2)
+                    else setStep(3)
+                  }}
                   className={cn(
                     "relative p-8 rounded-[2.5rem] text-left transition-all duration-500 overflow-hidden group flex flex-col justify-between h-48",
                     selectedRole === role.id 
                       ? (role.id === 'student' ? "bg-[#1E3011] text-white shadow-2xl scale-[1.02]" : "bg-[#1E1E1E] text-white shadow-2xl scale-[1.02]")
                       : "bg-white text-primary-dark border border-primary/5 hover:border-primary/20",
-                    step > 1 && "opacity-50 cursor-not-allowed"
+                    step > 3 && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <div className="flex justify-between items-start">
@@ -96,12 +120,17 @@ const Signup = () => {
                     )}
                   </div>
                   
-                  <div>
-                    <h3 className="text-2xl font-manrope font-black mb-1">{role.title}</h3>
-                    <p className={cn(
-                      "text-sm font-dm-sans leading-tight",
-                      selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
-                    )}>{role.desc}</p>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h3 className="text-2xl font-manrope font-black mb-1">{role.title}</h3>
+                      <p className={cn(
+                        "text-sm font-dm-sans leading-tight",
+                        selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
+                      )}>{role.desc}</p>
+                    </div>
+                    <div className="lg:hidden bg-white/10 p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight size={20} className="text-white" />
+                    </div>
                   </div>
                 </button>
               ))}
@@ -109,7 +138,10 @@ const Signup = () => {
           </div>
 
           {/* Right Column: Multi-step Signup Form */}
-          <div className="bg-white rounded-[3.5rem] p-8 md:p-16 border border-primary/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] flex flex-col justify-center">
+          <div className={cn(
+            "bg-white rounded-[3.5rem] p-8 md:p-16 border border-primary/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] flex flex-col justify-center",
+            (step === 1) ? "hidden lg:flex" : "flex"
+          )}>
             <AnimatePresence mode="wait">
               {step === 1 ? (
                 <motion.div
@@ -132,7 +164,7 @@ const Signup = () => {
 
                   <p className="text-primary-dark/50 text-lg font-dm-sans leading-relaxed">
                     You've selected <span className="text-primary-dark font-black capitalize">{selectedRole}</span>. 
-                    {selectedRole === 'student' ? " You will need a verified Africa University email to complete registration." : " You will need to provide business verification details later."}
+                    {selectedRole === 'student' ? " You will need a verified student email to complete registration." : " You will need to provide business verification details later."}
                   </p>
 
                   <button
@@ -142,7 +174,7 @@ const Signup = () => {
                     }}
                     className="w-full bg-[#1E3011] text-white py-6 rounded-2xl font-manrope font-black text-xl shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
                   >
-                    Continue Registration
+                    Continue
                     <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
                   </button>
 
@@ -250,6 +282,34 @@ const Signup = () => {
                           className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-dm-sans transition-all"
                         />
                       </div>
+
+                      {selectedRole === 'student' && (
+                        <div className="pt-2">
+                          <label className="text-[10px] font-black text-primary-dark/40 uppercase tracking-widest ml-1 mb-3 block">Indicate Gender</label>
+                          <div className="grid grid-cols-2 gap-4">
+                            <button
+                              type="button"
+                              onClick={() => setGender('male')}
+                              className={cn(
+                                "py-4 rounded-2xl border transition-all font-manrope font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2",
+                                gender === 'male' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "bg-[#F8F9F8] text-primary-dark/40 border-primary/5 hover:border-primary/20"
+                              )}
+                            >
+                              Male
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setGender('female')}
+                              className={cn(
+                                "py-4 rounded-2xl border transition-all font-manrope font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2",
+                                gender === 'female' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "bg-[#F8F9F8] text-primary-dark/40 border-primary/5 hover:border-primary/20"
+                              )}
+                            >
+                              Female
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <button

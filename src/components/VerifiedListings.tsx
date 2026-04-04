@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Star, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useProperties } from '../hooks/useSupabase'
+import { getImageUrl } from '../utils/supabase-helpers'
 
 export const VerifiedListings = () => {
   const { properties, loading, error } = useProperties()
@@ -9,7 +10,13 @@ export const VerifiedListings = () => {
   // Show only first 3 for the homepage section
   const featured = properties?.slice(0, 3) || []
 
-  if (error) return null // Hide section if error
+  if (error) {
+    return (
+      <div className="py-12 border-t border-primary/5 text-center">
+        <p className="text-primary/40 font-dm-sans italic">Unable to load listings. Please check your connection.</p>
+      </div>
+    );
+  }
 
   return (
     <section className="py-24 px-6 bg-white">
@@ -17,7 +24,7 @@ export const VerifiedListings = () => {
         <div className="flex justify-between items-end">
           <div className="space-y-2">
             <h2 className="text-4xl font-manrope font-extrabold text-primary-dark">Verified Listings</h2>
-            <p className="text-primary-dark/40 font-dm-sans">Hand-picked, inspected, and AU-approved residences.</p>
+            <p className="text-primary-dark/40 font-dm-sans">Hand-picked, inspected, and certified residences.</p>
           </div>
           <Link to="/explorer" className="flex items-center gap-2 text-primary-dark font-bold hover:underline group">
             Explore All <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -39,11 +46,15 @@ export const VerifiedListings = () => {
                 className="group cursor-pointer"
               >
                 <Link to={`/property/${prop.id}`}>
-                  <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden mb-6 shadow-xl shadow-primary/5">
+                  <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden mb-6 shadow-xl shadow-primary/5 bg-gray-100">
                     <img 
-                      src={prop.image_url || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop'} 
+                      src={getImageUrl(prop.image_url)} 
                       alt={prop.title} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop';
+                      }}
                     />
                     <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 shadow-lg">
                       <Star size={14} className="text-accent-gold fill-accent-gold" />

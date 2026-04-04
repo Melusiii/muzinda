@@ -12,6 +12,7 @@ const Auth = () => {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedRole, setSelectedRole] = useState<'student' | 'landlord' | 'provider'>('student')
+  const [showPortal, setShowPortal] = useState(false)
   
   const navigate = useNavigate()
   const location = useLocation()
@@ -20,8 +21,18 @@ const Auth = () => {
   // Automated redirection once authenticated
   useEffect(() => {
     if (isAuthenticated && user && !authLoading) {
-      const from = (location.state as any)?.from?.pathname || 
-                   (user.role === 'student' ? '/dashboard' : `/${user.role}`);
+      let from = (location.state as any)?.from?.pathname;
+      
+      if (!from || from === '/') {
+        if (user.role === 'student') from = '/dashboard';
+        else if (user.role === 'landlord') from = '/landlord';
+        else if (user.role === 'provider') {
+          from = user.category === 'transport' ? '/transport-hub' : '/provider';
+        } else {
+          from = '/dashboard';
+        }
+      }
+
       console.log("Auth: Authenticated, redirecting to", from);
       navigate(from, { replace: true });
     }
@@ -33,9 +44,8 @@ const Auth = () => {
     try {
       console.log("Auth: Starting login process for", email);
       await login(email, password)
-      setLoading(false)
-      // We don't navigate here anymore; the useEffect above handles it
-      // once the AuthContext updates with the user profile.
+      // Note: We don't set loading(false) here because the global loading state (authLoading)
+      // will take over until the profile is fetched. The useEffect below handles navigation.
     } catch (err: any) {
       console.error("Auth: Login error:", err)
       setLoading(false)
@@ -44,7 +54,7 @@ const Auth = () => {
   }
 
   const roleOptions = [
-    { id: 'student', title: "I'm a Student", icon: School, desc: "Search and secure AU housing.", theme: 'green' },
+    { id: 'student', title: "I'm a Student", icon: School, desc: "Search and secure Premium housing.", theme: 'green' },
     { id: 'landlord', title: "I'm a Landlord", icon: Building, desc: "List and manage your properties.", theme: 'dark' },
     { id: 'provider', title: "Service Provider", icon: Briefcase, desc: "Offer maintenance or transport.", theme: 'dark' },
   ]
@@ -55,13 +65,16 @@ const Auth = () => {
         <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-stretch">
           
           {/* Left Column: Role Selection */}
-          <div className="flex flex-col gap-6">
+          <div className={cn("flex flex-col gap-6", showPortal ? "hidden lg:flex" : "flex")}>
             <h2 className="text-3xl font-manrope font-black text-primary-dark mb-2 px-2">Access Portal</h2>
             <div className="grid gap-6 flex-1">
               {roleOptions.map((role) => (
                 <button
                   key={role.id}
-                  onClick={() => setSelectedRole(role.id as any)}
+                  onClick={() => {
+                    setSelectedRole(role.id as any)
+                    setShowPortal(true)
+                  }}
                   className={cn(
                     "relative p-8 rounded-[2.5rem] text-left transition-all duration-500 overflow-hidden group flex flex-col justify-between h-48",
                     selectedRole === role.id 
@@ -83,20 +96,35 @@ const Auth = () => {
                     )}
                   </div>
                   
-                  <div>
-                    <h3 className="text-2xl font-manrope font-black mb-1">{role.title}</h3>
-                    <p className={cn(
-                      "text-sm font-dm-sans leading-tight",
-                      selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
-                    )}>{role.desc}</p>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h3 className="text-2xl font-manrope font-black mb-1">{role.title}</h3>
+                      <p className={cn(
+                        "text-sm font-dm-sans leading-tight",
+                        selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
+                      )}>{role.desc}</p>
+                    </div>
+                    <div className="lg:hidden bg-white/10 p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight size={20} className="text-white" />
+                    </div>
                   </div>
                 </button>
               ))}
             </div>
+
+            {/* Guest CTA for Signup visibility */}
+            <div className="lg:hidden text-center py-4 bg-white/50 rounded-3xl border border-primary/5">
+                <p className="text-primary-dark/40 text-xs font-dm-sans">
+                  Don't have an account? <button onClick={() => navigate('/signup', { state: { role: selectedRole } })} className="text-[#4F7C2C] font-black underline ml-1">Join Muzinda</button>
+                </p>
+            </div>
           </div>
 
           {/* Right Column: Integrated Login Form */}
-          <div className="bg-white rounded-[3.5rem] p-8 md:p-16 border border-primary/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] flex flex-col justify-center">
+          <div className={cn(
+            "bg-white rounded-[3.5rem] p-8 md:p-16 border border-primary/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] flex flex-col justify-center",
+            !showPortal && "hidden lg:flex"
+          )}>
             <AnimatePresence mode="wait">
               {!loading ? (
                 <motion.div
@@ -112,8 +140,8 @@ const Auth = () => {
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Welcome Back</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-manrope font-black text-primary-dark tracking-tighter">
-                      Login with <br />
-                      <span className="text-primary-dark/40">Africa University</span>
+                      Login to <br />
+                      <span className="text-primary-dark/40">Muzinda Portal</span>
                     </h1>
                   </div>
 
@@ -161,10 +189,16 @@ const Auth = () => {
                     </button>
                   </form>
 
-                  <div className="text-center pt-8 border-t border-primary/5">
+                  <div className="text-center pt-8 border-t border-primary/5 space-y-4">
                      <p className="text-primary-dark/40 font-dm-sans">
-                       First time at Muzinda? <Link to="/signup" className="text-[#4F7C2C] font-black hover:underline ml-1">Create Account</Link>
+                       First time at Muzinda? <button onClick={() => navigate('/signup', { state: { role: selectedRole } })} className="text-[#4F7C2C] font-black hover:underline ml-1">Create Account</button>
                      </p>
+                     <button 
+                       onClick={() => setShowPortal(false)}
+                       className="lg:hidden text-[10px] font-black uppercase tracking-widest text-primary-dark/20 hover:text-primary transition-colors"
+                     >
+                       Change Role
+                     </button>
                   </div>
                 </motion.div>
               ) : (
@@ -180,7 +214,7 @@ const Auth = () => {
                   </div>
                   <div className="space-y-4">
                     <h2 className="text-3xl font-manrope font-black text-primary-dark">Authenticating...</h2>
-                    <p className="text-primary-dark/40 font-dm-sans max-w-xs mx-auto">Verifying your credentials with Africa University security protocols.</p>
+                    <p className="text-primary-dark/40 font-dm-sans max-w-xs mx-auto">Verifying your credentials with premium security protocols.</p>
                   </div>
                 </motion.div>
               )}

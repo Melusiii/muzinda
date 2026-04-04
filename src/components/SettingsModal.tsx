@@ -1,8 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, User, Bell, Shield, Palette, LogOut } from 'lucide-react'
+import { X, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { cn } from '../utils/cn'
-import { useState } from 'react'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -10,17 +8,9 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
-  const { user, logout } = useAuth()
-  const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'security' | 'appearance'>('profile')
+  const { user } = useAuth()
 
-  const tabs = [
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'security', label: 'Security', icon: Shield },
-    { id: 'appearance', label: 'Appearance', icon: Palette },
-  ]
-
-  if (!isOpen) return null
+  if (!isOpen || !user) return null
 
   return (
     <AnimatePresence>
@@ -37,128 +27,168 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[600px]"
+          className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col min-h-[500px]"
         >
-          {/* Sidebar */}
-          <div className="w-full md:w-64 bg-surface-bright border-r border-primary/5 p-8 flex flex-col">
-            <div className="mb-8">
-              <h2 className="text-2xl font-manrope font-extrabold text-primary-dark">Settings</h2>
-              <p className="text-xs text-primary-dark/40 font-dm-sans mt-1">Manage your Muzinda account</p>
+          {/* Header */}
+          <div className="p-8 border-b border-primary/5 flex items-center justify-between bg-surface-bright">
+            <div>
+              <h2 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tight">Edit Professional Profile</h2>
+              <p className="text-[10px] text-primary/40 font-bold uppercase tracking-widest mt-1">Institutional Identity • {user.role}</p>
             </div>
-
-            <nav className="flex-1 space-y-2">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all",
-                    activeTab === tab.id 
-                      ? "bg-primary text-white shadow-lg shadow-primary/20" 
-                      : "text-primary-dark/40 hover:bg-primary/5 hover:text-primary"
-                  )}
-                >
-                  <tab.icon size={18} />
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-
-            <button 
-              onClick={() => { logout(); onClose(); }}
-              className="mt-auto flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm text-accent-amber hover:bg-accent-amber/5 transition-all text-left"
-            >
-              <LogOut size={18} />
-              Sign Out
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 p-8 md:p-12 relative overflow-y-auto">
             <button 
               onClick={onClose}
-              className="absolute top-8 right-8 p-2 hover:bg-surface-bright rounded-xl transition-all text-primary-dark/20 hover:text-primary-dark"
+              className="p-3 hover:bg-white rounded-2xl transition-all text-primary-dark/20 hover:text-primary-dark shadow-sm border border-transparent hover:border-primary/5"
             >
               <X size={20} />
             </button>
+          </div>
 
-            <div className="max-w-xl">
-              {activeTab === 'profile' && (
-                <div className="space-y-8">
-                  <header>
-                    <h3 className="text-xl font-manrope font-extrabold text-primary-dark">Profile Information</h3>
-                    <p className="text-sm text-primary-dark/40 font-dm-sans">Update your personal details and how others see you.</p>
-                  </header>
+          {/* Profile Editor Content */}
+          <div className="flex-1 p-8 md:p-10 overflow-y-auto">
+            <div className="space-y-8">
+              <div className="flex items-center gap-6">
+                <div className="relative group">
+                  <img 
+                    src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}`} 
+                    alt="Profile" 
+                    className="w-24 h-24 rounded-[2rem] object-cover shadow-xl border-4 border-white transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                     <User size={24} className="text-white" />
+                  </div>
+                </div>
+                <div>
+                  <input 
+                    type="file" 
+                    id="avatar-upload" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !user) return;
 
-                  <div className="flex items-center gap-6">
-                    <img 
-                      src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}`} 
-                      alt="Profile" 
-                      className="w-20 h-20 rounded-2xl object-cover shadow-md border-4 border-surface-bright"
+                      try {
+                        const { supabase } = await import('../lib/supabase');
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+                        const filePath = `${fileName}`;
+
+                        const { error: uploadError } = await supabase.storage
+                          .from('avatars')
+                          .upload(filePath, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                          .from('avatars')
+                          .getPublicUrl(filePath);
+
+                        const { error: updateError } = await supabase
+                          .from('profiles')
+                          .update({ avatar_url: publicUrl })
+                          .eq('id', user.id);
+
+                        if (updateError) throw updateError;
+
+                        alert("Profile photo updated! Refreshing...");
+                        window.location.reload();
+                      } catch (err: any) {
+                        console.error(err);
+                        alert("Upload failed: " + err.message);
+                      }
+                    }}
+                  />
+                  <label 
+                    htmlFor="avatar-upload"
+                    className="text-[10px] font-black text-primary px-6 py-4 bg-primary/5 rounded-2xl hover:bg-primary hover:text-white transition-all cursor-pointer inline-block uppercase tracking-widest font-manrope shadow-md hover:shadow-primary/20"
+                  >
+                    Change Profile Photo
+                  </label>
+                  <p className="text-[9px] text-primary-dark/20 font-bold uppercase tracking-widest mt-3 ml-1">Synced with local storage</p>
+                </div>
+              </div>
+
+              <form 
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const full_name = formData.get('full_name') as string;
+                  const phone = formData.get('phone') as string;
+                  const bio = formData.get('bio') as string;
+                  const gender = formData.get('gender') as any;
+                  
+                  if (user) {
+                    try {
+                      const { supabase } = await import('../lib/supabase');
+                      const { error } = await supabase.from('profiles').update({ 
+                        full_name, 
+                        phone, 
+                        bio,
+                        gender
+                      }).eq('id', user.id);
+                      
+                      if (error) throw error;
+                      alert("Profile updated successfully!");
+                      window.location.reload();
+                    } catch (err) {
+                      console.error(err);
+                      alert("Failed to update profile.");
+                    }
+                  }
+                }}
+                className="space-y-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest ml-1">Display Name</label>
+                    <input 
+                      type="text" 
+                      name="full_name"
+                      defaultValue={user?.name}
+                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark transition-all"
                     />
-                    <button 
-                      onClick={async () => {
-                        const newUrl = prompt("Enter new profile picture URL (e.g. from unsplash or imgur):");
-                        if (newUrl && user) {
-                          // Quick client-side implementation; update logic needed in AuthContext for a complete fix,
-                          // but direct update for UX verification:
-                          import('../lib/supabase').then(async ({ supabase }) => {
-                             await supabase.from('profiles').update({ avatar_url: newUrl }).eq('id', user.id);
-                             alert("Profile picture updated! Please refresh to see changes.");
-                          });
-                        }
-                      }}
-                      className="text-xs font-bold text-primary px-4 py-2 bg-primary/5 rounded-xl hover:bg-primary hover:text-white transition-all">
-                      Change Photo
-                    </button>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest ml-1">Full Name</label>
-                      <input 
-                        type="text" 
-                        defaultValue={user?.name}
-                        className="w-full p-4 rounded-xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest ml-1">Email Address</label>
-                       <input 
-                        type="email" 
-                        defaultValue={user?.email}
-                        disabled
-                        className="w-full p-4 rounded-xl bg-surface-bright border border-primary/5 outline-none font-dm-sans text-sm font-bold text-primary-dark/40 cursor-not-allowed"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest ml-1">Contact Link</label>
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      defaultValue={user?.phone || ''}
+                      placeholder="+263 ..."
+                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark transition-all"
+                    />
                   </div>
-
-                  <div className="flex justify-end pt-4">
-                    <button className="bg-primary text-white px-8 py-3 rounded-xl font-bold font-manrope shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                      Save Changes
-                    </button>
+                  <div className="space-y-2">
+                     <label className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest ml-1">Identity Gender</label>
+                     <select 
+                       name="gender"
+                       defaultValue={user?.gender || 'preferred_not_to_say'}
+                       className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark transition-all appearance-none"
+                     >
+                       <option value="male">Male</option>
+                       <option value="female">Female</option>
+                       <option value="preferred_not_to_say">Preferred not to say</option>
+                     </select>
                   </div>
                 </div>
-              )}
 
-              {activeTab !== 'profile' && (
-                <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                  <div className="w-16 h-16 rounded-2xl bg-surface-bright flex items-center justify-center text-primary/20">
-                     {tabs.find(t => t.id === activeTab)?.icon && (
-                       <div className="scale-150 transform">
-                         {(() => {
-                           const Icon = tabs.find(t => t.id === activeTab)!.icon
-                           return <Icon size={24} />
-                         })()}
-                       </div>
-                     )}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-manrope font-bold text-primary-dark">{tabs.find(t => t.id === activeTab)?.label} Settings Coming Soon</h4>
-                    <p className="text-sm text-primary-dark/30 font-dm-sans">This module is currently being optimized for the Africa University branch.</p>
-                  </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest ml-1">Professional Bio</label>
+                    <textarea 
+                      name="bio"
+                      defaultValue={user?.bio || ''}
+                      rows={4}
+                      placeholder="Share your experience with the community..."
+                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark resize-none transition-all"
+                    />
                 </div>
-              )}
+
+                <div className="flex justify-end pt-6">
+                  <button type="submit" className="w-full md:w-auto bg-primary text-white px-10 py-5 rounded-[1.5rem] font-bold font-manrope shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-widest">
+                    Update Professional Hub
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </motion.div>

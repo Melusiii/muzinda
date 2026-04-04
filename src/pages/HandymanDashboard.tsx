@@ -52,7 +52,7 @@ const HandymanDashboard = () => {
                 <span className="text-[8px] font-bold text-primary-dark/30 uppercase tracking-tighter">On Time</span>
               </div>
             </div>
-            <p className="text-[10px] font-extrabold text-primary-dark/60 mt-6 uppercase tracking-wider">Top 5% in AU District</p>
+            <p className="text-[10px] font-extrabold text-primary-dark/60 mt-6 uppercase tracking-wider">Top 5% in District</p>
           </div>
         </header>
 
@@ -71,8 +71,8 @@ const HandymanDashboard = () => {
 
             <div className="grid grid-cols-1 gap-6">
               {[
-                { title: "Burst Pipe Emergency", desc: "Africa University, Block C. Main supply line leak affecting 4 rooms.", loc: "Main Campus", time: "15m ago", price: 45, icon: Wrench, urgent: true },
-                { title: "Socket Installation", desc: "Morningside Student Housing. Installation of 3 additional power sockets.", loc: "Morningside", time: "2h ago", price: 25, icon: TrendingUp },
+                { title: "Burst Pipe Emergency", desc: "Muzinda Hub, Block C. Main supply line leak affecting 4 rooms.", loc: "Muzinda Hub", time: "15m ago", price: 45, icon: Wrench, urgent: true },
+                { title: "Socket Installation", desc: "Campus Housing. Installation of 3 additional power sockets.", loc: "Campus", time: "2h ago", price: 25, icon: TrendingUp },
               ].map((job, idx) => (
                 <motion.div 
                   key={idx}

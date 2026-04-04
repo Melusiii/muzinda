@@ -6,7 +6,7 @@ const Earnings = () => {
   const transactions = [
     { id: 1, type: 'Maintenance Gig', date: 'Oct 12, 2023', amount: 45.00, status: 'Completed', provider: 'Fern Valley Estate' },
     { id: 2, type: 'Shuttle Payout', date: 'Oct 10, 2023', amount: 120.50, status: 'Processing', provider: 'Mutare Trust' },
-    { id: 3, type: 'Security Deposit', date: 'Oct 08, 2023', amount: 15.00, status: 'Released', provider: 'AU Main Campus' },
+    { id: 3, type: 'Security Deposit', date: 'Oct 08, 2023', amount: 15.00, status: 'Released', provider: 'Muzinda Hub' },
   ]
 
   return (

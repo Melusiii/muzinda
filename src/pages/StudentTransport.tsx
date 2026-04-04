@@ -1,259 +1,479 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sidebar } from '../components/Sidebar'
-import { Bus, MapPin, Trash2, Phone, MessageCircle, Clock, ChevronRight, X } from 'lucide-react'
+import { MapPin, Phone, Bus, CheckCircle2, Clock, Users, Star, CreditCard, ShieldCheck } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { useUserTickets, useTransportTrips, useProviders } from '../hooks/useSupabase'
+import { useServices, useStudentServiceApplications } from '../hooks/useSupabase'
+import { ApplyServiceModal } from '../components/ApplyServiceModal'
+import { Navbar } from '../components/Navbar'
 
-const StudentTransport = () => {
-  const [activeTab, setActiveTab] = useState<'to_campus' | 'to_town'>('to_campus')
-  const [isPickupModalOpen, setIsPickupModalOpen] = useState(false)
-  const [selectedTrip, setSelectedTrip] = useState<any>(null)
+import { ManageSubscriptionModal } from '../components/ManageSubscriptionModal'
 
-  const { tickets: activeTickets, loading: ticketsLoading } = useUserTickets()
-  const { trips, loading: tripsLoading } = useTransportTrips()
-  const { providers: privateShuttles, loading: providersLoading } = useProviders('transport')
+const QRBox = () => (
+  <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-2 relative group overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <div className="w-full h-full border-2 border-white/40 border-dashed rounded-lg flex items-center justify-center relative z-10">
+      <div className="grid grid-cols-3 gap-1">
+         {[...Array(9)].map((_, i) => (
+           <div key={i} className={cn("w-1.5 h-1.5 rounded-sm bg-white", i % 2 === 0 ? "opacity-100" : "opacity-40")} />
+         ))}
+      </div>
+    </div>
+  </div>
+)
 
-  // Derive from remote trips
-  const tripsToCampus = trips?.filter(t => !t.routes?.name?.toLowerCase().includes('town')) || []
-  const tripsToTown = trips?.filter(t => t.routes?.name?.toLowerCase().includes('town')) || []
+const WaveAnimation = () => (
+  <div className="absolute inset-0 pointer-events-none opacity-20">
+    <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <motion.path
+        d="M0 50 Q 25 40, 50 50 T 100 50"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="0.5"
+        className="text-primary"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ 
+          pathLength: [0, 1], 
+          opacity: [0, 1, 0],
+          d: [
+            "M0 50 Q 25 40, 50 50 T 100 50",
+            "M0 50 Q 25 60, 50 50 T 100 50",
+            "M0 50 Q 25 40, 50 50 T 100 50"
+          ]
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </svg>
+  </div>
+)
 
-  const currentTrips = activeTab === 'to_campus' ? tripsToCampus : tripsToTown
-
-  // const privateShuttles = [ ... ] (Removed in favor of useProviders)
-
-  const handleBookClick = (trip: any) => {
-    setSelectedTrip(trip)
-    setIsPickupModalOpen(true)
-  }
+const StatusTrackingTile = ({ app }: { app: any }) => {
+  const steps = [
+    { label: 'Request Sent', status: 'completed', icon: CheckCircle2 },
+    { label: 'Provider Review', status: 'active', icon: Clock },
+    { label: 'Pass Issued', status: 'pending', icon: CreditCard }
+  ]
 
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white p-8 rounded-[3rem] border-2 border-dashed border-primary/20 relative overflow-hidden"
+    >
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="space-y-4 text-center md:text-left">
+           <div className="inline-flex items-center gap-2 bg-accent-gold/10 text-accent-gold px-4 py-2 rounded-2xl border border-accent-gold/20">
+              <Clock size={14} />
+              <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verification in Progress</span>
+           </div>
+           <h2 className="text-3xl font-manrope font-black tracking-tighter text-primary-dark uppercase italic">Hold tight, {app.profiles?.full_name?.split(' ')[0] || 'Student'}!</h2>
+           <p className="text-primary-dark/40 text-xs font-bold leading-relaxed max-w-md">Your application for <span className="text-primary">{app.service?.name}</span> is being reviewed by the provider. Secure boarding is our priority.</p>
+        </div>
+
+        <div className="flex gap-4">
+           {steps.map((step, idx) => (
+             <div key={idx} className="flex flex-col items-center gap-3">
+                <div className={cn(
+                  "w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-lg",
+                  step.status === 'completed' ? "bg-primary text-white" :
+                  step.status === 'active' ? "bg-accent-gold text-white animate-pulse" : "bg-primary/5 text-primary/20"
+                )}>
+                  <step.icon size={20} />
+                </div>
+                <span className="text-[8px] font-black uppercase tracking-widest text-primary-dark/40">{step.label}</span>
+             </div>
+           ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+const PremiumPassBento = ({ app, onManage }: { app: any, onManage: () => void }) => {
+  const approvedDate = app.approved_at ? new Date(app.approved_at) : new Date()
+  const expiryDate = new Date(approvedDate)
+  expiryDate.setMonth(expiryDate.getMonth() + 1)
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="bg-primary-dark p-8 md:p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[260px] border border-white/5"
+    >
+      <WaveAnimation />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-primary/30 rounded-full -mr-32 -mt-32 blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-gold/20 rounded-full -ml-32 -mb-32 blur-[80px] pointer-events-none" />
+      
+      <div className="relative z-10 flex justify-between items-start">
+        <div className="space-y-4">
+           <div className="flex items-center gap-3 bg-white/5 backdrop-blur-3xl px-4 py-2 rounded-2xl border border-white/10 w-fit">
+              <div className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verified Active Pass</span>
+           </div>
+           <div>
+              <h2 className="text-5xl font-manrope font-black tracking-tighter italic leading-none">{app.service?.name}</h2>
+              <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em] mt-3">Muzinda Institutional Network</p>
+           </div>
+        </div>
+        <QRBox />
+      </div>
+
+      <div className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-8 mt-auto">
+        <div className="flex gap-12">
+          <div className="space-y-1">
+            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest font-manrope">Verification ID</p>
+            <p className="text-sm font-manrope font-black tracking-tight leading-none uppercase italic font-mono text-primary">#MZ-{app.id.slice(0, 8)}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest font-manrope">Next Boarding</p>
+            <p className="text-sm font-manrope font-black tracking-tight leading-none text-accent-gold uppercase italic">
+               {expiryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase()}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <a href={`tel:${app.service?.profiles?.phone || ''}`} className="p-5 bg-white/5 hover:bg-white/10 text-white rounded-2xl transition-all border border-white/10 backdrop-blur-md">
+            <Phone size={18} />
+          </a>
+          <button 
+            onClick={onManage}
+            className="px-10 py-5 bg-primary text-white rounded-[2.5rem] font-black font-manrope transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-2xl flex items-center gap-3 text-[10px] uppercase tracking-widest border border-white/20"
+          >
+            Manage Membership
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+const StudentTransport = () => {
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
+  const [isManageModalOpen, setIsManageModalOpen] = useState(false)
+  const [selectedService, setSelectedService] = useState<any>(null)
+  const [pulseIndex, setPulseIndex] = useState(0)
+
+  const pulses = [
+    "14 Students boarding now",
+    "Mutual Trust Transit Network",
+    "Verified Doorstep Pickup Active",
+    "Muzinda • Institutional Grade"
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseIndex((prev) => (prev + 1) % pulses.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const { services: monthlyShuttles, loading: servicesLoading } = useServices('transport')
+  const { applications: myApps, loading: appsLoading, refetch: refetchMyApps } = useStudentServiceApplications()
+
+  const handleApplyClick = (service: any) => {
+    setSelectedService(service)
+    setIsApplyModalOpen(true)
+  }
+
+  const handleCancelSubscription = async () => {
+    if (!approvedApp) return;
+    if (!confirm("Are you sure you want to cancel your institutional membership? Your pass will remain active until the end of the billing cycle.")) return;
+
+    try {
+      const { supabase } = await import('../lib/supabase');
+      const { error } = await supabase
+        .from('service_applications')
+        .update({ status: 'vacated' })
+        .eq('id', approvedApp.id);
+
+      if (error) throw error;
+      
+      setIsManageModalOpen(false);
+      refetchMyApps();
+      alert("Subscription cancelled successfully.");
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to cancel subscription: " + err.message);
+    }
+  }
+
+  const approvedApp = myApps.find(a => a.status === 'approved')
+  const pendingApp = myApps.find(a => a.status === 'pending')
+
+  return (
+    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
+      <div className="md:hidden">
+        <Navbar />
+      </div>
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 md:p-12 pb-32">
-        <header className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-primary-dark font-manrope">Transport Hub</h1>
-          <p className="text-primary-dark/50 font-dm-sans max-w-xl mt-2">
-            Book reliable shuttles or private taxis to and from Africa University.
-          </p>
-        </header>
+      {/* Background Decor */}
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
 
-        {/* My Active Tickets */}
-        <section className="mb-12">
-          <div className="flex items-center gap-4 mb-6">
-             <h2 className="text-2xl font-manrope font-extrabold text-primary-dark">My Active Tickets</h2>
-             {ticketsLoading && <span className="text-sm text-primary-dark/50">Loading...</span>}
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative z-10">
+        {/* SENIOR HEADER */}
+        <motion.header 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="mb-16 space-y-6"
+        >
+          <div className="flex items-center gap-4">
+             <div className="h-0.5 w-12 bg-primary rounded-full" />
+             <AnimatePresence mode="wait">
+               <motion.span 
+                 key={pulseIndex}
+                 initial={{ opacity: 0, y: 5 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: -5 }}
+                 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary"
+               >
+                 {pulses[pulseIndex]}
+               </motion.span>
+             </AnimatePresence>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
-            {activeTickets.length > 0 ? activeTickets.map(ticket => (
-              <div key={ticket.id} className="min-w-[280px] bg-primary-dark p-6 rounded-[2rem] text-white shadow-xl shadow-primary/10 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl" />
-                <div className="relative z-10 flex justify-between items-start">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <h1 className="text-7xl font-black tracking-tighter text-primary-dark font-manrope leading-none mb-2">
+                Transit <span className="text-primary italic">Hub</span>
+              </h1>
+              <p className="text-primary-dark/30 font-bold uppercase tracking-widest text-[11px] ml-1">
+                 Institutional Logistics • Professional Fleet Management
+              </p>
+            </div>
+            {approvedApp && (
+               <button 
+                 onClick={() => setIsManageModalOpen(true)}
+                 className="bg-white px-6 py-4 rounded-[2rem] border border-primary/10 shadow-sm flex items-center gap-4 hover:shadow-lg transition-all text-left"
+               >
+                  <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><CreditCard size={20} /></div>
                   <div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-accent-gold mb-1 block">{ticket.trips?.profiles?.full_name || 'Shuttle Services'}</span>
-                    <h3 className="font-bold text-lg leading-tight mb-2">{ticket.trips?.routes?.name || ticket.pickup_point}</h3>
-                    <div className="flex items-center gap-2 text-white/70">
-                      <Clock size={14} />
-                      <span className="text-sm font-bold">{ticket.trips?.departure_time}</span>
-                    </div>
+                     <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-widest leading-none">Subscription</p>
+                     <p className="text-sm font-black text-primary-dark tracking-tight">Manage Active Pass</p>
                   </div>
-                  <button className="p-2 bg-white/10 hover:bg-red-500/20 hover:text-red-400 text-white/50 rounded-xl transition-all">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-                <div className="mt-6 flex items-center justify-between">
-                  <span className="px-3 py-1 bg-white/10 rounded-lg text-xs font-bold uppercase">{ticket.status}</span>
-                  <button className="text-xs font-bold text-accent-gold flex items-center gap-1 hover:underline">
-                    View QR <ChevronRight size={14} />
-                  </button>
-                </div>
-              </div>
-            )) : (
-              <div className="p-8 border-2 border-dashed border-primary/10 rounded-[2rem] text-center w-full">
-                <p className="text-primary-dark/40 font-bold">No active tickets for today.</p>
-              </div>
+               </button>
             )}
           </div>
-        </section>
+        </motion.header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
-          {/* Available Trips */}
-          <section className="xl:col-span-8 space-y-8">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-manrope font-extrabold text-primary-dark">Available Trips (Today)</h2>
-              {tripsLoading && <span className="text-sm text-primary-dark/50">Loading...</span>}
-              <div className="flex bg-surface-bright p-1 rounded-xl border border-primary/5">
-                <button 
-                  onClick={() => setActiveTab('to_campus')}
-                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'to_campus' ? "bg-white shadow-sm text-primary-dark" : "text-primary-dark/40 hover:text-primary-dark")}
-                >
-                  To Campus
-                </button>
-                <button 
-                  onClick={() => setActiveTab('to_town')}
-                  className={cn("px-4 py-2 text-sm font-bold rounded-lg transition-all", activeTab === 'to_town' ? "bg-white shadow-sm text-primary-dark" : "text-primary-dark/40 hover:text-primary-dark")}
-                >
-                  To Town
-                </button>
-              </div>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-8 space-y-16">
+            
+            {/* STATE-DRIVEN HERO */}
+            <section className="space-y-8">
+               {approvedApp ? (
+                 <>
+                   <div className="flex items-center justify-between">
+                      <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tight italic uppercase">Current Membership</h2>
+                      <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Digital Badge ID: #MZ-{approvedApp.id.slice(0,6)}</span>
+                   </div>
+                   <PremiumPassBento app={approvedApp} onManage={() => setIsManageModalOpen(true)} />
+                 </>
+               ) : pendingApp ? (
+                 <>
+                   <div className="flex items-center justify-between">
+                      <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tight italic uppercase">Processing Application</h2>
+                   </div>
+                   <StatusTrackingTile app={pendingApp} />
+                 </>
+               ) : (
+                 <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-sm relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary/10 transition-colors" />
+                    <div className="relative z-10 max-w-xl">
+                       <h2 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-tight mb-4 italic">Reliable Boarding for Africa University.</h2>
+                       <p className="text-primary-dark/40 font-bold text-sm leading-relaxed mb-8">Join the elite network of student transit. Doorstep pickups, verified institutional drivers, and transparent monthly pricing.</p>
+                       <div className="flex gap-6">
+                          <div className="flex items-center gap-3">
+                             <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><ShieldCheck size={18} /></div>
+                             <span className="text-[10px] font-black uppercase tracking-widest text-primary-dark/60">Verified Safety</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                             <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><Users size={18} /></div>
+                             <span className="text-[10px] font-black uppercase tracking-widest text-primary-dark/60">1.2k+ Students</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+               )}
+            </section>
 
-            <div className="space-y-4">
-              {currentTrips.map(trip => (
-                <div key={trip.id} className="bg-white p-6 rounded-[2rem] border border-primary/5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-md transition-all">
-                  <div className="flex items-center gap-6">
-                    <div className="text-center min-w-[80px]">
-                      <p className="text-2xl font-black font-manrope text-primary">{trip.departure_time || 'N/A'}</p>
-                      <p className="text-[9px] font-extrabold text-primary-dark/40 uppercase tracking-widest mt-1">Departure</p>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-md text-[10px] font-extrabold uppercase">{trip.routes?.type || 'Bus Shuttle'}</span>
-                        <span className="text-[10px] font-extrabold text-primary-dark/40 uppercase">• {trip.profiles?.full_name || 'AU'}</span>
-                      </div>
-                      <h3 className="font-bold text-primary-dark">{trip.routes?.name}</h3>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 pt-4 md:pt-0 border-primary/5">
-                    <div className="text-right">
-                      <h4 className="text-xl font-black text-primary-dark">${trip.routes?.price_morning || 1.00}</h4>
-                      <div className="flex items-center gap-1.5 justify-end mt-1">
-                        <div className={cn("w-2 h-2 rounded-full", (trip.seatsLeft || 0) > 5 ? "bg-green-500" : "bg-accent-amber")} />
-                        <span className="text-[10px] font-extrabold text-primary-dark/50 uppercase">{trip.seatsLeft || 0} Seats</span>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => handleBookClick(trip)}
-                      className="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
-                    >
-                      Book Now
-                    </button>
-                  </div>
+            {/* MARKETPLACE FLEET */}
+            <section className="space-y-10">
+               <div className="flex items-center gap-4">
+                  <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase">Institutional Fleets</h3>
+                  <div className="h-0.5 flex-1 bg-primary/5 rounded-full" />
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                 {servicesLoading || appsLoading ? (
+                   <div className="col-span-full py-20 text-center animate-pulse">
+                      <Bus className="mx-auto text-primary/10 mb-4" size={48} />
+                      <p className="text-primary/20 font-black italic tracking-widest uppercase text-[10px]">Updating Institutional Database...</p>
+                   </div>
+                 ) : monthlyShuttles.length > 0 ? monthlyShuttles.map((s) => {
+                   const myApp = myApps.find(a => a.service_id === s.id)
+                   const approvedCount = s.approved_count?.[0]?.count || 0
+                   const capacity = s.capacity || 14
+                   const seatsLeft = Math.max(0, capacity - approvedCount)
+                   const isFull = seatsLeft === 0
+
+                   const isCurrentApproved = myApp?.status === 'approved'
+                   const isCurrentPending = myApp?.status === 'pending'
+
+                   return (
+                     <motion.div 
+                       key={s.id}
+                       whileHover={{ y: -8, scale: 1.01 }}
+                       className={cn(
+                        "group bg-white rounded-[4rem] border border-primary/5 shadow-sm hover:shadow-2xl transition-all relative overflow-hidden flex flex-col",
+                        isCurrentApproved && "ring-4 ring-primary ring-offset-8"
+                       )}
+                     >
+                        <div className="relative aspect-video overflow-hidden bg-gray-50 border-b border-primary/5">
+                           {s.image_url ? (
+                             <img src={s.image_url} alt={s.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                           ) : (
+                             <div className="w-full h-full flex items-center justify-center text-primary-dark/10">
+                               <Bus size={64} />
+                             </div>
+                           )}
+                           
+                           {/* Status Overlays */}
+                           <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg border border-white/20">
+                             {isCurrentApproved ? <CheckCircle2 size={12} className="text-primary" /> : 
+                              isCurrentPending ? <Clock size={12} className="text-accent-gold" /> : <Star size={12} className="text-accent-gold fill-accent-gold" />}
+                             <span className={cn("text-[10px] font-black tracking-tighter uppercase", isCurrentApproved ? "text-primary" : "text-primary-dark")}>
+                                {isCurrentApproved ? 'Active Pass' : isCurrentPending ? 'Under Review' : 'Verified Fleet'}
+                             </span>
+                           </div>
+
+                           <div className="absolute bottom-6 right-6 bg-primary-dark/95 backdrop-blur-lg px-6 py-4 rounded-3xl border border-white/10 shadow-2xl">
+                             <span className="text-lg font-manrope font-black text-white italic">${s.price}<span className="text-[10px] text-white/50 not-italic ml-1 uppercase font-dm-sans tracking-widest">/mo</span></span>
+                           </div>
+                        </div>
+
+                        <div className="p-8 space-y-6">
+                           <div>
+                              <h4 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase leading-none">{s.name}</h4>
+                              <p className="text-[11px] font-bold text-primary-dark/30 uppercase mt-3 tracking-widest flex items-center gap-2">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+                                 {s.profiles?.full_name || 'Verified Provider'}
+                              </p>
+                           </div>
+                           
+                           <div className="flex items-center gap-8 py-5 border-y border-primary/5">
+                              <div className="flex items-center gap-3 text-primary">
+                                 <Users size={18} className="opacity-40" />
+                                 <span className="text-[11px] font-black uppercase tracking-widest text-primary-dark/60">
+                                    {isFull ? 'Limit Reached' : `${seatsLeft} Seats Left`}
+                                 </span>
+                              </div>
+                              <div className="flex items-center gap-3 text-primary">
+                                 <MapPin size={18} className="opacity-40" />
+                                 <span className="text-[11px] font-black uppercase tracking-widest text-primary-dark/60">Campus Pickups</span>
+                              </div>
+                           </div>
+
+                           <div className="flex gap-4 pt-2">
+                              {isCurrentApproved ? (
+                                <button disabled className="flex-1 py-5 bg-primary/5 text-primary rounded-[2.5rem] font-manrope font-black text-[11px] uppercase tracking-[0.2em] border border-primary/10 cursor-not-allowed">
+                                   Seat Secured
+                                </button>
+                              ) : isCurrentPending ? (
+                                <button disabled className="flex-1 py-5 bg-accent-gold/5 text-accent-gold rounded-[2.5rem] font-manrope font-black text-[11px] uppercase tracking-[0.2em] border border-accent-gold/10 flex items-center justify-center gap-2">
+                                   Pending Approval
+                                </button>
+                              ) : (
+                                <button 
+                                  disabled={isFull || !!approvedApp}
+                                  onClick={() => handleApplyClick(s)}
+                                  className={cn(
+                                    "flex-1 py-6 rounded-[2.5rem] font-manrope font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-xl",
+                                    (isFull || !!approvedApp) 
+                                      ? "bg-[#F0F2F0] text-primary-dark/20 border-2 border-dashed border-primary/10" 
+                                      : "bg-primary-dark text-white hover:bg-primary shadow-primary/20 hover:scale-[1.02] active:scale-95"
+                                  )}
+                                >
+                                   {isFull ? 'Booking Full' : approvedApp ? 'Pass Active' : 'request monthly pass'}
+                                </button>
+                              )}
+                              <a href={`tel:${s.profiles?.phone || ''}`} className="p-6 bg-primary/5 text-primary/40 hover:text-primary rounded-[2.5rem] border border-primary/5 transition-all hover:bg-primary/10">
+                                <Phone size={22} />
+                              </a>
+                           </div>
+                        </div>
+                     </motion.div>
+                   )
+                 }) : (
+                   <div className="col-span-full py-28 text-center border-4 border-dashed border-primary/5 rounded-[5rem]">
+                      <Bus className="mx-auto text-primary-dark/5 mb-6" size={64} />
+                      <p className="text-primary-dark/20 font-black italic text-xl uppercase tracking-[0.4em]">Fleet Database Offline</p>
+                   </div>
+                 )}
+               </div>
+            </section>
+          </div>
+
+          <aside className="lg:col-span-4 space-y-12">
+             {/* CONTEXTUAL TILE: TRUST SCORE */}
+             <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-sm">
+                <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary mb-6"><ShieldCheck size={24} /></div>
+                <h4 className="text-xl font-manrope font-black text-primary-dark uppercase italic mb-2">Network Safety</h4>
+                <p className="text-xs text-primary-dark/40 font-bold leading-relaxed mb-6">Every driver in the Muzinda network undergoes a rigorous biometric and vehicle inspection process.</p>
+                <div className="flex items-center gap-2 text-primary">
+                   <Star size={14} className="fill-primary" />
+                   <Star size={14} className="fill-primary" />
+                   <Star size={14} className="fill-primary" />
+                   <Star size={14} className="fill-primary" />
+                   <Star size={14} className="fill-primary" />
+                   <span className="text-[10px] font-black uppercase tracking-widest ml-1">98% Safety Score</span>
                 </div>
-              ))}
-            </div>
+             </div>
 
-            {/* Static Timetables */}
-            <div className="mt-12">
-              <h2 className="text-2xl font-manrope font-extrabold text-primary-dark mb-6">Full Timetables</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {['GreenSide Bus', 'Pote Transport', 'AU Official'].map((provider, i) => (
-                  <div key={i} onClick={() => alert('Opening full schedule modal...')} className="bg-surface-bright p-6 rounded-2xl border border-primary/5 cursor-pointer hover:bg-primary/5 transition-all group">
-                    <Bus className="text-primary mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="font-bold text-primary-dark text-sm">{provider}</h3>
-                    <p className="text-[10px] font-extrabold text-primary-dark/40 uppercase mt-1">View Schedule</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Private Shuttles List */}
-          <aside className="xl:col-span-4 space-y-6">
-            <div className="flex items-center justify-between">
-               <h2 className="text-2xl font-manrope font-extrabold text-primary-dark">Private Shuttles</h2>
-               {providersLoading && <span className="text-sm text-primary-dark/50">Loading...</span>}
-            </div>
-            <div className="bg-white p-6 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-4">
-              {privateShuttles.map(driver => (
-                <div key={driver.id} className="p-4 bg-surface-bright rounded-2xl flex flex-col gap-4">
-                  <div className="flex items-center gap-4">
-                    <img src={driver.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${driver.profiles?.full_name}`} alt={driver.profiles?.full_name} className="w-12 h-12 rounded-xl object-cover shadow-sm" />
-                    <div className="flex-1">
-                      <h4 className="font-bold text-primary-dark text-sm">{driver.profiles?.full_name}</h4>
-                      <div className="flex items-center gap-1 text-accent-gold text-xs font-bold">
-                        ★ {5.0} {/* Mock rating for now */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <a href={`tel:${driver.profiles?.phone || ''}`} className="flex items-center justify-center gap-2 p-2.5 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-colors">
-                      <Phone size={14} />
-                      <span className="text-xs font-bold">Call</span>
-                    </a>
-                    <a href={`https://wa.me/${(driver.profiles?.phone || '').replace('+', '')}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 p-2.5 bg-green-500/10 text-green-600 rounded-xl hover:bg-green-500/20 transition-colors">
-                      <MessageCircle size={14} />
-                      <span className="text-xs font-bold">WhatsApp</span>
-                    </a>
-                  </div>
+             {/* PROTOCOL GUIDE */}
+             <div className="bg-primary-dark p-12 rounded-[4.5rem] text-white shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none" />
+                <h4 className="text-2xl font-manrope font-black italic tracking-tight mb-10 uppercase">Hub Protocol</h4>
+                <div className="space-y-10">
+                   {[
+                     { step: 'Select Fleet', icon: Bus },
+                     { step: 'Submit Pass', icon: CreditCard },
+                     { step: 'Verification', icon: ShieldCheck },
+                     { step: 'Live Boarding', icon: MapPin }
+                   ].map((item, idx) => (
+                     <div key={idx} className="flex gap-6 items-center">
+                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-primary/40"><item.icon size={20} /></div>
+                        <div className="space-y-1">
+                           <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Step 0{idx + 1}</p>
+                           <p className="text-xs font-black uppercase tracking-widest text-white">{item.step}</p>
+                        </div>
+                     </div>
+                   ))}
                 </div>
-              ))}
-              <button className="w-full py-4 text-xs font-bold text-primary hover:underline">
-                View all independent drivers
-              </button>
-            </div>
+             </div>
           </aside>
         </div>
       </main>
 
-      {/* Pickup Modal */}
       <AnimatePresence>
-        {isPickupModalOpen && selectedTrip && (
-          <div className="fixed inset-0 z-50 flex items-end justify-center">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              onClick={() => setIsPickupModalOpen(false)}
-              className="absolute inset-0 bg-primary-dark/40 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ y: '100%' }} 
-              animate={{ y: 0 }} 
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-xl bg-white rounded-t-[3rem] p-8 pb-12 shadow-2xl"
-            >
-              <button 
-                onClick={() => setIsPickupModalOpen(false)}
-                className="absolute top-8 right-8 p-2 bg-surface-bright text-primary-dark/40 hover:text-primary-dark rounded-full transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="pr-12 mb-8">
-                <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-[10px] font-extrabold uppercase mb-4 inline-block">{selectedTrip.routes?.type}</span>
-                <h2 className="text-3xl font-manrope font-extrabold text-primary-dark mb-2">Confirm Booking</h2>
-                <p className="text-primary-dark/50 text-sm font-dm-sans">{selectedTrip.routes?.name} at {selectedTrip.departure_time}</p>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-xs font-bold text-primary-dark/60 uppercase tracking-widest mb-3">Select Pickup Point</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-dark/30" size={20} />
-                    <select className="w-full pl-12 pr-4 py-4 rounded-xl bg-surface-bright border border-primary/5 focus:border-primary/20 appearance-none font-bold text-primary-dark outline-none cursor-pointer">
-                      <option>Chikanga Total Service Station</option>
-                      <option>Hobhouse Turnoff</option>
-                      <option>Yeovil Standard Route</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 flex justify-between items-center">
-                  <div>
-                    <p className="text-xs font-bold text-primary-dark/60 uppercase tracking-widest">Total Price</p>
-                    <p className="text-3xl font-black text-primary-dark font-manrope">${selectedTrip.routes?.price_morning}</p>
-                  </div>
-                  <p className="text-[10px] font-bold text-primary uppercase bg-white px-3 py-1.5 rounded-lg border border-primary/10">Cash on Board</p>
-                </div>
-
-                <button 
-                  onClick={() => {
-                    alert('Supabase RPC: Booking confirmed!')
-                    setIsPickupModalOpen(false)
-                  }}
-                  className="w-full py-5 bg-primary text-white rounded-2xl font-bold font-manrope shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-lg"
-                >
-                  Confirm & Reserve Seat
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
+        <ApplyServiceModal 
+          isOpen={isApplyModalOpen} 
+          onClose={() => setIsApplyModalOpen(false)} 
+          service={selectedService} 
+          onSuccess={() => {
+            refetchMyApps();
+            setIsApplyModalOpen(false);
+          }} 
+        />
+        <ManageSubscriptionModal
+          isOpen={isManageModalOpen}
+          onClose={() => setIsManageModalOpen(false)}
+          app={approvedApp}
+          onCancel={handleCancelSubscription}
+        />
       </AnimatePresence>
     </div>
   )

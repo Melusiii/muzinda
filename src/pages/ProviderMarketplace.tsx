@@ -12,7 +12,8 @@ const ProviderMarketplace = () => {
             </div>
             <h1 className="text-4xl font-extrabold tracking-tighter text-primary-dark font-manrope">Gig Marketplace</h1>
             <p className="text-primary-dark/50 font-dm-sans">
-               Browse and claim maintenance requests from AU-approved landlords.
+               Browse and claim maintenance requests from verified landlords.
+ Verified students get prioritized responses.
             </p>
             
             <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-4">
@@ -26,7 +27,7 @@ const ProviderMarketplace = () => {
                <div className="pt-4 flex justify-center">
                   <div className="flex items-center gap-2 px-4 py-2 bg-surface-bright rounded-xl">
                     <div className="w-2 h-2 bg-accent-gold rounded-full animate-pulse" />
-                    <span className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest">Pending Review</span>
+                    <span className="text-xs font-black text-primary-dark uppercase tracking-widest">Muzinda Certified</span>
                   </div>
                </div>
             </div>
