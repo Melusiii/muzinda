@@ -1,0 +1,7 @@
+﻿src/pages/LandlordDashboard.tsx(1,31): error TS6133: 'useRef' is declared but its value is never read.
+src/pages/LandlordDashboard.tsx(9,3): error TS6133: 'MoreHorizontal' is declared but its value is never read.
+src/pages/LandlordDashboard.tsx(10,3): error TS6133: 'ChevronRight' is declared but its value is never read.
+src/pages/LandlordDashboard.tsx(25,3): error TS6133: 'CreditCard' is declared but its value is never read.
+src/pages/LandlordDashboard.tsx(26,3): error TS6133: 'Building2' is declared but its value is never read.
+src/pages/LandlordDashboard.tsx(27,3): error TS6133: 'Clock' is declared but its value is never read.
+src/pages/LandlordDashboard.tsx(101,38): error TS6133: 'id' is declared but its value is never read.

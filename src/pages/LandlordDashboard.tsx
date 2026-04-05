@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   BarChart3, 
   Users, 
@@ -6,25 +6,20 @@ import {
   LayoutDashboard, 
   DollarSign, 
   Search,
-  MoreHorizontal,
-  ChevronRight,
-  TrendingUp,
-  MapPin,
-  Check,
-  Camera,
-  Wifi,
-  Wind,
-  Droplets,
-  Zap,
-  Shield,
-  Trash2,
-  ChevronLeft,
-  Loader2,
+  TrendingUp, 
+  MapPin, 
+  Check, 
+  Camera, 
+  Wifi, 
+  Wind, 
+  Droplets, 
+  Zap, 
+  Shield, 
+  Trash2, 
+  ChevronLeft, 
+  Loader2, 
   AlertCircle,
-  X,
-  CreditCard,
-  Building2,
-  Clock
+  X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
@@ -98,7 +93,7 @@ export const LandlordDashboard = () => {
     }
   }
 
-  const handleDeleteListing = async (id: string) => {
+  const handleDeleteListing = async (_id: string) => {
     if (!confirm("Are you sure you want to remove this house listing?")) return
     try {
       // In a real app, we'd have a deleteProperty function in useSupabase

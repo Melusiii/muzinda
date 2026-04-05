@@ -679,39 +679,41 @@ export const useLandlordStats = () => {
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const fetchStats = useCallback(async () => {
     if (!user) return
-    const fetchStats = async () => {
-      try {
-        const { data: properties, error: propError } = await supabase
-          .from('properties')
-          .select('id, title, price, image_url, location')
-          .eq('landlord_id', user.id)
+    setLoading(true)
+    try {
+      const { data: properties, error: propError } = await supabase
+        .from('properties')
+        .select('id, title, price, image_url, location, description, amenities, type, gender_preference')
+        .eq('landlord_id', user.id)
 
-        if (propError) throw propError
+      if (propError) throw propError
 
-        const { data: applications, error: appError } = await supabase
-          .from('applications')
-          .select('id, status, property_id')
-          .in('property_id', (properties || []).map((p: any) => p.id))
+      const { data: applications, error: appError } = await supabase
+        .from('applications')
+        .select('id, status, property_id')
+        .in('property_id', (properties || []).map((p: any) => p.id))
 
-        if (appError) throw appError
+      if (appError) throw appError
 
-        setStats({
-          revenue: (properties || []).reduce((acc: number, p: any) => acc + (p.price || 0), 0),
-          occupancy: Math.round(((applications?.filter((a: any) => a.status === 'secured').length || 0) / (properties?.length || 1)) * 100),
-          listings: properties?.length || 0,
-          properties: (properties || []).map((p: any) => ({
-            ...p,
-            status: applications?.find((a: any) => a.property_id === p.id && a.status === 'secured') ? 'occupied' : 'available'
-          }))
-        })
-      } catch (err) { console.error(err) } finally { setLoading(false) }
-    }
-    fetchStats()
+      setStats({
+        revenue: (properties || []).reduce((acc: number, p: any) => acc + (p.price || 0), 0),
+        occupancy: Math.round(((applications?.filter((a: any) => a.status === 'secured').length || 0) / (properties?.length || 1)) * 100),
+        listings: properties?.length || 0,
+        properties: (properties || []).map((p: any) => ({
+          ...p,
+          status: applications?.find((a: any) => a.property_id === p.id && a.status === 'secured') ? 'occupied' : 'available'
+        }))
+      })
+    } catch (err) { console.error(err) } finally { setLoading(false) }
   }, [user])
 
-  return { stats, loading, refetch: () => { setLoading(true); } } // Simple trigger, the useEffect will re-run if needed or I can make it a callback
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
+
+  return { stats, loading, refetch: fetchStats } 
 }
 
 // --- LANDLORD APPLICATIONS ---
