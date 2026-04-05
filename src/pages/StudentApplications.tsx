@@ -7,7 +7,7 @@ import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getImageUrl } from '../utils/supabase-helpers'
 
-const StudentApplications = () => {
+export const StudentApplications = () => {
   const { applications, loading, refetch } = useUserApplications()
   const [selectedApp, setSelectedApp] = useState<any>(null)
   const [isDeleting, setIsDeleting] = useState(false)

@@ -1,21 +1,27 @@
 import { Sidebar } from '../components/Sidebar'
-import { Bell, ShieldCheck, Bus, AlertCircle, ArrowRight, Star, Loader2, Sparkles, MapPin, Building, X, CheckCircle2, Clock, Zap, Users, CreditCard, Wrench } from 'lucide-react'
+import { Bus, ArrowRight, Star, Loader2, Sparkles, MapPin, Building, X, Clock, Zap, Users, CreditCard, Bell, Check, ShieldCheck, Wrench } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
-import { useUserApplications, useUserTickets, cancelTransportBooking, useProperties } from '../hooks/useSupabase'
-import { Navbar } from '../components/Navbar'
+import { useUserApplications, useUserTickets, cancelTransportBooking, useProperties, useNotifications } from '../hooks/useSupabase'
 import { useState, useEffect } from 'react'
 import { getImageUrl } from '../utils/supabase-helpers'
+import { NotificationsModal } from '../components/NotificationsModal'
+import { Navbar } from '../components/Navbar'
+import { SettingsModal } from '../components/SettingsModal'
+import { PageHeader } from '../components/PageHeader'
 
-const StudentDashboard = () => {
+export const StudentDashboard = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { properties, loading: loadingProps } = useProperties()
   const { applications: apps } = useUserApplications()
   const { tickets, refetch: refetchTickets } = useUserTickets()
+  const { unreadCount } = useNotifications()
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [pulseIndex, setPulseIndex] = useState(0)
   
   const hasSecuredHousing = user?.hasSecuredHousing || false
@@ -61,7 +67,7 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
+    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-x-hidden">
       <div className="md:hidden">
         <Navbar />
       </div>
@@ -71,59 +77,55 @@ const StudentDashboard = () => {
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
 
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative z-10">
-        <motion.header 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
+      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-12 overflow-y-auto h-screen relative z-10 pb-32">
+        <PageHeader 
+          title={hasSecuredHousing ? `Your Oasis, ${user?.name?.split(' ')[0] || 'Resident'}` : "Student Home"}
+          subtitle="Muzinda Concierge • The Independent Housing Authority"
+          className="pt-20 md:pt-4"
         >
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-               <div className="flex items-center gap-2 text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                  </span>
-                  <AnimatePresence mode="wait">
-                    <motion.span 
-                      key={pulseIndex}
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      className="text-[10px] font-black uppercase tracking-[0.2em]"
-                    >
-                      {pulses[pulseIndex]}
-                    </motion.span>
-                  </AnimatePresence>
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6 w-full md:w-auto">
+             <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
+                   <span className="relative flex h-2 w-2">
+                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                     <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                   </span>
+                   <AnimatePresence mode="wait">
+                     <motion.span 
+                       key={pulseIndex}
+                       initial={{ opacity: 0, y: 5 }}
+                       animate={{ opacity: 1, y: 0 }}
+                       exit={{ opacity: 0, y: -5 }}
+                       className="text-[10px] font-black uppercase tracking-[0.2em]"
+                     >
+                       {pulses[pulseIndex]}
+                     </motion.span>
+                   </AnimatePresence>
+                </div>
+             </div>
+             
+             <div className="flex items-center gap-3">
+               <button 
+                 onClick={() => setIsNotificationsOpen(true)}
+                 className="p-3 bg-white rounded-2xl border border-primary/5 text-primary-dark/40 hover:text-primary transition-all shadow-sm hover:shadow-xl hover:-translate-y-1 relative"
+               >
+                 <Bell size={20} className="md:w-6 md:h-6" />
+                 {unreadCount > 0 && (
+                   <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white shadow-sm" />
+                 )}
+               </button>
+               <div className="h-12 w-12 md:h-16 md:w-16 rounded-[1.2rem] md:rounded-[2rem] bg-white p-1 shadow-xl shadow-primary/5 border border-primary/10">
+                  <div className="w-full h-full rounded-[1rem] md:rounded-[1.7rem] bg-primary/5 flex items-center justify-center overflow-hidden">
+                   {user?.avatar_url ? (
+                     <img src={user.avatar_url} alt={user.name || 'User'} className="w-full h-full object-cover" />
+                   ) : (
+                     <span className="text-primary font-black uppercase text-xl">{(user?.name || 'U').charAt(0)}</span>
+                   )}
+                  </div>
                </div>
-            </div>
-            <h1 className="text-6xl font-black tracking-tighter text-primary-dark font-manrope leading-tight">
-              {hasSecuredHousing ? (
-                <>Your <span className="text-primary italic">Oasis</span>, {user?.name.split(' ')[0]}</>
-              ) : (
-                <>Student <span className="text-primary italic">Home</span></>
-              )}
-            </h1>
-            <p className="text-primary-dark/40 font-bold uppercase tracking-widest text-[10px]">
-               Muzinda Concierge • The Independent Housing Authority
-            </p>
+             </div>
           </div>
-          
-          <div className="hidden md:flex items-center gap-4">
-            <button className="p-4 bg-white rounded-3xl border border-primary/5 text-primary-dark/40 hover:text-primary transition-all shadow-sm hover:shadow-xl hover:-translate-y-1">
-              <Bell size={24} />
-            </button>
-            <div className="h-16 w-16 rounded-[2rem] bg-white p-1 shadow-xl shadow-primary/5 border border-primary/10">
-               <div className="w-full h-full rounded-[1.7rem] bg-primary/5 flex items-center justify-center overflow-hidden">
-                {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
-                ) : (
-                  <Star className="text-primary" />
-                )}
-               </div>
-            </div>
-          </div>
-        </motion.header>
+        </PageHeader>
 
         <motion.div 
           variants={containerVariants}
@@ -295,7 +297,7 @@ const StudentDashboard = () => {
                           onClick={() => navigate(`/property/${prop.id}`)}
                           className="group/prop cursor-pointer space-y-4"
                         >
-                           <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/5 bg-gray-100">
+                           <div className="relative aspect-[4/3] sm:aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl shadow-primary/5 bg-gray-100">
                              <img 
                                src={getImageUrl(prop.image_url)} 
                                alt={prop.title} 
@@ -331,7 +333,7 @@ const StudentDashboard = () => {
                   {[
                     { icon: Bus, label: 'Shuttle Hub', desc: 'Secure reliable transport', color: 'bg-primary/5 text-primary' },
                     { icon: ShieldCheck, label: 'Certified', desc: 'Verified status ranking', color: 'bg-accent-gold/5 text-accent-gold' },
-                    { icon: AlertCircle, label: 'Concierge', desc: 'Support & Help Desk', color: 'bg-[#F2F4F2] text-primary-dark' },
+                    { icon: Check, label: 'Applications', desc: 'View your status', color: 'bg-[#F2F4F2] text-primary-dark' },
                   ].map((service, idx) => (
                     <motion.div 
                       key={idx} 
@@ -375,7 +377,7 @@ const StudentDashboard = () => {
                                     item.status === 'active' ? "bg-white border-primary text-primary-dark animate-pulse scale-110" :
                                     "bg-white/5 border-white/10 text-white/20"
                                   )}>
-                                     {item.status === 'complete' ? <CheckCircle2 size={20} /> : <item.icon size={20} />}
+                                     {item.status === 'complete' ? <Check size={20} /> : <item.icon size={20} />}
                                   </div>
                                   {idx < 2 && <div className={cn("w-0.5 h-10 my-2", item.status === 'complete' ? "bg-primary" : "bg-white/5")} />}
                                </div>
@@ -426,7 +428,7 @@ const StudentDashboard = () => {
                                 <p className="text-sm font-black text-primary-dark tracking-tight truncate pr-4 mb-1.5">{ticket.trips?.routes?.name}</p>
                                 <div className="flex justify-between items-center text-[10px] font-bold text-primary-dark/40 uppercase tracking-widest">
                                    <div className="flex items-center gap-1"><Clock size={10} /> {ticket.trips?.departure_time}</div>
-                                   <div className="flex items-center gap-1"><CheckCircle2 size={10} className="text-primary" /> Active</div>
+                                   <div className="flex items-center gap-1"><Check size={10} className="text-primary" /> Active</div>
                                 </div>
                              </div>
                            ))}
@@ -463,6 +465,8 @@ const StudentDashboard = () => {
             </>
           )}
         </motion.div>
+        <NotificationsModal isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
+        <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       </main>
     </div>
   )

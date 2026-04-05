@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-const Home = () => {
+export const Home = () => {
   const { isAuthenticated } = useAuth()
 
   return (

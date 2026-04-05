@@ -1,7 +1,7 @@
 import { Sidebar } from '../components/Sidebar'
 import { Megaphone, Plus, Info } from 'lucide-react'
 
-const PropertyAds = () => {
+export const PropertyAds = () => {
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />

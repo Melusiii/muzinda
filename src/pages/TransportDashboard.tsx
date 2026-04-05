@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { ManageServiceModal } from '../components/ManageServiceModal'
 import { getImageUrl } from '../utils/supabase-helpers'
 
-const TransportDashboard = () => {
+export const TransportDashboard = () => {
   const navigate = useNavigate()
   const { service, refetch: refetchService } = useProviderService()
   const { applications, loading: appsLoading, refetch: refetchApps } = useServiceApplications(service?.id)

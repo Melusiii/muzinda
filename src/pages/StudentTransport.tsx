@@ -11,6 +11,8 @@ import { getImageUrl } from '../utils/supabase-helpers'
 
 import { ManageSubscriptionModal } from '../components/ManageSubscriptionModal'
 
+import { supabase } from '../lib/supabase'
+
 const QRBox = () => (
   <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-2 relative group overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -28,12 +30,11 @@ const WaveAnimation = () => (
   <div className="absolute inset-0 pointer-events-none opacity-20">
     <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
       <motion.path
-        d="M0 50 Q 25 40, 50 50 T 100 50"
         fill="none"
         stroke="currentColor"
         strokeWidth="0.5"
         className="text-primary"
-        initial={{ pathLength: 0, opacity: 0 }}
+        initial={{ pathLength: 0, opacity: 0, d: "M0 50 Q 25 40, 50 50 T 100 50" }}
         animate={{ 
           pathLength: [0, 1], 
           opacity: [0, 1, 0],
@@ -152,7 +153,7 @@ const PremiumPassBento = ({ app, onManage }: { app: any, onManage: () => void })
   )
 }
 
-const StudentTransport = () => {
+export const StudentTransport = () => {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
   const [isManageModalOpen, setIsManageModalOpen] = useState(false)
   const [selectedService, setSelectedService] = useState<any>(null)
@@ -185,7 +186,6 @@ const StudentTransport = () => {
     if (!confirm("Are you sure you want to cancel your institutional membership? Your pass will remain active until the end of the billing cycle.")) return;
 
     try {
-      const { supabase } = await import('../lib/supabase');
       const { error } = await supabase
         .from('service_applications')
         .update({ status: 'vacated' })
@@ -314,7 +314,7 @@ const StudentTransport = () => {
                       <Bus className="mx-auto text-primary/10 mb-4" size={48} />
                       <p className="text-primary/20 font-black italic tracking-widest uppercase text-[10px]">Updating Institutional Database...</p>
                    </div>
-                 ) : monthlyShuttles.length > 0 ? monthlyShuttles.map((s) => {
+                 ) : monthlyShuttles.length > 0 ? monthlyShuttles.map((s, idx) => {
                    const myApp = myApps.find(a => a.service_id === s.id)
                    const approvedCount = s.approved_count?.[0]?.count || 0
                    const capacity = s.capacity || 14
@@ -326,7 +326,7 @@ const StudentTransport = () => {
 
                    return (
                      <motion.div 
-                       key={s.id}
+                       key={s.id || `shuttle-${idx}`}
                        whileHover={{ y: -8, scale: 1.01 }}
                        className={cn(
                         "group bg-white rounded-[4rem] border border-primary/5 shadow-sm hover:shadow-2xl transition-all relative overflow-hidden flex flex-col",
@@ -359,10 +359,10 @@ const StudentTransport = () => {
                         <div className="p-8 space-y-6">
                            <div>
                               <h4 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase leading-none">{s.name}</h4>
-                              <p className="text-[11px] font-bold text-primary-dark/30 uppercase mt-3 tracking-widest flex items-center gap-2">
-                                 <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+                              <div className="text-[11px] font-bold text-primary-dark/30 uppercase mt-3 tracking-widest flex items-center gap-2">
+                                 <span className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                                  {s.profiles?.full_name || 'Verified Provider'}
-                              </p>
+                              </div>
                            </div>
                            
                            <div className="flex items-center gap-8 py-5 border-y border-primary/5">
@@ -459,22 +459,28 @@ const StudentTransport = () => {
         </div>
       </main>
 
-      <AnimatePresence>
-        <ApplyServiceModal 
-          isOpen={isApplyModalOpen} 
-          onClose={() => setIsApplyModalOpen(false)} 
-          service={selectedService} 
-          onSuccess={() => {
-            refetchMyApps();
-            setIsApplyModalOpen(false);
-          }} 
-        />
-        <ManageSubscriptionModal
-          isOpen={isManageModalOpen}
-          onClose={() => setIsManageModalOpen(false)}
-          app={approvedApp}
-          onCancel={handleCancelSubscription}
-        />
+      <AnimatePresence mode="wait">
+        {isApplyModalOpen && (
+          <ApplyServiceModal 
+            key="shuttle-apply-modal"
+            isOpen={isApplyModalOpen} 
+            onClose={() => setIsApplyModalOpen(false)} 
+            service={selectedService} 
+            onSuccess={() => {
+              refetchMyApps();
+              setIsApplyModalOpen(false);
+            }} 
+          />
+        )}
+        {isManageModalOpen && (
+          <ManageSubscriptionModal
+            key="shuttle-manage-modal"
+            isOpen={isManageModalOpen}
+            onClose={() => setIsManageModalOpen(false)}
+            app={approvedApp}
+            onCancel={handleCancelSubscription}
+          />
+        )}
       </AnimatePresence>
     </div>
   )

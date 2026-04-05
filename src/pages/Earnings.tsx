@@ -2,7 +2,7 @@ import { Sidebar } from '../components/Sidebar'
 import { Wallet, TrendingUp, ArrowUpRight, Clock, ShieldCheck } from 'lucide-react'
 import { cn } from '../utils/cn'
 
-const Earnings = () => {
+export const Earnings = () => {
   const transactions = [
     { id: 1, type: 'Maintenance Gig', date: 'Oct 12, 2023', amount: 45.00, status: 'Completed', provider: 'Fern Valley Estate' },
     { id: 2, type: 'Shuttle Payout', date: 'Oct 10, 2023', amount: 120.50, status: 'Processing', provider: 'Mutare Trust' },

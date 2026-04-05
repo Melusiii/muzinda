@@ -1,4 +1,4 @@
-import { LayoutDashboard, Compass, Bus, MessageSquare, Settings, LogOut, Wrench, ShieldCheck, Heart, CheckCircle2 } from 'lucide-react'
+import { LayoutDashboard, Compass, Bus, MessageSquare, Settings, LogOut, Wrench, ShieldCheck, Heart, Check, User } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
 import { Logo } from './Logo'
@@ -15,12 +15,13 @@ export const Sidebar = () => {
     const baseItems = [
       { icon: LayoutDashboard, label: 'Home', href: user?.role === 'student' ? '/dashboard' : `/${user?.role === 'provider' ? 'provider' : user?.role}` },
       { icon: MessageSquare, label: 'Messages', href: '/messages' },
+      { icon: User, label: 'Profile', href: '/profile' },
     ]
 
     if (user?.role === 'student') {
       return [
         ...baseItems,
-        { icon: CheckCircle2, label: 'Applications', href: '/applications' },
+        { icon: Check, label: 'Applications', href: '/applications' },
         { icon: Heart, label: 'Favorites', href: '/favorites' },
         { icon: Compass, label: 'Explorer', href: '/explorer' },
         { icon: Bus, label: 'Shuttle', href: '/transport' },
@@ -53,7 +54,7 @@ export const Sidebar = () => {
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-primary/5 h-screen fixed left-0 top-0 z-40">
         <div className="p-8 h-full flex flex-col">
           <div className="mb-12">
-            <Link to={user ? (user.role === 'student' ? '/dashboard' : (user.role === 'landlord' ? '/landlord' : '/provider')) : '/'}>
+            <Link to={user?.role === 'student' ? '/dashboard' : (user?.role === 'landlord' ? '/landlord' : (user?.role === 'provider' ? '/provider' : '/'))}>
               <Logo />
             </Link>
           </div>
@@ -106,7 +107,7 @@ export const Sidebar = () => {
               Settings
             </button>
             <button 
-              onClick={logout}
+              onClick={() => logout()}
               className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-sm text-accent-amber hover:bg-accent-amber/5 transition-all text-left"
             >
               <LogOut size={20} />

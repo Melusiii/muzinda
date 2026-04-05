@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, User } from 'lucide-react'
+import { X, User, ChevronLeft, Shield, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { cn } from '../utils/cn'
+import { supabase } from '../lib/supabase'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -8,36 +10,56 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   if (!isOpen || !user) return null
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center md:justify-end">
+        {/* Responsive Backdrop */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-primary-dark/40 backdrop-blur-md"
+          className="absolute inset-0 bg-primary-dark/60 backdrop-blur-xl cursor-pointer"
         />
         
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col min-h-[500px]"
+          initial={{ y: "100%", x: 0 }}
+          animate={{ y: 0, x: 0 }}
+          exit={{ y: "100%", x: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          className={cn(
+            "relative bg-white shadow-2xl flex flex-col overflow-hidden",
+            "h-[92vh] mt-auto w-full rounded-t-[3rem]",
+            "md:h-full md:mt-0 md:max-w-md md:rounded-none"
+          )}
         >
+          {/* Mobile Handle */}
+          <div className="md:hidden flex justify-center py-4 shrink-0">
+            <div className="w-12 h-1.5 bg-primary-dark/5 rounded-full" />
+          </div>
+
           {/* Header */}
-          <div className="p-8 border-b border-primary/5 flex items-center justify-between bg-surface-bright">
-            <div>
-              <h2 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tight">Edit Professional Profile</h2>
-              <p className="text-[10px] text-primary/40 font-bold uppercase tracking-widest mt-1">Institutional Identity • {user.role}</p>
+          <div className="px-8 pb-8 md:p-8 border-b border-primary/5 flex items-center justify-between bg-white">
+            <div className="flex items-center gap-4">
+               <button 
+                 onClick={onClose} 
+                 className="md:hidden p-2 -ml-2 text-primary hover:bg-primary/5 rounded-xl flex items-center gap-1 transition-all"
+               >
+                 <ChevronLeft size={20} />
+                 <span className="text-xs font-bold font-manrope uppercase tracking-tight">Back</span>
+               </button>
+               <div>
+                 <h2 className="text-xl md:text-2xl font-manrope font-extrabold text-primary-dark tracking-tight">Edit Profile</h2>
+                 <p className="hidden md:block text-[10px] text-primary/40 font-bold uppercase tracking-widest mt-1">Institutional Identity • {user.role}</p>
+               </div>
             </div>
             <button 
               onClick={onClose}
-              className="p-3 hover:bg-white rounded-2xl transition-all text-primary-dark/20 hover:text-primary-dark shadow-sm border border-transparent hover:border-primary/5"
+              className="hidden md:flex p-3 hover:bg-white rounded-2xl transition-all text-primary-dark/20 hover:text-primary-dark shadow-sm border border-transparent hover:border-primary/5"
             >
               <X size={20} />
             </button>
@@ -68,7 +90,6 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                       if (!file || !user) return;
 
                       try {
-                        const { supabase } = await import('../lib/supabase');
                         const fileExt = file.name.split('.').pop();
                         const fileName = `${user.id}-${Math.random()}.${fileExt}`;
                         const filePath = `${fileName}`;
@@ -119,7 +140,6 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                   
                   if (user) {
                     try {
-                      const { supabase } = await import('../lib/supabase');
                       const { error } = await supabase.from('profiles').update({ 
                         full_name, 
                         phone, 
@@ -189,6 +209,43 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                   </button>
                 </div>
               </form>
+
+              {/* Security & Sessions */}
+              <div className="mt-12 pt-12 border-t border-primary/5 space-y-8 pb-10">
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600">
+                      <Shield size={20} />
+                   </div>
+                   <div>
+                     <h3 className="text-sm font-manrope font-black text-primary-dark uppercase tracking-tight">Security & Sessions</h3>
+                     <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-widest">Institutional Integrity Guard</p>
+                   </div>
+                </div>
+
+                <div className="bg-orange-500/5 p-8 rounded-[2.5rem] border border-orange-500/10 space-y-6">
+                   <div className="space-y-2">
+                      <p className="text-xs font-bold text-orange-950/80 leading-relaxed">Protect your account by invalidating active sessions on other hardware or public devices.</p>
+                   </div>
+                   <button 
+                     onClick={async () => {
+                       if (confirm("Are you sure you want to sign out of all devices? This will invalidate your current session as well.")) {
+                         try {
+                           await logout('global');
+                           onClose();
+                           window.location.href = '/';
+                         } catch (err) {
+                           console.error("Global logout failed", err);
+                           alert("Failed to sign out from all devices. Please try again.");
+                         }
+                       }
+                     }}
+                     className="w-full py-4 bg-white text-orange-600 border border-orange-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-600 hover:text-white transition-all flex items-center justify-center gap-3 shadow-sm"
+                   >
+                     <LogOut size={14} />
+                     Sign out from all devices
+                   </button>
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>

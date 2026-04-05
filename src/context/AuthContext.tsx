@@ -29,7 +29,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password?: string) => Promise<void>;
   signup: (email: string, password?: string, userData?: Omit<User, 'id' | 'email' | 'verificationStatus'>) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (scope?: 'local' | 'global') => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,27 +45,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return !localStorage.getItem('muzinda_user');
   });
 
-  const fetchProfile = async (sessionUser: SupabaseUser) => {
+  const fetchProfile = async (sessionUser: SupabaseUser, retryCount = 0) => {
     // If a fetch is already in flight for THIS user, wait for it
-    if (profilePromise && currentProfileUserId === sessionUser.id) {
-      console.log("AuthContext: Waiting for existing profile fetch...");
+    if (profilePromise && currentProfileUserId === sessionUser.id && retryCount === 0) {
+      console.log("AuthContext: Profile fetch in progress, returning existing promise.");
       return profilePromise;
     }
 
-    // New fetch starts
+    // Defensive: If there's an existing bundle for a DIFFERENT user, kill it
+    if (profilePromise && currentProfileUserId !== sessionUser.id) {
+       console.warn("AuthContext: User mismatch during fetch, resetting singleton...");
+       profilePromise = null;
+    }
+
     currentProfileUserId = sessionUser.id;
 
-    try {
-      console.log(`AuthContext: Starting SINGLETON profile fetch for ${sessionUser.email}`);
-      
-      // 45-second timeout guard for slower campus networks
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Profile fetch timed out')), 45000)
-      );
+    const executeFetch = async (attempt: number): Promise<void> => {
+      try {
+        console.log(`AuthContext: Profile sync attempt ${attempt + 1} for ${sessionUser.email}`);
+        
+        // 30-second timeout guard per attempt
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Profile fetch timed out')), 30000)
+        );
 
-      // Create the singular fetch operation
-      const fetchOp = (async () => {
-        try {
+        const fetchOp = (async () => {
           let { data: profile, error: fetchError } = await supabase
             .from('profiles')
             .select('id, email, full_name, role, avatar_url, verification_status, phone, bio, gender')
@@ -74,12 +78,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           if (fetchError) throw fetchError;
 
-          // Auto-create profile if missing - ONLY as a fallback for internal dev errors
+          // ... (profile creation fallback logic)
           if (!profile) {
             console.warn(`AuthContext: Profile missing for ${sessionUser.email}, checking if in signup flow...`);
-            // If we're in the middle of a signup, wait a heartbeat for the manual insert to complete
             await new Promise(resolve => setTimeout(resolve, 1500));
-            
             const { data: retryProfile } = await supabase
               .from('profiles')
               .select('id, email, full_name, role, avatar_url, verification_status, phone, bio, gender')
@@ -89,7 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (retryProfile) {
               profile = retryProfile;
             } else {
-              // Deep fallback for rogue accounts
               const { data: newProfile, error: createError } = await supabase
                 .from('profiles')
                 .insert([{ 
@@ -134,36 +135,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           setUser(newUser);
           localStorage.setItem('muzinda_user', JSON.stringify(newUser));
-          console.log(`AuthContext: Singleton profile fetch success for ${sessionUser.email}`);
-          return;
-        } finally {
-          // Clear the singleton promise once the background work is DONE (success or fail)
-          // so that future auth events can trigger a fresh sync if needed.
-          profilePromise = null;
+          console.log(`AuthContext: Profile sync success for ${sessionUser.email}`);
+        })();
+
+        await Promise.race([fetchOp, timeoutPromise]);
+      } catch (error: any) {
+        const isLockError = error.message?.includes('Lock') || error.name === 'NavigatorLockAcquireTimeoutError';
+        
+        if (isLockError && attempt < 2) {
+          console.warn(`AuthContext: Lock contention (attempt ${attempt + 1}), retrying in 1.5s...`);
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          return executeFetch(attempt + 1);
         }
-      })();
 
-      profilePromise = fetchOp;
-
-      // Race the actual fetch against our timeout for the CALLER
-      await Promise.race([fetchOp, timeoutPromise]);
-      setLoading(false);
-    } catch (error: any) {
-      console.warn(`AuthContext: Profile sync reached timeout/failed for ${sessionUser.email}:`, error.message);
-      
-      // If we don't have a user yet, set a minimal fallback so the UI can at least render
-      if (!user) {
-        setUser({
-          id: sessionUser.id,
-          email: sessionUser.email || '',
-          name: sessionUser.email?.split('@')[0] || 'User',
-          role: 'student',
-          verificationStatus: 'unverified'
-        });
+        throw error;
       }
-      
-      setLoading(false);
-    }
+    };
+
+    profilePromise = (async () => {
+      try {
+        await executeFetch(0);
+      } catch (error: any) {
+        console.warn(`AuthContext: Final profile sync failure for ${sessionUser.email}:`, error.message);
+        if (!user) {
+          setUser({
+            id: sessionUser.id,
+            email: sessionUser.email || '',
+            name: sessionUser.email?.split('@')[0] || 'User',
+            role: 'student',
+            verificationStatus: 'unverified'
+          });
+        }
+      } finally {
+        profilePromise = null;
+        setLoading(false);
+      }
+    })();
+
+    return profilePromise;
   };
 
   useEffect(() => {
@@ -171,22 +180,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Optimization: Combines 'Initial check' and 'Subscription' to avoid common 'NavigatorLock' fight on mount.
     // Relying on onAuthStateChange INITIAL_SESSION event which is bulletproof in Supabase v2.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
       if (!mounted) return;
-      
       console.log(`AuthContext: Auth event fired - ${event}`);
-
+      
       if (session?.user) {
-        try {
-          await fetchProfile(session.user);
-        } catch (err) {
-          console.error("AuthContext: Auth change profile fetch failed:", err);
-          setLoading(false);
-        }
+        // De-couple from sync lock by using a non-blocking trigger
+        fetchProfile(session.user).catch(err => {
+          console.error("AuthContext: Async profile fetch failed", err);
+        });
       } else {
-        // Only unlock loading if we're sure there's no session
         if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-          console.log(`AuthContext: No active session found during ${event}`);
           profilePromise = null;
           currentProfileUserId = null;
           setUser(null);
@@ -195,6 +199,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     });
+
+    // Cross-tab Synchronization: Listen for logout events from other tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'muzinda_user' && !e.newValue) {
+        console.log("AuthContext: Logout detected in another tab, clearing session...");
+        setUser(null);
+        setLoading(false);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
 
     // Fail-safe: No matter what, stop loading after 15 seconds to prevent soft-locks
     const safetyTimer = setTimeout(() => {
@@ -207,6 +221,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mounted = false;
       clearTimeout(safetyTimer);
       subscription.unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -278,9 +293,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  const logout = async () => {
+  const logout = async (scope: 'local' | 'global' = 'local') => {
+    // Optimistic Logout: Clear UI immediately
+    setUser(null);
+    localStorage.removeItem('muzinda_user');
     setLoading(true);
-    await supabase.auth.signOut();
+    
+    try {
+      // Supabase Global SignOut invalidates all active tokens for the user account
+      await supabase.auth.signOut({ scope });
+      console.log(`AuthContext: Logout success (scope: ${scope})`);
+    } catch (err) {
+      console.warn("AuthContext: signOut error (non-fatal for UI)", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 import { useEffect } from 'react'
 
-const Auth = () => {
+export const Auth = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)

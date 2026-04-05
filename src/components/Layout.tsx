@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { MobileBottomDock } from './MobileBottomDock'
 
 interface LayoutProps {
   children: ReactNode
@@ -14,6 +15,7 @@ export const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
+      <MobileBottomDock />
     </div>
   )
 }

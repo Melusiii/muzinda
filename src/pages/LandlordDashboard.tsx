@@ -8,7 +8,7 @@ import { useLandlordStats } from '../hooks/useSupabase'
 import { Navbar } from '../components/Navbar'
 import { getImageUrl } from '../utils/supabase-helpers'
 
-const LandlordDashboard = () => {
+export const LandlordDashboard = () => {
   const { user } = useAuth()
   const { stats, loading } = useLandlordStats()
   const [reviewsVisible, setReviewsVisible] = useState(true)

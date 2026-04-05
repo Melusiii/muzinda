@@ -28,7 +28,7 @@ import {
 import { useState } from 'react'
 import { getImageUrl } from '../utils/supabase-helpers'
 
-const PropertyDetail = () => {
+export const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>()
   const { property, loading, error } = useProperty(id)
   const { toggleFavorite, isFavorited } = useFavorites()

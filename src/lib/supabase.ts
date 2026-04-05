@@ -25,14 +25,7 @@ const getSupabase = () => {
             persistSession: true,
             detectSessionInUrl: true,
             flowType: 'pkce',
-            storageKey: 'sb-muzinda-auth-token',
-            // --- THE NUCLEAR FIX FOR NavigatorLockAcquireTimeoutError ---
-            // Instead of an object (which caused a TypeError), we provide a 
-            // FUNCTION that executes the callback immediately without web locks.
-            // This is the cleanest way to disable cross-tab locking in Dev environments.
-            lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<any>) => {
-              return await fn();
-            }
+            storageKey: 'sb-muzinda-auth-token'
           }
         }
     );

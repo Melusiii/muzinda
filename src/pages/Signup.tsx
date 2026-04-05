@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 import { useEffect } from 'react'
 
-const Signup = () => {
+export const Signup = () => {
   const [step, setStep] = useState(1)
   const [selectedRole, setSelectedRole] = useState<'student' | 'landlord' | 'provider'>('student')
   const [selectedCategory, setSelectedCategory] = useState<'handyman' | 'transport' | undefined>(undefined)

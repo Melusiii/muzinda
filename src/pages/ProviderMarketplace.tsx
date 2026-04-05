@@ -1,7 +1,7 @@
 import { Sidebar } from '../components/Sidebar'
 import { Briefcase, Info, Lock } from 'lucide-react'
 
-const ProviderMarketplace = () => {
+export const ProviderMarketplace = () => {
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />

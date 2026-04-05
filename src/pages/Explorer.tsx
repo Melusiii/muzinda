@@ -7,8 +7,9 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { cn } from '../utils/cn'
 import { useProperties, useFavorites } from '../hooks/useSupabase'
 import { getImageUrl } from '../utils/supabase-helpers'
+import { PageHeader } from '../components/PageHeader'
 
-const Explorer = () => {
+export const Explorer = () => {
   const [searchParams] = useSearchParams()
   const { properties, loading, error } = useProperties()
   const { toggleFavorite, isFavorited } = useFavorites()
@@ -50,27 +51,20 @@ const Explorer = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Content (Left) */}
           <section className="lg:col-span-8 space-y-12">
-            <header className="space-y-6">
-              <div className="flex gap-2 items-center text-[#4F7C2C]">
-                 <div className="w-8 h-[2px] bg-current opacity-20" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.3em]">Verified Stays</span>
+            <PageHeader 
+              title="Find your Spot" 
+              subtitle={`${filtered.length} verified results across Mutare`}
+            >
+              <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border border-primary/5 shadow-sm self-start md:self-auto">
+                <Filter size={14} className="text-primary/40" />
+                <span className="text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">Sort:</span>
+                <select className="bg-transparent border-none text-xs font-black text-primary focus:ring-0 cursor-pointer p-0 pr-8">
+                  <option>Distance</option>
+                  <option>Price (Low)</option>
+                  <option>Price (High)</option>
+                </select>
               </div>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-left">
-                <div>
-                   <h1 className="text-6xl font-black tracking-tighter text-primary-dark font-manrope leading-none">Find your Spot</h1>
-                   <p className="text-primary-dark/40 font-bold uppercase tracking-widest text-[10px] mt-6">{filtered.length} verified results across Mutare</p>
-                </div>
-                <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border border-primary/5 shadow-sm self-start md:self-auto">
-                  <Filter size={14} className="text-primary/40" />
-                  <span className="text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">Sort:</span>
-                  <select className="bg-transparent border-none text-xs font-black text-primary focus:ring-0 cursor-pointer p-0 pr-8">
-                    <option>Distance</option>
-                    <option>Price (Low)</option>
-                    <option>Price (High)</option>
-                  </select>
-                </div>
-              </div>
-            </header>
+            </PageHeader>
 
             {/* Quick Type Selection */}
             <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">

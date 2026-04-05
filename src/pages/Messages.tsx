@@ -5,7 +5,7 @@ import { cn } from '../utils/cn'
 import { useConversations, useMessages, sendMessage } from '../hooks/useSupabase'
 import { useAuth } from '../context/AuthContext'
 
-const Messages = () => {
+export const Messages = () => {
   const { user } = useAuth()
   const { conversations, loading: loadingConv } = useConversations()
   const [selectedContact, setSelectedContact] = useState<any>(null)

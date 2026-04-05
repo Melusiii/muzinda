@@ -5,7 +5,7 @@ import { useFavorites } from '../hooks/useSupabase'
 import { useNavigate } from 'react-router-dom'
 import { getImageUrl } from '../utils/supabase-helpers'
 
-const StudentFavorites = () => {
+export const StudentFavorites = () => {
   const navigate = useNavigate()
   const { favorites } = useFavorites()
 

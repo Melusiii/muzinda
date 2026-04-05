@@ -6,7 +6,7 @@ import { useProviderService, useServiceApplications, updateServiceApplicationSta
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-const ProviderDashboard = () => {
+export const ProviderDashboard = () => {
   const [processingId, setProcessingId] = useState<string | null>(null)
   
   // Fetch the provider's active service (transport by default for this view)

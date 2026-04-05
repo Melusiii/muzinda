@@ -1,6 +1,26 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+ 
+ // Helper to handle transient Supabase lock contention errors
+ const withLockRetry = async <T>(operation: () => Promise<T>, maxRetries = 2): Promise<T> => {
+   let lastError: any;
+   for (let i = 0; i <= maxRetries; i++) {
+     try {
+       return await operation();
+     } catch (err: any) {
+       lastError = err;
+       const isLockError = err.message?.includes('Lock') || err.name === 'NavigatorLockAcquireTimeoutError';
+       if (isLockError && i < maxRetries) {
+         console.warn(`useSupabase: Lock contention, retrying (${i + 1}/${maxRetries})...`);
+         await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+         continue;
+       }
+       throw err;
+     }
+   }
+   throw lastError;
+ };
 
 export interface TransportRoute {
   id: string
@@ -47,6 +67,16 @@ export interface Application {
   property?: Property
 }
 
+export interface Notification {
+  id: string
+  user_id: string
+  title: string
+  message: string
+  type: string
+  read: boolean
+  created_at: string
+}
+
 // Module-level cache to ensure "Instant UI" on refresh
 let propertiesPromise: Promise<Property[]> | null = null;
 let propertiesCache: Property[] = (() => {
@@ -55,6 +85,7 @@ let propertiesCache: Property[] = (() => {
     return saved ? JSON.parse(saved) : [];
   } catch { return []; }
 })();
+
 
 // --- PROPERTIES HOOK ---
 export const useProperties = () => {
@@ -73,18 +104,19 @@ export const useProperties = () => {
 
     try {
       propertiesPromise = (async () => {
-        const { data, error: fetchError } = await supabase
-          .from('properties')
-          .select('id, title, type, price, location, distance, image_url, verified, rating, reviews_count')
-          .order('created_at', { ascending: false });
-
-        if (fetchError) throw fetchError;
+        const { data } = await withLockRetry<any>(() => 
+          supabase
+            .from('properties')
+            .select('id, title, type, price, location, distance, image_url, verified, rating, reviews_count')
+            .order('created_at', { ascending: false })
+        );
+ 
         const result = (data as Property[]) || [];
         propertiesCache = result;
         localStorage.setItem('muzinda_properties_cache', JSON.stringify(result));
         return result;
       })();
-
+ 
       const data = await propertiesPromise;
       if (mounted) setProperties(data);
     } catch (err: any) {
@@ -124,21 +156,32 @@ export const useProperty = (id?: string) => {
   const [loading, setLoading] = useState(!property);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchProperty = useCallback(async () => {
     if (!id) return;
-    const fetchProperty = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('properties')
-          .select('*, landlord:profiles!landlord_id(full_name, verification_status)')
-          .eq('id', id)
-          .single();
-        if (error) throw error;
-        setProperty(data);
-      } catch (err: any) { setError(err.message); } finally { setLoading(false); }
-    };
-    fetchProperty();
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*, landlord:profiles!landlord_id(full_name, verification_status)')
+        .eq('id', id)
+        .single();
+      if (error) throw error;
+      setProperty(data);
+    } catch (err: any) { setError(err.message); } finally { setLoading(false); }
   }, [id]);
+
+  useEffect(() => {
+    fetchProperty();
+    const uniqueId = Math.random().toString(36).substring(7);
+    const channel = supabase.channel(`prop-detail-${uniqueId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'properties', filter: `id=eq.${id}` }, () => {
+        fetchProperty()
+      })
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    }
+  }, [id, fetchProperty]);
 
   return { property, loading, error };
 }
@@ -153,14 +196,15 @@ export const useUserApplications = () => {
   const fetchApplications = useCallback(async () => {
     if (!user) return;
     try {
-      const { data, error } = await supabase
-        .from('applications')
-        .select(`
-          id, student_id, property_id, status, message, created_at,
-          property:properties(id, title, location, image_url, price)
-        `)
-        .eq('student_id', user.id);
-      if (error) throw error;
+       const { data } = await withLockRetry<any>(() => 
+         supabase
+          .from('applications')
+          .select(`
+            id, student_id, property_id, status, message, created_at,
+            property:properties(id, title, location, image_url, price)
+          `)
+          .eq('student_id', user.id)
+       );
       
       const processed = (data || []).map((app: any) => ({
         ...app,
@@ -174,8 +218,8 @@ export const useUserApplications = () => {
   useEffect(() => {
     fetchApplications();
     const uniqueId = Math.random().toString(36).substring(7);
-    const channel = supabase.channel(`apps-${user?.id}-${uniqueId}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'applications', filter: `student_id=eq.${user?.id}` }, () => fetchApplications())
+    const channel = supabase.channel(`user-apps-${uniqueId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'applications', filter: `student_id=eq.${user?.id}` }, () => fetchApplications())
       .subscribe();
     return () => { channel.unsubscribe(); }
   }, [user, fetchApplications]);
@@ -352,7 +396,7 @@ export const useUserTickets = () => {
   useEffect(() => {
     fetchTickets()
     const uniqueId = Math.random().toString(36).substring(7);
-    const channel = supabase.channel(`tkts-${user?.id}-${uniqueId}`)
+    const channel = supabase.channel(`user-tkts-${uniqueId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transport_bookings', filter: `student_id=eq.${user?.id}` }, () => fetchTickets())
       .subscribe()
     return () => { channel.unsubscribe() }
@@ -727,4 +771,111 @@ export const useServices = (category = 'transport') => {
   }, [category])
 
   return { services, loading }
+}
+
+// --- NOTIFICATIONS HOOK ---
+export const useNotifications = () => {
+  const { user } = useAuth()
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return
+    try {
+       const { data } = await withLockRetry<any>(() => 
+         supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+       );
+ 
+      const result = (data as Notification[]) || []
+      setNotifications(result)
+      setUnreadCount(result.filter((n: Notification) => n && !n.read).length || 0)
+    } catch (err) {
+      console.error('Error fetching notifications:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  const markAsRead = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', id)
+      
+      if (error) throw error
+      setNotifications(prev => prev.map((n: Notification) => n.id === id ? { ...n, read: true } : n))
+      setUnreadCount(prev => Math.max(0, prev - 1))
+    } catch (err) {
+      console.error('Error marking notification as read:', err)
+    }
+  }
+
+  const markAllAsRead = async () => {
+    if (!user) return
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false)
+      
+      if (error) throw error
+      setNotifications(prev => prev.map((n: Notification) => ({ ...n, read: true })))
+      setUnreadCount(0)
+    } catch (err) {
+      console.error('Error marking all notifications as read:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (!user) return
+
+    fetchNotifications()
+
+    // Real-time subscription
+    const uniqueId = Math.random().toString(36).substring(7);
+    const channel = supabase
+      .channel(`user-notifs-${uniqueId}`, {
+           auth: {
+             autoRefreshToken: true,
+             persistSession: true,
+             detectSessionInUrl: true,
+             flowType: 'pkce',
+             storageKey: 'sb-muzinda-auth-token'
+           }
+         }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          fetchNotifications()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, fetchNotifications])
+
+  return {
+    notifications,
+    loading,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    refetch: fetchNotifications
+  }
 }
