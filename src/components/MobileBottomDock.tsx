@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Compass, MessageSquare, Bus, Check, ShieldCheck, Wrench, CreditCard } from 'lucide-react'
+import { LayoutDashboard, Users, DollarSign, Compass, MessageSquare, Bus, Wrench, CreditCard, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 
@@ -12,9 +12,14 @@ export const MobileBottomDock = () => {
   const [lastScrollY, setLastScrollY] = useState(0)
 
   useEffect(() => {
+    if (location.pathname === '/messages') {
+      setIsVisible(true)
+      return
+    }
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false) // Scrolling down
       } else {
         setIsVisible(true) // Scrolling up
@@ -24,7 +29,7 @@ export const MobileBottomDock = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+  }, [lastScrollY, location.pathname])
 
   if (!isAuthenticated) return null
 
@@ -35,16 +40,17 @@ export const MobileBottomDock = () => {
         { name: 'Explore', path: '/explorer', icon: Compass },
         { name: 'Messages', path: '/messages', icon: MessageSquare },
         { name: 'Shuttle', path: '/transport', icon: Bus },
-        { name: 'Apps', path: '/applications', icon: Check },
+        { name: 'Profile', path: '/profile', icon: User },
       ]
     }
     
     if (user?.role === 'landlord') {
       return [
         { name: 'Home', path: '/landlord', icon: LayoutDashboard },
-        { name: 'Ads', path: '/ads', icon: ShieldCheck },
-        { name: 'Market', path: '/marketplace', icon: Wrench },
+        { name: 'Applicants', path: '/landlord?tab=applications', icon: Users },
+        { name: 'Earnings', path: '/landlord?tab=finance', icon: DollarSign },
         { name: 'Messages', path: '/messages', icon: MessageSquare },
+        { name: 'Profile', path: '/profile', icon: User },
       ]
     }
 
@@ -54,6 +60,7 @@ export const MobileBottomDock = () => {
         { name: 'Gigs', path: '/marketplace', icon: Wrench },
         { name: 'Earnings', path: '/earnings', icon: CreditCard },
         { name: 'Messages', path: '/messages', icon: MessageSquare },
+        { name: 'Profile', path: '/profile', icon: User },
       ]
     }
 
@@ -70,12 +77,13 @@ export const MobileBottomDock = () => {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[40] md:hidden w-[90%] max-w-sm"
+          className="fixed bottom-0 left-0 right-0 z-[100] md:hidden pb-6 px-6"
         >
-          <div className="bg-white/80 backdrop-blur-2xl border border-primary/5 shadow-2xl rounded-full px-4 py-3 flex items-center justify-between gap-1 overflow-hidden">
+          <div className="bg-white/80 backdrop-blur-2xl border border-primary/5 shadow-2xl rounded-full px-4 py-3 flex items-center justify-between gap-1 overflow-hidden max-w-sm mx-auto">
             {links.map((link) => {
-              const isActive = location.pathname === link.path
+              const isActive = link.path.includes('?') 
+                ? (location.pathname + location.search) === link.path
+                : location.pathname.startsWith(link.path)
               return (
                 <Link
                   key={link.path}

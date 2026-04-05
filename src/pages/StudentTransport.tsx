@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Sidebar } from '../components/Sidebar'
 import { MapPin, Phone, Bus, CheckCircle2, Clock, Users, Star, CreditCard, ShieldCheck } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
-
 import { useServices, useStudentServiceApplications } from '../hooks/useSupabase'
 import { ApplyServiceModal } from '../components/ApplyServiceModal'
-import { Navbar } from '../components/Navbar'
 import { getImageUrl } from '../utils/supabase-helpers'
-
 import { ManageSubscriptionModal } from '../components/ManageSubscriptionModal'
 
 import { supabase } from '../lib/supabase'
@@ -207,15 +203,11 @@ export const StudentTransport = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
-      <div className="md:hidden">
-        <Navbar />
-      </div>
-      <Sidebar />
       
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
 
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative z-10">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative z-10">
         {/* SENIOR HEADER */}
         <motion.header 
           initial={{ opacity: 0, x: -20 }}

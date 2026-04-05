@@ -22,6 +22,10 @@ const StudentApplications = lazy(() => import('./pages/StudentApplications').the
 const StudentFavorites = lazy(() => import('./pages/StudentFavorites').then(m => ({ default: m.StudentFavorites })))
 const TransportDashboard = lazy(() => import('./pages/TransportDashboard').then(m => ({ default: m.TransportDashboard })))
 const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })))
+const AccountSettings = lazy(() => import('./pages/AccountSettings').then(m => ({ default: m.AccountSettings })))
+import { Navbar } from './components/Navbar'
+import { Sidebar } from './components/Sidebar'
+import { MobileBottomDock } from './components/MobileBottomDock'
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -197,10 +201,22 @@ function App() {
               } 
             />
 
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute allowedRoles={['student', 'landlord', 'provider']}>
+                  <AccountSettings />
+                </ProtectedRoute>
+              } 
+            />
+
             {/* Fallback & Legacy Redirects */}
             <Route path="/handyman" element={<Navigate to="/provider" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <Navbar />
+          <Sidebar />
+          <MobileBottomDock />
         </Suspense>
       </AuthProvider>
     </ErrorBoundary>

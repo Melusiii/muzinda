@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Sidebar } from '../components/Sidebar'
-import { MessageSquare, Search, Send, Loader2 } from 'lucide-react'
+import { MessageSquare, Send, Loader2 } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useConversations, useMessages, sendMessage } from '../hooks/useSupabase'
 import { useAuth } from '../context/AuthContext'
@@ -39,24 +38,7 @@ export const Messages = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
-      <Sidebar />
-      
-      <main className="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
-        <header className="p-8 border-b border-primary/5 bg-white flex justify-between items-center shrink-0">
-           <div>
-             <h1 className="text-3xl font-black tracking-tighter text-primary-dark font-manrope">Conversations</h1>
-             <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-widest">Connect with our verified community</p>
-           </div>
-           
-           <div className="relative hidden md:block">
-             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-dark/20" size={18} />
-             <input 
-               type="text" 
-               placeholder="Search..."
-               className="pl-12 pr-6 py-3 bg-[#F8F9F8] rounded-2xl border border-primary/5 outline-none text-sm font-dm-sans focus:border-primary/20 transition-all w-64"
-             />
-           </div>
-        </header>
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10 pt-28 md:pt-6">
 
         <div className="flex-1 flex overflow-hidden">
           {/* List */}
@@ -150,7 +132,7 @@ export const Messages = () => {
                  </div>
 
                  {/* Input */}
-                 <div className="p-8 bg-white border-t border-primary/5 shrink-0">
+                 <div className="p-8 pb-32 md:pb-8 bg-white border-t border-primary/5 shrink-0">
                     <form onSubmit={handleSend} className="max-w-4xl mx-auto flex items-center gap-4">
                        <div className="flex-1 relative">
                           <input 

@@ -35,3 +35,10 @@ const getSupabase = () => {
 }
 
 export const supabase = getSupabase();
+
+export const getImageUrl = (path: string | undefined) => {
+  if (!path) return 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800'
+  if (path.startsWith('http')) return path
+  const { data } = supabase.storage.from('properties').getPublicUrl(path)
+  return data.publicUrl
+}

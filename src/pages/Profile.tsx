@@ -12,7 +12,8 @@ import {
   LogOut, 
   ChevronRight,
   Sparkles,
-  Calendar
+  Calendar,
+  ClipboardList
 } from 'lucide-react'
 import { useState } from 'react'
 import { SettingsModal } from '../components/SettingsModal'
@@ -33,31 +34,30 @@ export const Profile = () => {
 
   const menuItems = [
     { label: 'Favorites', icon: Star, path: '/favorites', color: 'text-accent-gold', bg: 'bg-accent-gold/10' },
+    { label: 'My Applications', icon: ClipboardList, path: '/applications', color: 'text-primary', bg: 'bg-primary/5' },
     { label: 'Messages', icon: MessageSquare, path: '/messages', color: 'text-primary', bg: 'bg-primary/5' },
     { label: 'Notifications', icon: Bell, action: () => setIsNotificationsOpen(true), badge: unreadCount, color: 'text-primary', bg: 'bg-primary/5' },
-    { label: 'Security', icon: ShieldCheck, path: '#', color: 'text-accent-amber', bg: 'bg-accent-amber/10' },
-    { label: 'Account Settings', icon: Settings, action: () => setIsSettingsOpen(true), color: 'text-primary-dark/60', bg: 'bg-gray-100' },
+    { label: 'Security', icon: ShieldCheck, path: '/settings', color: 'text-accent-amber', bg: 'bg-accent-amber/10' },
+    { label: 'Account Settings', icon: Settings, path: '/settings', color: 'text-primary-dark/60', bg: 'bg-gray-100' },
   ]
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
-      <div className="md:hidden">
-        <Navbar />
-      </div>
+      <Navbar />
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative z-10 pb-32">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative z-10 pb-32">
         {/* Header Section */}
         <PageHeader 
           title="Digital Identity" 
           subtitle="Official Institutional Credentials"
-          className="max-w-2xl mx-auto"
+          className="max-w-2xl"
         />
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-xl mx-auto space-y-12"
+          className="max-w-xl space-y-12"
         >
           {/* Identity Card */}
           <div className="text-center space-y-6">

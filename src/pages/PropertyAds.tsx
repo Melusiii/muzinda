@@ -1,11 +1,9 @@
-import { Sidebar } from '../components/Sidebar'
 import { Megaphone, Plus, Info } from 'lucide-react'
 
 export const PropertyAds = () => {
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <Sidebar />
-      <main className="flex-1 md:ml-64 p-6 md:p-12 flex flex-col">
+      <main className="flex-1 md:ml-64 p-6 md:p-8 min-h-screen pt-28 md:pt-8 relative z-10 flex flex-col">
          <header className="mb-12 flex justify-between items-center">
             <div>
                <h1 className="text-4xl font-extrabold tracking-tighter text-primary-dark font-manrope">Property Ads</h1>

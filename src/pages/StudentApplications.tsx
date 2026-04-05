@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import { Sidebar } from '../components/Sidebar'
-import { Navbar } from '../components/Navbar'
 import { Loader2, MapPin, X, Info, ArrowRight, AlertCircle } from 'lucide-react'
 import { useUserApplications, deleteApplication } from '../hooks/useSupabase'
 import { cn } from '../utils/cn'
@@ -31,12 +29,8 @@ export const StudentApplications = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
-      <div className="md:hidden">
-        <Navbar />
-      </div>
-      <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative pb-32">
         <header className="mb-12">
           <div className="flex gap-2 items-center text-primary mb-2">
              <div className="w-8 h-[2px] bg-current opacity-20" />

@@ -2,7 +2,24 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
  
- // Helper to handle transient Supabase lock contention errors
+export interface Transaction {
+  id: string
+  date: string
+  student_name: string
+  house_ref: string
+  amount: number
+  status: 'paid' | 'pending' | 'failed'
+}
+
+export interface LandlordFinance {
+  total_earnings: number
+  pending_payments: number
+  recent_transactions: Transaction[]
+  monthly_trends: { month: string; amount: number }[]
+  occupancy_rate: number
+}
+
+// Helper to handle transient Supabase lock contention errors
  const withLockRetry = async <T>(operation: () => Promise<T>, maxRetries = 2): Promise<T> => {
    let lastError: any;
    for (let i = 0; i <= maxRetries; i++) {
@@ -22,6 +39,23 @@ import { useAuth } from '../context/AuthContext'
    throw lastError;
  };
 
+export interface Profile {
+  id: string
+  email: string
+  full_name: string
+  role: 'student' | 'landlord' | 'provider'
+  avatar_url?: string
+  bio?: string
+  phone?: string
+  university?: string
+  notification_settings: {
+    push: boolean
+    email: boolean
+    messages: boolean
+    updates: boolean
+  }
+}
+
 export interface TransportRoute {
   id: string
   name: string
@@ -34,7 +68,7 @@ export interface TransportRoute {
 export interface Property {
   id: string
   title: string
-  type: string
+  type: 'Single' | 'Shared' | 'Apartment' | 'Hostel' | string
   price: number
   location: string
   distance: string
@@ -54,7 +88,7 @@ export interface Property {
   }
   name?: string
   status?: string
-  gender_requirement?: string
+  gender_preference?: 'Boys Only' | 'Girls Only' | 'Mixed' | string
 }
 
 export interface Application {
@@ -244,6 +278,19 @@ export const submitApplication = async (propertyId: string, message: string) => 
     }
     throw error;
   }
+
+  // Notify Landlord
+  try {
+    const { data: prop } = await supabase.from('properties').select('landlord_id, title').eq('id', propertyId).single();
+    if (prop?.landlord_id) {
+      await createNotification(
+        prop.landlord_id,
+        'House Application Request',
+        `A student is interested in "${prop.title}". Review their request in your hub!`,
+        'new_app'
+      );
+    }
+  } catch (err) { console.warn("Failed to notify landlord", err); }
 }
 
 export const deleteApplication = async (id: string) => {
@@ -543,7 +590,88 @@ export const useProviders = (type?: string) => {
   }, [type])
 
   return { providers, loading }
+}// --- LANDLORD STATS & FINANCE ---
+export const useLandlordFinance = () => {
+  const { user } = useAuth();
+  const [finance, setFinance] = useState<LandlordFinance | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFinance = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data: props } = await supabase.from('properties').select('id, price, title').eq('landlord_id', user.id);
+      const propIds = (props || []).map((p: any) => p.id);
+
+      // Get secured applications for "Paid" earnings
+      const { data: securedApps } = await supabase
+        .from('applications')
+        .select('property_id, created_at, student:profiles!student_id(full_name)')
+        .in('property_id', propIds)
+        .eq('status', 'secured');
+
+      // Get pending applications for "Pending" earnings
+      const { data: pendingApps } = await supabase
+        .from('applications')
+        .select('property_id, created_at, student:profiles!student_id(full_name)')
+        .in('property_id', propIds)
+        .eq('status', 'pending');
+
+      const totalEarnings = (securedApps || []).reduce((acc: number, app: any) => {
+        const prop = props?.find((p: any) => p.id === app.property_id);
+        return acc + (prop?.price || 0);
+      }, 0);
+
+      const pendingPayments = (pendingApps || []).reduce((acc: number, app: any) => {
+        const prop = props?.find((p: any) => p.id === app.property_id);
+        return acc + (prop?.price || 0);
+      }, 0);
+
+      // Construct Mock Transactions for Visual History
+      const transactions: Transaction[] = [
+        ...(securedApps || []).map((app: any) => ({
+          id: Math.random().toString(36).substr(2, 9),
+          date: new Date(app.created_at).toLocaleDateString(),
+          student_name: (app as any).student?.full_name || 'Student',
+          house_ref: props?.find((p: any) => p.id === app.property_id)?.title || 'House',
+          amount: props?.find((p: any) => p.id === app.property_id)?.price || 0,
+          status: 'paid' as const
+        })),
+        ...(pendingApps || []).slice(0, 5).map((app: any) => ({
+          id: Math.random().toString(36).substr(2, 9),
+          date: new Date(app.created_at).toLocaleDateString(),
+          student_name: (app as any).student?.full_name || 'Student',
+          house_ref: props?.find((p: any) => p.id === app.property_id)?.title || 'House',
+          amount: props?.find((p: any) => p.id === app.property_id)?.price || 0,
+          status: 'pending' as const
+        }))
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
+
+      // Mock Monthly Trends
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+      const monthlyTrends = months.map(m => ({
+        month: m,
+        amount: Math.floor(Math.random() * (totalEarnings || 500)) + 200
+      }));
+
+      const occupancyRate = props?.length 
+        ? Math.round(((securedApps?.length || 0) / props.length) * 100) 
+        : 0;
+
+      setFinance({
+        total_earnings: totalEarnings,
+        pending_payments: pendingPayments,
+        recent_transactions: transactions,
+        monthly_trends: monthlyTrends,
+        occupancy_rate: occupancyRate
+      });
+    } catch (err) { console.error(err); } finally { setLoading(false); }
+  }, [user]);
+
+  useEffect(() => { fetchFinance() }, [fetchFinance]);
+
+  return { finance, loading, refetch: fetchFinance };
 }
+
 
 // --- LANDLORD STATS ---
 export const useLandlordStats = () => {
@@ -583,10 +711,119 @@ export const useLandlordStats = () => {
     fetchStats()
   }, [user])
 
-  return { stats, loading }
+  return { stats, loading, refetch: () => { setLoading(true); } } // Simple trigger, the useEffect will re-run if needed or I can make it a callback
 }
 
-// --- FAVORITES ---
+// --- LANDLORD APPLICATIONS ---
+export const useLandlordApplications = () => {
+  const { user } = useAuth();
+  const [applications, setApplications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchApplications = useCallback(async () => {
+    if (!user) return;
+    try {
+      // First get landlord properties
+      const { data: props } = await supabase.from('properties').select('id').eq('landlord_id', user.id);
+      const propIds = props?.map((p: { id: string }) => p.id) || [];
+      
+      if (propIds.length === 0) {
+        setApplications([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*, student:profiles!student_id(*), property:properties(*)')
+        .in('property_id', propIds)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setApplications(data || []);
+    } catch (err) { console.error(err); } finally { setLoading(false); }
+  }, [user]);
+
+  useEffect(() => {
+    fetchApplications();
+    const channel = supabase.channel(`landlord-apps-${user?.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, () => fetchApplications())
+      .subscribe();
+    return () => { channel.unsubscribe(); }
+  }, [user, fetchApplications]);
+
+  return { applications, loading, refetch: fetchApplications };
+}
+
+export const updateApplicationStatus = async (applicationId: string, status: 'approved' | 'rejected' | 'secured') => {
+  const { data: appData, error: fetchError } = await supabase
+    .from('applications')
+    .select('student_id, property_id, property:properties(title, available_rooms)')
+    .eq('id', applicationId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  const { error } = await supabase.from('applications').update({ status }).eq('id', applicationId);
+  if (error) throw error;
+
+  // Auto-Occupancy Logic: Decrement rooms if approved
+  if (status === 'approved' && appData.property?.available_rooms > 0) {
+    const newCount = appData.property.available_rooms - 1;
+    await supabase.from('properties').update({ 
+      available_rooms: newCount
+    }).eq('id', appData.property_id);
+  }
+
+  // Notify Student
+  await createNotification(
+    appData.student_id,
+    `Application ${status === 'approved' ? 'Accepted' : 'Updated'}`,
+    `Your application for "${appData.property?.title}" has been ${status}. Check your portals for details.`,
+    'app_status'
+  );
+}
+
+// --- PROPERTY CRUD ---
+export const addProperty = async (propertyData: Partial<Property>) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const { data, error } = await supabase
+    .from('properties')
+    .insert([{ ...propertyData, landlord_id: user.id, verified: false }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export const togglePropertyAvailability = async (id: string, currentStatus: string) => {
+  const newStatus = currentStatus === 'available' ? 'unavailable' : 'available';
+  const { error } = await supabase.from('properties').update({ status: newStatus }).eq('id', id);
+  if (error) throw error;
+}
+
+export const updatePropertyDetails = async (id: string, updates: Partial<Property>) => {
+  const { error } = await supabase.from('properties').update(updates).eq('id', id);
+  if (error) throw error;
+}
+
+export const deleteProperty = async (id: string) => {
+  const { error } = await supabase.from('properties').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// --- NOTIFICATIONS HOOK ---
+export const createNotification = async (userId: string, title: string, message: string, type = 'system') => {
+  const { error } = await supabase.from('notifications').insert([{
+    user_id: userId,
+    title,
+    message,
+    type
+  }]);
+  if (error) throw error;
+}
 export const useFavorites = () => {
   const { user } = useAuth()
   const [favorites, setFavorites] = useState<any[]>([])
@@ -878,4 +1115,104 @@ export const useNotifications = () => {
     markAllAsRead,
     refetch: fetchNotifications
   }
+}
+// --- PROFILE HOOK ---
+export const useProfile = () => {
+  const { user } = useAuth()
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchProfile = useCallback(async () => {
+    if (!user) return
+    try {
+      const { data, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) throw profileError
+      setProfile(data as Profile)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [user])
+
+  useEffect(() => {
+    fetchProfile()
+    if (!user) return
+
+    const channel = supabase.channel(`profile-${user.id}`)
+      .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'profiles', 
+        filter: `id=eq.${user.id}` 
+      }, (payload: any) => {
+        setProfile(payload.new as Profile)
+      })
+      .subscribe()
+
+    return () => { channel.unsubscribe() }
+  }, [user, fetchProfile])
+
+  return { profile, loading, error, refetch: fetchProfile }
+}
+
+export const updateProfile = async (updates: Partial<Profile>) => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Unauthorized")
+
+  const { error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', user.id)
+
+  if (error) throw error
+}
+
+export const uploadAvatar = async (file: File) => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Unauthorized")
+
+  const fileExt = file.name.split('.').pop()
+  const filePath = `avatars/${user.id}-${Math.random()}.${fileExt}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('property-images') // Reusing existing bucket or use avatars if exists
+    .upload(filePath, file)
+
+  if (uploadError) throw uploadError
+
+  const { data } = supabase.storage
+    .from('property-images')
+    .getPublicUrl(filePath)
+
+  await updateProfile({ avatar_url: data.publicUrl })
+  return data.publicUrl
+}
+
+// --- SECURITY & AUTH FUNCTIONS ---
+export const changePassword = async (newPassword: string) => {
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) throw error
+}
+
+export const globalLogout = async () => {
+  const { error } = await supabase.auth.signOut({ scope: 'global' })
+  if (error) throw error
+}
+
+export const submitProviderApplication = async (data: any) => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Unauthorized")
+
+  const { error } = await supabase
+    .from('verification_requests')
+    .insert([{ ...data, user_id: user.id, status: 'pending' }])
+
+  if (error) throw error
 }

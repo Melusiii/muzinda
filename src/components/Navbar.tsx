@@ -72,6 +72,7 @@ export const Navbar = () => {
   return (
     <nav className={cn(
       "fixed top-0 w-full z-50 transition-all duration-500 px-6 py-4 md:py-6",
+      isAuthenticated && "md:hidden",
       isScrolled 
         ? "bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-b border-primary/5 py-3 md:py-4" 
         : "bg-white/40 backdrop-blur-md border-b border-white/10"
@@ -131,17 +132,15 @@ export const Navbar = () => {
                  </button>
                </div>
 
-              {/* Mobile Profile Indicator */}
               <div className="md:hidden flex items-center gap-3">
                   <button 
-                   onClick={() => setIsSettingsOpen(true)}
-                   className="h-10 w-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center overflow-hidden shadow-sm"
+                   onClick={() => setIsNotificationsOpen(true)}
+                   className="h-10 w-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center relative shadow-sm active:scale-95 transition-all"
                   >
-                    {user?.avatar_url ? (
-                     <img src={user.avatar_url} alt={user.name || 'User'} className="w-full h-full object-cover" />
-                   ) : (
-                     <span className="text-primary font-black uppercase text-xs">{((user as any)?.name || (user as any)?.email || 'U').charAt(0)}</span>
-                   )}
+                    <Bell size={20} className="text-primary" />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-white" />
+                    )}
                   </button>
                </div>
             </>

@@ -1,10 +1,8 @@
-import { Sidebar } from '../components/Sidebar'
 import { Clock, Star, Users, CheckCircle2, ShieldCheck, CreditCard, MessageSquare, X, Bus, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Navbar } from '../components/Navbar'
-import { useProviderService, useServiceApplications, updateServiceApplicationStatus } from '../hooks/useSupabase'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useProviderService, useServiceApplications, updateServiceApplicationStatus } from '../hooks/useSupabase'
 
 export const ProviderDashboard = () => {
   const [processingId, setProcessingId] = useState<string | null>(null)
@@ -33,15 +31,11 @@ export const ProviderDashboard = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
-      <div className="md:hidden">
-        <Navbar />
-      </div>
-      <Sidebar />
       
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
 
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-12 md:p-12 overflow-y-auto h-screen relative z-10">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative z-10">
         {/* HEADER */}
         <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-6">
