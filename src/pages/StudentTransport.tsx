@@ -113,7 +113,7 @@ const PremiumPassBento = ({ app, onManage }: { app: any, onManage: () => void })
               <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verified Active Pass</span>
            </div>
            <div>
-              <h2 className="text-5xl font-manrope font-black tracking-tighter italic leading-none">{app.service?.name}</h2>
+              <h2 className="text-5xl font-manrope font-black tracking-tighter leading-none">{app.service?.name}</h2>
               <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em] mt-3">Muzinda Institutional Network</p>
            </div>
         </div>
@@ -260,7 +260,7 @@ export const StudentTransport = () => {
                {approvedApp ? (
                  <>
                    <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tight italic uppercase">Current Membership</h2>
+                      <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tight uppercase">Current Membership</h2>
                       <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Digital Badge ID: #MZ-{approvedApp.id.slice(0,6)}</span>
                    </div>
                    <PremiumPassBento app={approvedApp} onManage={() => setIsManageModalOpen(true)} />
@@ -276,7 +276,7 @@ export const StudentTransport = () => {
                  <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary/10 transition-colors" />
                     <div className="relative z-10 max-w-xl">
-                       <h2 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-tight mb-4 italic">Reliable Boarding for Africa University.</h2>
+                       <h2 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-tight mb-4">Reliable Boarding for Africa <span className="italic text-primary">University.</span></h2>
                        <p className="text-primary-dark/40 font-bold text-sm leading-relaxed mb-8">Join the elite network of student transit. Doorstep pickups, verified institutional drivers, and transparent monthly pricing.</p>
                        <div className="flex gap-6">
                           <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ export const StudentTransport = () => {
             {/* MARKETPLACE FLEET */}
             <section className="space-y-10">
                <div className="flex items-center gap-4">
-                  <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase">Institutional Fleets</h3>
+                  <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase">Institutional <span className="italic text-primary">Fleets</span></h3>
                   <div className="h-0.5 flex-1 bg-primary/5 rounded-full" />
                </div>
 
@@ -350,7 +350,7 @@ export const StudentTransport = () => {
 
                         <div className="p-8 space-y-6">
                            <div>
-                              <h4 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase leading-none">{s.name}</h4>
+                              <h4 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase leading-none">{s.name}</h4>
                               <div className="text-[11px] font-bold text-primary-dark/30 uppercase mt-3 tracking-widest flex items-center gap-2">
                                  <span className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                                  {s.profiles?.full_name || 'Verified Provider'}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Users, DollarSign, Compass, MessageSquare, Bus, Wrench, CreditCard, User } from 'lucide-react'
+import { LayoutDashboard, Users, DollarSign, Compass, MessageSquare, CreditCard, User, Heart, Wrench } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 
@@ -45,8 +45,8 @@ export const MobileBottomDock = () => {
       return [
         { name: 'Home', path: '/dashboard', icon: LayoutDashboard },
         { name: 'Explore', path: '/explorer', icon: Compass },
+        { name: 'Saved', path: '/favorites', icon: Heart },
         { name: 'Messages', path: '/messages', icon: MessageSquare },
-        { name: 'Shuttle', path: '/transport', icon: Bus },
         { name: 'Profile', path: '/profile', icon: User },
       ]
     }
@@ -119,7 +119,7 @@ export const MobileBottomDock = () => {
                       isActive ? 'scale-110' : ''
                     )}
                   />
-                  <span className="text-[10px] font-bold tracking-tight leading-none">{link.name}</span>
+                  <span className="text-[11px] font-bold tracking-tight leading-none">{link.name}</span>
                 </button>
               )
             })}

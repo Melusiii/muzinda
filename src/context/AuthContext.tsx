@@ -1,10 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-
-// Module-level guard to prevent multiple concurrent profile fetches across re-renders
-let profilePromise: Promise<void> | null = null;
-let currentProfileUserId: string | null = null;
 
 type Role = 'student' | 'landlord' | 'provider' | 'none';
 type VerificationStatus = 'unverified' | 'pending' | 'verified';
@@ -36,127 +32,79 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    // Synchronously check localStorage on initialization
     const saved = localStorage.getItem('muzinda_user');
     return saved ? JSON.parse(saved) : null;
   });
-  const [loading, setLoading] = useState(() => {
-    // If we have a cached user, we can start in a non-loading state (Stale-While-Revalidate)
-    return !localStorage.getItem('muzinda_user');
-  });
+  const [loading, setLoading] = useState(!localStorage.getItem('muzinda_user'));
 
-  const fetchProfile = async (sessionUser: SupabaseUser, retryCount = 0) => {
+  // Use refs for locks to ensure they are tied to the provider lifecycle, not the module
+  const profilePromiseRef = useRef<Promise<void> | null>(null);
+  const currentProfileUserIdRef = useRef<string | null>(null);
+
+  const fetchProfile = async (sessionUser: SupabaseUser) => {
     // If a fetch is already in flight for THIS user, wait for it
-    if (profilePromise && currentProfileUserId === sessionUser.id && retryCount === 0) {
-      console.log("AuthContext: Profile fetch in progress, returning existing promise.");
-      return profilePromise;
+    if (profilePromiseRef.current && currentProfileUserIdRef.current === sessionUser.id) {
+      return profilePromiseRef.current;
     }
 
-    // Defensive: If there's an existing bundle for a DIFFERENT user, kill it
-    if (profilePromise && currentProfileUserId !== sessionUser.id) {
-       console.warn("AuthContext: User mismatch during fetch, resetting singleton...");
-       profilePromise = null;
-    }
+    currentProfileUserIdRef.current = sessionUser.id;
 
-    currentProfileUserId = sessionUser.id;
-
-    const executeFetch = async (attempt: number): Promise<void> => {
+    profilePromiseRef.current = (async () => {
       try {
-        console.log(`AuthContext: Profile sync attempt ${attempt + 1} for ${sessionUser.email}`);
-        
-        // 30-second timeout guard per attempt
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Profile fetch timed out')), 30000)
-        );
+        let { data: profile, error: fetchError } = await supabase
+          .from('profiles')
+          .select('id, email, full_name, role, avatar_url, verification_status, phone, bio, gender')
+          .eq('id', sessionUser.id)
+          .maybeSingle();
 
-        const fetchOp = (async () => {
-          let { data: profile, error: fetchError } = await supabase
+        if (fetchError) throw fetchError;
+
+        // Auto-create profile if missing (common in local dev or quick-start flows)
+        if (!profile) {
+          console.warn(`AuthContext: Profile missing for ${sessionUser.email}, auto-creating...`);
+          const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .select('id, email, full_name, role, avatar_url, verification_status, phone, bio, gender')
-            .eq('id', sessionUser.id)
-            .maybeSingle();
-
-          if (fetchError) throw fetchError;
-
-          // ... (profile creation fallback logic)
-          if (!profile) {
-            console.warn(`AuthContext: Profile missing for ${sessionUser.email}, checking if in signup flow...`);
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            const { data: retryProfile } = await supabase
-              .from('profiles')
-              .select('id, email, full_name, role, avatar_url, verification_status, phone, bio, gender')
-              .eq('id', sessionUser.id)
-              .maybeSingle();
-              
-            if (retryProfile) {
-              profile = retryProfile;
-            } else {
-              const { data: newProfile, error: createError } = await supabase
-                .from('profiles')
-                .insert([{ 
-                    id: sessionUser.id, 
-                    email: sessionUser.email, 
-                    full_name: sessionUser.email?.split('@')[0] || 'User',
-                    role: 'student' 
-                }])
-                .select()
-                .single();
-              if (createError) throw createError;
-              profile = newProfile;
-            }
-          }
-
-          if (!profile) throw new Error('Failed to synchronize profile');
-          const profileData = profile;
-
-          let serviceCategory = undefined;
-          if (profileData.role === 'provider') {
-            const { data: service } = await supabase
-              .from('services')
-              .select('category')
-              .eq('provider_id', sessionUser.id)
-              .maybeSingle();
-            serviceCategory = service?.category;
-          }
-
-          const newUser: User = {
-            id: profileData.id,
-            email: profileData.email,
-            name: profileData.full_name,
-            role: profileData.role as Role,
-            avatar_url: profileData.avatar_url,
-            verificationStatus: (profileData.verification_status as VerificationStatus) || 'unverified',
-            gender: profileData.gender,
-            category: serviceCategory,
-            hasSecuredHousing: profileData.role === 'student' ? false : undefined,
-            phone: profileData.phone,
-            bio: profileData.bio,
-          };
-
-          setUser(newUser);
-          localStorage.setItem('muzinda_user', JSON.stringify(newUser));
-          console.log(`AuthContext: Profile sync success for ${sessionUser.email}`);
-        })();
-
-        await Promise.race([fetchOp, timeoutPromise]);
-      } catch (error: any) {
-        const isLockError = error.message?.includes('Lock') || error.name === 'NavigatorLockAcquireTimeoutError';
-        
-        if (isLockError && attempt < 2) {
-          console.warn(`AuthContext: Lock contention (attempt ${attempt + 1}), retrying in 1.5s...`);
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          return executeFetch(attempt + 1);
+            .insert([{ 
+                id: sessionUser.id, 
+                email: sessionUser.email, 
+                full_name: sessionUser.email?.split('@')[0] || 'User',
+                role: 'student' 
+            }])
+            .select()
+            .single();
+          if (createError) throw createError;
+          profile = newProfile;
         }
 
-        throw error;
-      }
-    };
+        let serviceCategory = undefined;
+        if (profile.role === 'provider') {
+          const { data: service } = await supabase
+            .from('services')
+            .select('category')
+            .eq('provider_id', sessionUser.id)
+            .maybeSingle();
+          serviceCategory = service?.category;
+        }
 
-    profilePromise = (async () => {
-      try {
-        await executeFetch(0);
+        const userData: User = {
+          id: profile.id,
+          email: profile.email,
+          name: profile.full_name,
+          role: profile.role as Role,
+          avatar_url: profile.avatar_url,
+          verificationStatus: (profile.verification_status as VerificationStatus) || 'unverified',
+          gender: profile.gender,
+          category: serviceCategory,
+          hasSecuredHousing: profile.role === 'student' ? false : undefined,
+          phone: profile.phone,
+          bio: profile.bio,
+        };
+
+        setUser(userData);
+        localStorage.setItem('muzinda_user', JSON.stringify(userData));
       } catch (error: any) {
-        console.warn(`AuthContext: Final profile sync failure for ${sessionUser.email}:`, error.message);
+        console.error("AuthContext: Profile sync failure:", error.message);
+        // Fallback user state so app remains usable
         if (!user) {
           setUser({
             id: sessionUser.id,
@@ -167,32 +115,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         }
       } finally {
-        profilePromise = null;
+        profilePromiseRef.current = null;
         setLoading(false);
       }
     })();
 
-    return profilePromise;
+    return profilePromiseRef.current;
   };
 
   useEffect(() => {
     let mounted = true;
 
-    // Optimization: Combines 'Initial check' and 'Subscription' to avoid common 'NavigatorLock' fight on mount.
-    // Relying on onAuthStateChange INITIAL_SESSION event which is bulletproof in Supabase v2.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+    // Use onAuthStateChange as the primary source of truth for sessions
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
       if (!mounted) return;
-      console.log(`AuthContext: Auth event fired - ${event}`);
       
       if (session?.user) {
-        // De-couple from sync lock by using a non-blocking trigger
         fetchProfile(session.user).catch(err => {
           console.error("AuthContext: Async profile fetch failed", err);
         });
       } else {
         if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-          profilePromise = null;
-          currentProfileUserId = null;
+          profilePromiseRef.current = null;
+          currentProfileUserIdRef.current = null;
           setUser(null);
           localStorage.removeItem('muzinda_user');
           setLoading(false);
@@ -200,33 +145,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    // Cross-tab Synchronization: Listen for logout events from other tabs
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'muzinda_user' && !e.newValue) {
-        console.log("AuthContext: Logout detected in another tab, clearing session...");
         setUser(null);
         setLoading(false);
       }
     };
     window.addEventListener('storage', handleStorageChange);
 
-    // Fail-safe: No matter what, stop loading after 15 seconds to prevent soft-locks
-    const safetyTimer = setTimeout(() => {
-      if (mounted) {
-        setLoading(false);
-      }
-    }, 15000);
-
     return () => {
       mounted = false;
-      clearTimeout(safetyTimer);
       subscription.unsubscribe();
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
   const login = async (email: string, password?: string) => {
-    // Start locally managed loading state
     setLoading(true);
     if (!password) password = "default_test_password_123!";
     
@@ -236,13 +170,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
         throw error;
       }
-      
-      // Explicitly await the profile recognition for the user.
       if (data.user) {
-        await Promise.race([
-          fetchProfile(data.user),
-          new Promise((_, reject) => setTimeout(() => reject(new Error("Profile synchronization timed out. Please try refreshing.")), 10000))
-        ]);
+        await fetchProfile(data.user);
       }
     } catch (err) {
       setLoading(false);
@@ -255,14 +184,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     
     try {
-      console.log("AuthContext: signup starting...");
       const { data, error: authError } = await supabase.auth.signUp({ email, password });
-      
       if (authError) throw authError;
       if (!data.user) throw new Error("No user returned from signup");
 
-      console.log("AuthContext: auth signup success, inserting profile...");
-      const { error: profileError } = await supabase.from('profiles').insert([{
+      // Use upsert to avoid race conditions with the onAuthStateChange observer
+      const { error: profileError } = await supabase.from('profiles').upsert([{
         id: data.user.id,
         email: email,
         full_name: userData?.name || email.split('@')[0],
@@ -270,10 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         gender: userData?.gender
       }]);
       
-      if (profileError) {
-        console.error("AuthContext: profile insert error", profileError);
-        throw profileError;
-      }
+      if (profileError) throw profileError;
 
       if (userData?.role === 'provider' && userData?.category) {
         await supabase.from('services').insert([{
@@ -283,8 +207,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           price: 0
         }]);
       }
-
-      console.log("AuthContext: signup logic complete");
     } catch (error: any) {
       console.error("AuthContext: signup error", error);
       throw error;
@@ -294,17 +216,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const logout = async (scope: 'local' | 'global' = 'local') => {
-    // Optimistic Logout: Clear UI immediately
     setUser(null);
     localStorage.removeItem('muzinda_user');
     setLoading(true);
     
     try {
-      // Supabase Global SignOut invalidates all active tokens for the user account
       await supabase.auth.signOut({ scope });
-      console.log(`AuthContext: Logout success (scope: ${scope})`);
     } catch (err) {
-      console.warn("AuthContext: signOut error (non-fatal for UI)", err);
+      console.warn("AuthContext: signOut error (non-fatal)", err);
     } finally {
       setLoading(false);
     }

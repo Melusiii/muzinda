@@ -45,6 +45,9 @@
     -webkit-touch-callout: none;
     user-select: none;
   }
+  .pb-safe {
+    padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+  }
 }
 
 

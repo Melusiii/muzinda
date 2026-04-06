@@ -75,7 +75,7 @@ export const Profile = () => {
              </div>
 
              <div className="space-y-2">
-                <h1 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase">{user.name}</h1>
+                <h1 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter uppercase">{user.name}</h1>
                 <div className="flex items-center justify-center gap-3">
                    <span className="px-4 py-1.5 bg-primary/5 text-primary rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/10">
                       Muzinda {user.role}

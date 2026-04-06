@@ -32,7 +32,7 @@ export const ApplyServiceModal = ({ isOpen, onClose, service, onSuccess }: Apply
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-primary-dark/60 backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-primary-dark/60 backdrop-blur-md">
           <motion.div 
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}

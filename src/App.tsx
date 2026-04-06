@@ -12,6 +12,7 @@ const StudentDashboard = lazy(() => import('./pages/StudentDashboard').then(m =>
 const StudentTransport = lazy(() => import('./pages/StudentTransport').then(m => ({ default: m.StudentTransport })))
 const LandlordDashboard = lazy(() => import('./pages/LandlordDashboard').then(m => ({ default: m.LandlordDashboard })))
 const ProviderDashboard = lazy(() => import('./pages/ProviderDashboard').then(m => ({ default: m.ProviderDashboard })))
+const HandymanDashboard = lazy(() => import('./pages/HandymanDashboard').then(m => ({ default: m.HandymanDashboard })))
 const Messages = lazy(() => import('./pages/Messages').then(m => ({ default: m.Messages })))
 const ProviderMarketplace = lazy(() => import('./pages/ProviderMarketplace').then(m => ({ default: m.ProviderMarketplace })))
 const PropertyAds = lazy(() => import('./pages/PropertyAds').then(m => ({ default: m.PropertyAds })))
@@ -23,6 +24,7 @@ const StudentFavorites = lazy(() => import('./pages/StudentFavorites').then(m =>
 const TransportDashboard = lazy(() => import('./pages/TransportDashboard').then(m => ({ default: m.TransportDashboard })))
 const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })))
 const AccountSettings = lazy(() => import('./pages/AccountSettings').then(m => ({ default: m.AccountSettings })))
+
 import { Navbar } from './components/Navbar'
 import { Sidebar } from './components/Sidebar'
 import { MobileBottomDock } from './components/MobileBottomDock'
@@ -94,7 +96,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/property/:id" element={<PropertyDetail />} />
 
-            {/* Gated Routes */}
+            {/* Student Gated Routes */}
             <Route 
               path="/explorer" 
               element={
@@ -135,27 +137,13 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            {/* Landlord Gated Routes */}
             <Route 
               path="/landlord" 
               element={
                 <ProtectedRoute allowedRoles={['landlord']}>
                   <LandlordDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/provider" 
-              element={
-                <ProtectedRoute allowedRoles={['provider']}>
-                  <ProviderDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/messages" 
-              element={
-                <ProtectedRoute allowedRoles={['student', 'landlord', 'provider']}>
-                  <Messages />
                 </ProtectedRoute>
               } 
             />
@@ -175,11 +163,21 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            {/* Provider Specialized Routes */}
             <Route 
-              path="/earnings" 
+              path="/provider" 
               element={
                 <ProtectedRoute allowedRoles={['provider']}>
-                  <Earnings />
+                  <ProviderDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/handyman" 
+              element={
+                <ProtectedRoute allowedRoles={['provider']}>
+                  <HandymanDashboard />
                 </ProtectedRoute>
               } 
             />
@@ -191,7 +189,24 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/earnings" 
+              element={
+                <ProtectedRoute allowedRoles={['provider']}>
+                  <Earnings />
+                </ProtectedRoute>
+              } 
+            />
 
+            {/* Shared Utility Routes */}
+            <Route 
+              path="/messages" 
+              element={
+                <ProtectedRoute allowedRoles={['student', 'landlord', 'provider']}>
+                  <Messages />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/profile" 
               element={
@@ -200,7 +215,6 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-
             <Route 
               path="/settings" 
               element={
@@ -210,8 +224,6 @@ function App() {
               } 
             />
 
-            {/* Fallback & Legacy Redirects */}
-            <Route path="/handyman" element={<Navigate to="/provider" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <Navbar />

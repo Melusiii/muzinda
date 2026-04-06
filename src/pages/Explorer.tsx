@@ -22,7 +22,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useSearchParams } from 'react-router-dom'
 import { cn } from '../utils/cn'
-import { useProperties, useFavorites } from '../hooks/useSupabase'
+import { useProperties, useFavorites } from '../hooks/supabase/useProperties'
 import { getImageUrl } from '../utils/supabase-helpers'
 import { PageHeader } from '../components/PageHeader'
 
@@ -80,10 +80,10 @@ export const Explorer = () => {
     const matchesType = selectedType === 'All' || p.type === selectedType
 
     // Amenities Logic
-    const matchesAmenities = selectedAmenities.every(a => p.amenities?.includes(a))
+    const matchesAmenities = (selectedAmenities || []).every(a => (p.amenities || []).includes(a))
 
     const matchesUniversity = selectedUniversity === 'All' || 
-                             p.nearby_university === selectedUniversity
+                             (p.nearby_university || '').toLowerCase() === (selectedUniversity || '').toLowerCase()
 
     return matchesSearch && matchesGender && matchesPrice && matchesType && matchesAmenities && matchesUniversity
   })
@@ -217,7 +217,7 @@ export const Explorer = () => {
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative pb-28 md:pb-8">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative pb-safe md:pb-8">
         <div className="max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Content (Left) */}
           <section className="lg:col-span-8 space-y-12">
@@ -237,7 +237,7 @@ export const Explorer = () => {
             </PageHeader>
 
             {/* Mobile filter trigger */}
-            <div className="lg:hidden sticky top-[72px] z-20 -mx-6 px-6 py-3 bg-surface-bright/90 backdrop-blur-md border-b border-primary/5 flex gap-3 mb-6 overflow-hidden">
+            <div className="lg:hidden sticky top-[96px] z-20 -mx-6 px-6 py-3 bg-surface-bright/90 backdrop-blur-md border-b border-primary/5 flex gap-3 mb-6 overflow-hidden">
               <button
                 onClick={() => setShowFilters(true)}
                 className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl border border-primary/5 shadow-sm font-black text-[10px] text-primary-dark/60 uppercase tracking-widest"
@@ -316,14 +316,14 @@ export const Explorer = () => {
                 <AnimatePresence mode="popLayout">
                   {filtered.map((prop, idx) => (
                     <motion.div
-                      key={prop.id}
+                      key={prop.id || `prop-${idx}`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.02, duration: 0.2 }}
                       className="group bg-white rounded-[2rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 text-left"
                     >
                        <Link to={`/property/${prop.id}`}>
-                        <div className="relative h-44 md:h-64 overflow-hidden">
+                        <div className="relative aspect-video overflow-hidden">
                           <img 
                             src={getImageUrl(prop.image_url)} 
                             alt={prop.title} 
@@ -344,21 +344,6 @@ export const Explorer = () => {
                                </div>
                             </div>
                           )}
-                          <div className="absolute top-4 right-4 z-10">
-                            <button 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                toggleFavorite(prop.id);
-                              }}
-                              className={cn(
-                                "w-10 h-10 rounded-full border border-white/20 backdrop-blur-md flex items-center justify-center transition-all duration-300",
-                                isFavorited(prop.id) ? "bg-red-500 text-white border-red-400" : "bg-white/20 text-white hover:bg-white/40"
-                              )}
-                            >
-                              <Heart size={18} className={isFavorited(prop.id) ? "fill-current" : ""} />
-                            </button>
-                          </div>
                           <div className="absolute top-4 left-4">
                             <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xl border border-white/20">
                               {prop.rating ? (
@@ -367,7 +352,7 @@ export const Explorer = () => {
                                   <span className="text-[11px] font-black text-primary-dark">{prop.rating}</span>
                                 </>
                               ) : (
-                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">New Oasis</span>
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">New House</span>
                               )}
                             </div>
                           </div>
@@ -380,14 +365,14 @@ export const Explorer = () => {
                         <div className="p-6 md:p-8">
                           <div className="flex justify-between items-start mb-3 gap-4">
                             <div className="min-w-0 flex-1">
-                              <h2 className="text-lg md:text-xl font-black text-primary-dark font-manrope tracking-tighter leading-tight truncate">{prop.title}</h2>
+                              <h2 className="text-lg md:text-xl font-black text-primary-dark font-manrope tracking-tighter leading-tight truncate">{prop.title || prop.name || 'Untitled House'}</h2>
                               <p className="text-[11px] text-primary-dark/40 font-bold uppercase tracking-widest flex items-center gap-1.5 leading-none mt-2">
-                                <MapPin size={10} className="text-primary" /> {prop.location}
+                                <MapPin size={10} className="text-primary" strokeWidth={3} /> {prop.location || 'Mutare, ZW'}
                               </p>
                             </div>
                             <div className="shrink-0 pt-1 text-right">
                               <span className="text-primary-dark font-black text-lg md:text-xl tracking-tighter font-manrope italic">${prop.price}</span>
-                              <p className="text-[9px] text-primary-dark/30 font-bold uppercase tracking-[0.2em] leading-none">USD</p>
+                              <p className="text-[11px] text-primary-dark/30 font-bold uppercase tracking-[0.2em] leading-none">USD</p>
                             </div>
                           </div>
                           
@@ -396,16 +381,41 @@ export const Explorer = () => {
                                {prop.amenities?.slice(0, 2).map((aId: string) => {
                                   const amenity = AMENITY_LIST.find(al => al.id === aId);
                                   if (!amenity) return null;
+                                  const Icon = amenity.icon;
                                   return (
                                     <div key={aId} className="flex items-center gap-2 text-primary-dark/30">
-                                      <amenity.icon size={13} />
-                                      <span className="text-[11px] font-bold uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded-md">{amenity.label.split(' ')[0]}</span>
+                                      <Icon size={12} />
+                                      <span className="text-[10px] font-bold uppercase tracking-widest leading-none">{amenity.label.split(' ')[0]}</span>
                                     </div>
-                                  )
+                                  );
                                 })}
                             </div>
-                            <div className="hidden md:flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px] group-hover:gap-4 transition-all">
-                              View <ArrowRight size={16} />
+                            <div className="flex items-center gap-3">
+                              <button 
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  toggleFavorite(prop.id);
+                                }}
+                                className={cn(
+                                  "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all group/like",
+                                  isFavorited(prop.id) 
+                                    ? "bg-red-50 text-white shadow-lg shadow-red-500/20" 
+                                    : "bg-primary/5 text-primary hover:bg-primary/10"
+                                )}
+                              >
+                                 <Heart 
+                                  size={13} 
+                                  className={cn(
+                                    "transition-transform",
+                                    isFavorited(prop.id) ? "fill-current scale-110" : "group-hover/like:scale-125"
+                                  )} 
+                                 />
+                                 <span className="text-[10px] font-black tracking-widest">{prop.likes_count || 0}</span>
+                              </button>
+                              <div className="hidden md:flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px] group-hover:gap-4 transition-all">
+                                View <ArrowRight size={16} />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -485,4 +495,3 @@ export const Explorer = () => {
 }
 
 export default Explorer
-

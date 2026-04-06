@@ -29,6 +29,7 @@ import {
   changePassword, 
   globalLogout
 } from '../hooks/useSupabase'
+import type { Profile } from '../hooks/useSupabase'
 
 export const AccountSettings = () => {
   const { user, logout } = useAuth()
@@ -123,13 +124,24 @@ export const AccountSettings = () => {
   }
 
   const toggleNotification = async (key: string) => {
-    if (!profile) return
+    if (!profile) return;
+    
+    const currentSettings = profile.notification_settings || {
+      push: true,
+      email: true,
+      messages: true,
+      updates: true
+    };
+    
     const newSettings = { 
-      ...profile.notification_settings, 
-      [key]: !((profile.notification_settings as any)[key]) 
-    }
+      ...currentSettings, 
+      [key]: !((currentSettings as any)[key]) 
+    };
+
     try {
-      await updateProfile({ notification_settings: newSettings })
+      await updateProfile({ 
+        notification_settings: newSettings as Profile['notification_settings'] 
+      })
     } catch (err) {
       showFeedback('error', 'Toggle sync failed')
     }

@@ -36,9 +36,9 @@ export const LoadingScreen = () => {
             <motion.h2 
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="text-xl font-manrope font-black tracking-tighter text-primary-dark uppercase italic"
+              className="text-xl font-manrope font-black tracking-tighter text-primary-dark uppercase"
             >
-              Stabilizing Experience
+              Preparing your House...
             </motion.h2>
             <div className="flex gap-1 justify-center">
               {[0, 1, 2].map((i) => (

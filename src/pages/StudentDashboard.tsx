@@ -1,10 +1,29 @@
+import React, { useState } from 'react'
 import { Sidebar } from '../components/Sidebar'
-import { Bus, ArrowRight, Star, Sparkles, MapPin, Building, Clock, Zap, Users, CreditCard, Check, ShieldCheck, Wrench } from 'lucide-react'
+import { 
+  Bus, 
+  ArrowRight, 
+  Star, 
+  Sparkles, 
+  MapPin, 
+  Building, 
+  Clock, 
+  Zap, 
+  Users, 
+  CreditCard, 
+  Check, 
+  ShieldCheck, 
+  Wrench, 
+  X, 
+  AlertCircle,
+  Heart
+} from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
-import { useUserApplications, useUserTickets, useProperties } from '../hooks/useSupabase'
+import { useUserApplications, useUserTickets, useProperties, useFavorites } from '../hooks/useSupabase'
+import { useMaintenance, submitMaintenanceRequest, useStudentResidency } from '../hooks/supabase/useMaintenance'
 import { getImageUrl } from '../utils/supabase-helpers'
 import { PageHeader } from '../components/PageHeader'
 
@@ -12,10 +31,14 @@ export const StudentDashboard = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { properties, loading: loadingProps } = useProperties()
+  const { residency } = useStudentResidency()
+  const { favorites } = useFavorites()
   const { applications: apps } = useUserApplications()
   const { tickets } = useUserTickets()
+  const { tickets: maintTickets } = useMaintenance()
+  const [isMaintModalOpen, setIsMaintModalOpen] = useState(false)
   
-  const hasSecuredHousing = user?.hasSecuredHousing || false
+  const hasSecuredHousing = !!residency
   const featuredProperties = properties?.slice(0, 4) || []
 
   const containerVariants = {
@@ -38,9 +61,9 @@ export const StudentDashboard = () => {
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-28 md:pb-0 pt-28 md:pt-28">
+      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-safe md:pb-8 pt-28 md:pt-28">
         <PageHeader 
-          title={hasSecuredHousing ? `Your Oasis, ${user?.name?.split(' ')[0] || 'Resident'}` : "Student Home"}
+          title={hasSecuredHousing ? `Your House, ${(user?.name || 'Resident').split(' ')[0]}` : "Student Home"}
           subtitle="Muzinda Concierge • Your Independent Housing Partner"
         />
 
@@ -51,7 +74,7 @@ export const StudentDashboard = () => {
           className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8"
         >
           {hasSecuredHousing ? (
-            /* RESIDENT VIEW (OASIS) */
+            /* RESIDENT VIEW (HOUSE) */
             <>
               {/* PRIMARY ROW */}
               <motion.section variants={itemVariants} className="lg:col-span-8 space-y-6 md:space-y-8">
@@ -95,13 +118,18 @@ export const StudentDashboard = () => {
 
                 {/* Home Manager Bento */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
-                  <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                  <div 
+                    onClick={() => setIsMaintModalOpen(true)}
+                    className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden cursor-pointer active:scale-[0.98]"
+                  >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-accent-amber/5 rounded-full -mr-16 -mt-16 blur-3xl" />
                     <div className="w-14 h-14 rounded-2xl bg-accent-amber/10 flex items-center justify-center mb-6 text-accent-amber shadow-inner">
                       <Wrench size={24} />
                     </div>
-                    <h3 className="text-xl md:text-2xl font-manrope font-black text-primary-dark tracking-tight">Maintenance Hub</h3>
-                    <p className="text-[10px] text-primary-dark/40 font-bold uppercase mt-2 tracking-widest leading-none">0 Active Requests</p>
+                    <h3 className="text-xl md:text-2xl font-manrope font-black text-primary-dark tracking-tight">Maintenance <span className="italic text-primary">Hub</span></h3>
+                    <p className="text-[10px] text-primary-dark/40 font-bold uppercase mt-2 tracking-widest leading-none">
+                      {(maintTickets || []).filter(t => t.status !== 'resolved').length} Active Requests
+                    </p>
                   </div>
 
                     <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
@@ -114,26 +142,48 @@ export const StudentDashboard = () => {
                     </div>
                   </div>
 
-                {/* NEW: Campus Status Bulletin to fill space */}
-                <div className="mt-8 bg-primary/5 p-8 rounded-[3rem] border border-primary/10 relative overflow-hidden group">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary"><ShieldCheck size={18} /></div>
-                    <div>
-                      <h4 className="text-sm font-black text-primary-dark uppercase tracking-tight">Institutional Alert</h4>
-                      <p className="text-[9px] text-primary-dark/40 font-bold uppercase tracking-widest">Network Status: Nominal</p>
+                {/* Saved Houses Horizontal Carousel */}
+                {(favorites || []).length > 0 && (
+                  <div className="space-y-6 pt-4">
+                    <div className="flex justify-between items-end px-2">
+                       <div>
+                          <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Curated</p>
+                          <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tight">Saved <span className="italic text-primary text-3xl font-serif">Houses</span></h3>
+                       </div>
+                       <Link to="/explorer" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">View All</Link>
+                    </div>
+                    <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
+                       {favorites.map((fav: any) => (
+                         <Link 
+                          key={fav.id} 
+                          to={`/property/${fav.property_id}`}
+                          className="min-w-[280px] bg-white p-4 rounded-[2.5rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group"
+                         >
+                            <div className="relative aspect-video rounded-3xl overflow-hidden mb-4">
+                               <img src={getImageUrl(fav.property?.image_url)} alt={fav.property?.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                               <div className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full shadow-lg">
+                                 <Heart size={12} className="fill-current" />
+                               </div>
+                            </div>
+                            <h4 className="text-sm font-black text-primary-dark tracking-tight px-2 truncate">{fav.property?.title}</h4>
+                            <div className="flex justify-between items-center px-2 mt-2">
+                               <p className="text-[10px] font-bold text-primary-dark/30 uppercase tracking-widest flex items-center gap-1">
+                                 <MapPin size={10} /> {fav.property?.location?.split(',')[0]}
+                               </p>
+                               <span className="text-[11px] font-black text-primary">${fav.property?.price}</span>
+                            </div>
+                         </Link>
+                       ))}
                     </div>
                   </div>
-                  <p className="text-[11px] text-primary-dark/60 font-medium leading-relaxed italic">
-                    All institutional housing facilities are currently operating at 100% capacity. No maintenance outages reported for your zone.
-                  </p>
-                </div>
+                )}
               </motion.section>
 
               {/* ASIDE ROW */}
               <motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6 md:space-y-8">
                 <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm space-y-8">
                    <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-manrope font-black text-primary-dark tracking-tight">Quick Services</h3>
+                    <h3 className="text-xl font-manrope font-black text-primary-dark tracking-tight">Quick <span className="italic text-primary">Services</span></h3>
                     <div className="w-10 h-1 bg-primary/10 rounded-full" />
                    </div>
                    <div className="grid grid-cols-1 gap-4">
@@ -141,14 +191,14 @@ export const StudentDashboard = () => {
                        <div className="w-12 h-12 bg-white rounded-xl shadow-md text-primary flex items-center justify-center group-hover:scale-110 transition-transform"><Bus size={20} /></div>
                        <div>
                           <p className="text-sm font-black text-primary-dark tracking-tight">Book Shuttle</p>
-                          <p className="text-[9px] text-primary-dark/40 font-bold uppercase mt-0.5">To Campus • 07:15</p>
+                          <p className="text-[11px] text-primary-dark/40 font-bold uppercase mt-0.5">To Campus • 07:15</p>
                        </div>
                     </button>
                     <button className="flex items-center gap-5 p-5 bg-[#F8F9F8] rounded-[2rem] hover:bg-accent-gold/5 transition-all text-left border border-transparent hover:border-accent-gold/10 group">
                        <div className="w-12 h-12 bg-white rounded-xl shadow-md text-accent-gold flex items-center justify-center group-hover:scale-110 transition-transform"><Sparkles size={20} /></div>
                        <div>
                           <p className="text-sm font-black text-primary-dark tracking-tight">Concierge</p>
-                          <p className="text-[9px] text-primary-dark/40 font-bold uppercase mt-0.5">Help Desk • Online</p>
+                          <p className="text-[11px] text-primary-dark/40 font-bold uppercase mt-0.5">Help Desk • Online</p>
                        </div>
                     </button>
                    </div>
@@ -156,7 +206,7 @@ export const StudentDashboard = () => {
 
                 {/* Active Tickets Peek */}
                 <AnimatePresence>
-                  {tickets.length > 0 && (
+                  {(tickets || []).length > 0 && (
                     <motion.div 
                       layout
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -168,15 +218,15 @@ export const StudentDashboard = () => {
                            <h4 className="text-md font-manrope font-black text-primary-dark tracking-tight flex items-center gap-2">
                               <Bus size={18} className="text-primary" /> Active Trips
                            </h4>
-                           <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-full text-[9px] font-black uppercase">{tickets.length}</span>
+                           <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-black uppercase">{(tickets || []).length}</span>
                         </div>
                         <div className="space-y-4">
-                           {tickets.map((ticket: any) => (
-                             <div key={ticket.id} className="relative p-5 bg-[#F8F9F8] rounded-[2rem] border border-primary/5">
-                                <p className="text-xs font-black text-primary-dark tracking-tight mb-2 truncate pr-6">{ticket.trips?.routes?.name}</p>
-                                <div className="flex justify-between items-center text-[8px] font-black text-primary-dark/30 uppercase tracking-widest">
-                                   <div className="flex items-center gap-1"><Clock size={10} /> {ticket.trips?.departure_time}</div>
-                                   <div className="flex items-center gap-1"><MapPin size={10} /> {ticket.pickup_point}</div>
+                           {(tickets || []).map((ticket: any) => (
+                             <div key={ticket.id || Math.random()} className="relative p-5 bg-[#F8F9F8] rounded-[2rem] border border-primary/5">
+                                <p className="text-xs font-black text-primary-dark tracking-tight mb-2 truncate pr-6">{ticket.trips?.routes?.name || 'Scheduled Service'}</p>
+                                <div className="flex justify-between items-center text-[11px] font-black text-primary-dark/30 uppercase tracking-widest">
+                                   <div className="flex items-center gap-1"><Clock size={10} /> {ticket.trips?.departure_time || 'TBD'}</div>
+                                   <div className="flex items-center gap-1"><MapPin size={10} /> {ticket.pickup_point || 'Pickup point'}</div>
                                 </div>
                              </div>
                            ))}
@@ -196,8 +246,8 @@ export const StudentDashboard = () => {
                   
                   <div className="flex justify-between items-end mb-8 md:mb-10 relative z-10">
                     <div className="space-y-1">
-                       <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">House Explorer</p>
-                       <h3 className="text-3xl md:text-4xl font-manrope font-black text-primary-dark tracking-tighter italic leading-none">Featured Stays</h3>
+                       <p className="text-[11px] font-black text-primary uppercase tracking-[0.3em]">House Explorer</p>
+                       <h3 className="text-3xl md:text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-none">Featured <span className="italic text-primary">Stays</span></h3>
                     </div>
                     <Link to="/explorer" className="flex items-center gap-2 text-[10px] font-black text-primary-dark/40 hover:text-primary transition-all uppercase tracking-[0.2em]">
                       Explore <ArrowRight size={14} />
@@ -220,7 +270,7 @@ export const StudentDashboard = () => {
                           onClick={() => navigate(`/property/${prop.id}`)}
                           className="group/prop cursor-pointer space-y-4"
                         >
-                           <div className="relative aspect-[16/10] rounded-[2rem] overflow-hidden shadow-sm">
+                           <div className="relative aspect-video rounded-[2rem] overflow-hidden shadow-sm">
                              <img 
                                src={getImageUrl(prop.image_url)} 
                                alt={prop.title} 
@@ -231,7 +281,7 @@ export const StudentDashboard = () => {
                              />
                              <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-1.5 border border-white/20">
                                <Star size={10} className="text-accent-gold fill-accent-gold" />
-                               <span className="text-[9px] font-black text-primary-dark uppercase tracking-tighter">{prop.rating || '4.8'}</span>
+                               <span className="text-[11px] font-black text-primary-dark uppercase tracking-tighter">{prop.rating || '4.8'}</span>
                              </div>
                              <div className="absolute bottom-3 right-3 bg-primary-dark/80 backdrop-blur-lg px-3 py-1.5 rounded-xl border border-white/10">
                                <span className="text-[10px] font-black text-white italic">${prop.price}</span>
@@ -239,13 +289,47 @@ export const StudentDashboard = () => {
                            </div>
                            <div className="px-1">
                              <h4 className="text-md font-black text-primary-dark tracking-tight leading-none truncate">{prop.name || prop.title}</h4>
-                             <p className="text-[9px] font-bold text-primary-dark/30 uppercase mt-1.5 tracking-widest">{prop.location}</p>
+                             <p className="text-[11px] font-bold text-primary-dark/30 uppercase mt-1.5 tracking-widest">{prop.location}</p>
                            </div>
                         </motion.div>
                       ))}
                     </div>
                   )}
                 </div>
+
+                {/* Saved Houses Section for Applicants */}
+                {favorites.length > 0 && (
+                  <div className="space-y-6 pt-4">
+                    <div className="flex justify-between items-end px-2">
+                       <div>
+                          <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Personal Collection</p>
+                          <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tight">Saved <span className="italic text-primary text-3xl font-serif">Houses</span></h3>
+                       </div>
+                       <Link to="/explorer" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">See Hearted</Link>
+                    </div>
+                    <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4">
+                       {favorites.map((fav: any) => (
+                         <Link 
+                          key={fav.id} 
+                          to={`/property/${fav.property_id}`}
+                          className="min-w-[280px] bg-white p-4 rounded-[2.5rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group"
+                         >
+                            <div className="relative aspect-video rounded-3xl overflow-hidden mb-4">
+                               <img src={getImageUrl(fav.property?.image_url)} alt={fav.property?.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                               <div className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full shadow-lg">
+                                 <Heart size={12} className="fill-current" />
+                               </div>
+                            </div>
+                            <h4 className="text-sm font-black text-primary-dark tracking-tight px-2 truncate">{fav.property?.title}</h4>
+                            <div className="flex justify-between items-center px-2 mt-2 text-[10px] font-bold uppercase tracking-widest">
+                               <span className="text-primary-dark/30">{fav.property?.location?.split(',')[0]}</span>
+                               <span className="text-primary font-black">${fav.property?.price}</span>
+                            </div>
+                         </Link>
+                       ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Service Tiles Row (Responsive Grid) */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-8 pt-2">
@@ -267,19 +351,6 @@ export const StudentDashboard = () => {
                   ))}
                 </div>
 
-                {/* NEW: Institutional Bulletin for Applicants */}
-                <div className="bg-[#4F7C2C]/5 p-8 rounded-[3.5rem] border border-[#4F7C2C]/10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                   <div className="flex-1 space-y-4 text-center md:text-left">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F7C2C]/10 text-[#4F7C2C] text-[8px] font-black uppercase tracking-widest">Institutional Bulletin</div>
-                      <h4 className="text-xl font-manrope font-black text-primary-dark tracking-tight leading-tight italic">Secure your oasis before the seasonal transition.</h4>
-                      <p className="text-xs text-primary-dark/50 font-medium leading-relaxed max-w-lg">
-                        94% of verified properties near Main Campus are now under active negotiation. Complete your profile to gain priority status.
-                      </p>
-                   </div>
-                   <div className="flex gap-4">
-                      <div className="w-16 h-16 rounded-2xl bg-white shadow-xl flex items-center justify-center text-primary-dark border border-primary/5 hover:scale-110 transition-transform cursor-pointer"><Zap size={24} /></div>
-                   </div>
-                </div>
               </motion.section>
 
               {/* SIDEBAR ASIDE: RESIDENT PATH (MOBILE OPTIMIZED) */}
@@ -290,8 +361,8 @@ export const StudentDashboard = () => {
                     <div className="relative z-10">
                        <div className="flex justify-between items-start mb-8 md:mb-10">
                           <div className="space-y-1">
-                             <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em]">Lifecycle</p>
-                             <h3 className="text-xl md:text-2xl font-manrope font-black text-white tracking-tighter italic uppercase">My Journey</h3>
+                             <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">Lifecycle</p>
+                             <h3 className="text-xl md:text-2xl font-manrope font-black text-white tracking-tighter uppercase">My Journey</h3>
                           </div>
                           <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/5"><Zap size={20} className="text-accent-gold" /></div>
                        </div>
@@ -299,7 +370,7 @@ export const StudentDashboard = () => {
                        <div className="space-y-8 md:space-y-10">
                            {[
                              { step: 'Preferences', status: apps.length > 0 ? 'complete' : 'active', icon: MapPin },
-                             { step: 'Secure Oasis', status: 'lock', icon: Building }
+                             { step: 'Secure House', status: 'lock', icon: Building }
                            ].map((item, idx) => (
                             <div key={idx} className="flex gap-4 md:gap-6 items-center">
                                <div className="relative flex flex-col items-center">
@@ -317,7 +388,7 @@ export const StudentDashboard = () => {
                                     "text-sm font-black tracking-tight leading-none uppercase",
                                     item.status === 'lock' ? "text-white/20" : "text-white"
                                   )}>{item.step}</p>
-                                  <p className="text-[8px] font-bold text-white/30 uppercase mt-1.5 tracking-widest">In Progress</p>
+                                  <p className="text-[11px] font-bold text-white/30 uppercase mt-1.5 tracking-widest">In Progress</p>
                                </div>
                             </div>
                           ))}
@@ -329,13 +400,13 @@ export const StudentDashboard = () => {
                     </button>
                  </div>
 
-                 {/* Social Proof Stats (Hidden on smallest mobile if needed, or simplified) */}
+                 {/* Social Proof Stats */}
                  <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
                     <div className="flex items-center gap-4">
                        <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary shadow-inner"><Users size={20} /></div>
                        <div>
                           <p className="text-[10px] font-black text-primary-dark leading-none uppercase tracking-widest">Active Community</p>
-                          <p className="text-[8px] font-black text-primary-dark/20 uppercase mt-1.5 tracking-widest font-dm-sans">5K+ Verified AU Students</p>
+                          <p className="text-[11px] font-black text-primary-dark/20 uppercase mt-1.5 tracking-widest font-dm-sans">5K+ Verified AU Students</p>
                        </div>
                     </div>
                     <div className="flex -space-x-3 pt-1">
@@ -344,15 +415,205 @@ export const StudentDashboard = () => {
                            <img src={`https://i.pravatar.cc/150?u=${i+10}`} alt="user" className="w-full h-full object-cover grayscale opacity-50" />
                         </div>
                       ))}
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-4 border-white bg-primary text-white flex items-center justify-center text-[8px] font-black shadow-lg">+14</div>
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-4 border-white bg-primary text-white flex items-center justify-center text-[11px] font-black shadow-lg">+14</div>
                     </div>
                  </div>
               </motion.aside>
             </>
           )}
         </motion.div>
+
+        {/* Maintenance Request Overlay */}
+        <AnimatePresence>
+          {isMaintModalOpen && (
+            <MaintenanceModal 
+              onClose={() => setIsMaintModalOpen(false)} 
+              tickets={maintTickets}
+            />
+          )}
+        </AnimatePresence>
       </main>
     </div>
+  )
+}
+
+// PREMIUM MAINTENANCE MODAL COMPONENT
+const MaintenanceModal = ({ onClose, tickets }: { onClose: () => void, tickets: any[] }) => {
+  const [step, setStep] = useState<'list' | 'create'>('list')
+  const [formData, setFormData] = useState<{ category: string, priority: 'low' | 'medium' | 'high' | 'emergency', description: string }>({ 
+    category: 'plumbing', 
+    priority: 'medium', 
+    description: '' 
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const { applications } = useUserApplications()
+  
+  // Get active property for the current resident
+  const activePropertyId = applications.find(a => a.status === 'secured')?.property_id
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!activePropertyId) return
+    setSubmitting(true)
+    try {
+      await submitMaintenanceRequest(activePropertyId, formData)
+      setStep('list')
+    } catch (err) {
+      alert("Failed to submit request")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+    >
+      <div className="absolute inset-0 bg-primary-dark/40 backdrop-blur-sm" onClick={onClose} />
+      
+      <motion.div 
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        className="glass w-full max-w-2xl bg-white/95 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]"
+      >
+        {/* Header */}
+        <div className="p-8 md:p-10 flex justify-between items-center border-b border-primary/5">
+          <div>
+            <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Maintenance <span className="text-primary italic">Hub</span></h3>
+            <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.4em] mt-1">Status Tracking • Request Repairs</p>
+          </div>
+          <button onClick={onClose} className="p-3 bg-primary/5 text-primary-dark/40 hover:text-primary transition-all rounded-2xl"><X size={20} /></button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-8 md:p-10">
+          {step === 'list' ? (
+            <div className="space-y-8">
+              <div className="flex justify-between items-center">
+                 <h4 className="text-md font-black text-primary-dark uppercase tracking-wide">Active Tickets</h4>
+                 <button 
+                  onClick={() => setStep('create')}
+                  className="px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                 >
+                   New Request
+                 </button>
+              </div>
+
+              <div className="space-y-4">
+                {tickets.length === 0 ? (
+                  <div className="p-12 text-center space-y-4 bg-primary/5 rounded-[2rem] border border-dashed border-primary/20">
+                     <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center text-primary/20 mx-auto"><Wrench size={24} /></div>
+                     <p className="text-[10px] font-black text-primary-dark/30 uppercase tracking-[0.3em]">No active maintenance issues</p>
+                  </div>
+                ) : (
+                  tickets.map((t) => (
+                    <div key={t.id} className="p-6 bg-white rounded-[2rem] border border-primary/5 shadow-sm group hover:shadow-md transition-all">
+                       <div className="flex justify-between items-start mb-4">
+                          <div className="flex items-center gap-3">
+                             <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary capitalize font-black text-[10px]">{t.category[0]}</div>
+                             <div>
+                                <p className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{t.category}</p>
+                                <p className="text-[9px] font-bold text-primary-dark/30 uppercase tracking-widest">{new Date(t.created_at).toLocaleDateString()}</p>
+                             </div>
+                          </div>
+                          <div className={cn(
+                            "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border",
+                            t.status === 'resolved' ? "bg-green-50 text-green-600 border-green-100" :
+                            t.status === 'in_progress' ? "bg-primary/5 text-primary border-primary/10" :
+                            "bg-accent-amber/5 text-accent-amber border-accent-amber/10"
+                          )}>
+                            {t.status}
+                          </div>
+                       </div>
+                       <p className="text-xs text-primary-dark/60 line-clamp-2 italic leading-relaxed">{t.description}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-8">
+               <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-primary-dark uppercase tracking-[0.3em] ml-2">Category</label>
+                    <div className="grid grid-cols-2 gap-4">
+                       {['plumbing', 'electrical', 'security', 'fittings'].map(cat => (
+                         <button 
+                          key={cat}
+                          type="button"
+                          onClick={() => setFormData({...formData, category: cat})}
+                          className={cn(
+                            "p-5 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all text-center",
+                            formData.category === cat ? "bg-primary text-white border-primary shadow-xl shadow-primary/20" : "bg-white border-primary/10 text-primary-dark/40 hover:border-primary/20"
+                          )}
+                         >
+                           {cat}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-primary-dark uppercase tracking-[0.3em] ml-2">Priority</label>
+                    <div className="flex gap-4">
+                       {['low', 'medium', 'high', 'emergency'].map(prio => (
+                         <button 
+                          key={prio}
+                          type="button"
+                          onClick={() => setFormData({...formData, priority: prio as any})}
+                          className={cn(
+                            "flex-1 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all text-center",
+                            formData.priority === prio ? "bg-primary-dark text-white border-primary-dark" : "bg-white border-primary/10 text-primary-dark/40"
+                          )}
+                         >
+                           {prio}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-primary-dark uppercase tracking-[0.3em] ml-2">Description</label>
+                    <textarea 
+                      placeholder="Describe the issue in detail..."
+                      required
+                      value={formData.description}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      className="w-full h-32 p-6 glass bg-white/50 rounded-[2rem] border border-primary/10 outline-none focus:border-primary/30 transition-all text-sm font-medium italic"
+                    />
+                  </div>
+               </div>
+
+               <div className="flex gap-4 pt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setStep('list')}
+                    className="flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-primary/10 text-primary-dark/40 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-[2] py-5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  >
+                    {submitting ? 'Submitting...' : 'Identify Issue'} <Zap size={14} />
+                  </button>
+               </div>
+
+               {!activePropertyId && (
+                 <div className="p-4 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-3 text-red-500">
+                    <AlertCircle size={18} />
+                    <span className="text-[10px] font-black uppercase tracking-tight">No active lease found to attach request.</span>
+                 </div>
+               )}
+            </form>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

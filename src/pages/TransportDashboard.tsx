@@ -20,8 +20,8 @@ export const TransportDashboard = () => {
     } catch (err: any) { alert(err.message) }
   }
 
-  const pendingApps = applications.filter(a => a.status === 'pending')
-  const approvedCustomers = applications.filter(a => a.status === 'approved')
+  const pendingApps = (applications || []).filter(a => a.status === 'pending')
+  const approvedCustomers = (applications || []).filter(a => a.status === 'approved')
   
   const totalCapacity = service?.capacity || 14
   const seatsTaken = approvedCustomers.length
@@ -52,7 +52,7 @@ export const TransportDashboard = () => {
                  <div className="flex justify-between items-start mb-10">
                    <div>
                      <h2 className="text-[10px] font-black text-accent-gold uppercase tracking-[0.3em] mb-3">Service Profile</h2>
-                     <h3 className="text-4xl font-manrope font-black tracking-tighter italic">
+                     <h3 className="text-4xl font-manrope font-black tracking-tighter">
                        {service?.name || "Your Car Service"}
                      </h3>
                    </div>
@@ -93,7 +93,7 @@ export const TransportDashboard = () => {
             {/* CAPACITY OVERVIEW */}
             <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
               <div className="flex items-center justify-between mb-10">
-                <h3 className="text-2xl font-manrope font-extrabold text-primary-dark italic tracking-tight">Vehicle Availability</h3>
+                <h3 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tight">Vehicle Availability</h3>
                 <div className="flex items-center gap-2 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">
                   <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">{seatsAvailable} Seats Left</span>
                 </div>
@@ -194,7 +194,7 @@ export const TransportDashboard = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-xs font-bold text-primary-dark">{app.student?.full_name}</p>
-                        <p className="text-[8px] text-primary-dark/30 font-black uppercase tracking-tighter">Residing: {app.student_residing_at}</p>
+                        <p className="text-[11px] text-primary-dark/30 font-black uppercase tracking-tighter">Residing: {app.student_residing_at}</p>
                       </div>
                       <button 
                         onClick={() => navigate('/messages')}
