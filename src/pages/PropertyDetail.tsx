@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { useProperty, submitApplication, useFavorites, useUserApplications, type Application } from '../hooks/useSupabase'
+import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -33,6 +34,7 @@ export const PropertyDetail = () => {
   const { property, loading, error } = useProperty(id)
   const { applications, loading: appsLoading } = useUserApplications()
   const { toggleFavorite, isFavorited } = useFavorites()
+  const { isAuthenticated, user } = useAuth()
   
   const existingApp = applications.find((a: Application) => a.property_id === id)
   
@@ -41,6 +43,17 @@ export const PropertyDetail = () => {
   const [applying, setApplying] = useState(false)
   const [applied, setApplied] = useState(false)
   const navigate = useNavigate()
+
+  const canApply = isAuthenticated && user?.role === 'student'
+
+  const handleApplyClick = () => {
+    if (!isAuthenticated) {
+      navigate('/auth', { state: { from: { pathname: `/property/${id}` } } })
+      return
+    }
+    if (user?.role !== 'student') return
+    setShowApplyModal(true)
+  }
 
   if (loading) {
     return (
@@ -262,15 +275,15 @@ export const PropertyDetail = () => {
                                 You'll be notified of any changes.
                              </p>
                              <Link 
-                               to="/dashboard" 
-                               className="block w-full text-center py-4 bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all font-manrope shadow-inner"
+                                to="/dashboard" 
+                                className="block w-full text-center py-4 bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all font-manrope shadow-inner"
                              >
-                               Track in Portal
+                                Track in Portal
                              </Link>
                           </div>
                        ) : (
                           <button 
-                            onClick={() => setShowApplyModal(true)}
+                            onClick={handleApplyClick}
                             className="w-full bg-white text-primary-dark py-6 rounded-3xl font-manrope font-black text-xl shadow-2xl shadow-black/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-4 group/btn"
                           >
                             Apply Now
@@ -315,15 +328,23 @@ export const PropertyDetail = () => {
               <CheckCircle2 size={20} />
               Application Active • View Status
             </Link>
-         ) : (
+         ) : !isAuthenticated ? (
+            <button
+              onClick={handleApplyClick}
+              className="w-full bg-[#1E3011] text-white py-5 rounded-2xl font-black text-md shadow-2xl shadow-primary/20 flex items-center justify-center gap-3"
+            >
+              Sign in to Apply
+              <ArrowRight size={20} />
+            </button>
+         ) : canApply ? (
             <button 
-              onClick={() => setShowApplyModal(true)}
+              onClick={handleApplyClick}
               className="w-full bg-primary text-white py-5 rounded-2xl font-black text-md shadow-2xl shadow-primary/20 flex items-center justify-center gap-3"
             >
               Apply for Housing • ${property.price}/mo
               <ArrowRight size={20} />
             </button>
-         )}
+         ) : null}
       </div>
 
       {/* Application Modal (Same as before but with consistent styling) */}
@@ -406,4 +427,3 @@ export const PropertyDetail = () => {
 }
 
 export default PropertyDetail
-

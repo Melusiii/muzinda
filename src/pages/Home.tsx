@@ -5,11 +5,20 @@ import { BentoServices } from '../components/BentoServices'
 import { Neighborhoods } from '../components/Neighborhoods'
 import { StudentFavorites } from '../components/StudentFavorites'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export const Home = () => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user, loading } = useAuth()
+
+  // Redirect authenticated users to their dashboard immediately
+  if (!loading && isAuthenticated && user) {
+    if (user.role === 'student') return <Navigate to="/dashboard" replace />
+    if (user.role === 'landlord') return <Navigate to="/landlord" replace />
+    if (user.role === 'provider') {
+      return <Navigate to={user.category === 'transport' ? '/transport-hub' : '/provider'} replace />
+    }
+  }
 
   return (
     <Layout>

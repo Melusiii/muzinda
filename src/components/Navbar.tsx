@@ -71,19 +71,25 @@ export const Navbar = () => {
 
   return (
     <nav className={cn(
-      "fixed top-0 w-full z-50 transition-all duration-500 px-6 py-4 md:py-6",
-      isAuthenticated && "md:hidden",
+      "fixed top-0 w-full z-50 transition-all duration-500 py-4 md:py-6",
+      isAuthenticated && "md:left-64 md:w-[calc(100%-16rem)]",
       isScrolled 
         ? "bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-b border-primary/5 py-3 md:py-4" 
         : "bg-white/40 backdrop-blur-md border-b border-white/10"
     )}>
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link to={user?.role === 'student' ? '/dashboard' : (user?.role === 'landlord' ? '/landlord' : (user?.role === 'provider' ? '/provider' : '/'))}>
+      <div className={cn(
+        "flex w-full items-center transition-all px-4 sm:px-6",
+        isAuthenticated ? "justify-between md:justify-end md:px-12" : "max-w-7xl mx-auto justify-between"
+      )}>
+        <Link 
+          to={user?.role === 'student' ? '/dashboard' : (user?.role === 'landlord' ? '/landlord' : (user?.role === 'provider' ? '/provider' : '/'))}
+          className={cn(isAuthenticated && "md:hidden transition-all")}
+        >
           <Logo />
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop Nav links — hidden when authenticated since Sidebar covers it */}
+        <div className={cn("hidden items-center gap-8", !isAuthenticated && "md:flex")}>
           {navLinks.map((link) => (
             link.action === 'settings' ? (
               <button
@@ -116,16 +122,16 @@ export const Navbar = () => {
                  </div>
                  <button 
                   onClick={() => setIsNotificationsOpen(true)}
-                  className="p-2 text-primary-dark/40 hover:text-primary relative transition-colors"
+                  className="h-11 w-11 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center relative shadow-sm active:scale-95 transition-all text-primary-dark/40 hover:text-primary"
                  >
                    <Bell size={20} />
                    {unreadCount > 0 && (
-                     <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full border border-white" />
+                     <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-white" />
                    )}
                  </button>
                  <button 
                    onClick={() => { logout(); navigate('/'); }}
-                   className="p-3 bg-accent-amber/5 text-accent-amber rounded-xl hover:bg-accent-amber/10 transition-all"
+                   className="p-3 bg-accent-amber/5 text-accent-amber rounded-xl hover:bg-accent-amber/10 transition-all font-bold"
                    title="Logout"
                  >
                    <LogOut size={20} />
@@ -135,7 +141,7 @@ export const Navbar = () => {
               <div className="md:hidden flex items-center gap-3">
                   <button 
                    onClick={() => setIsNotificationsOpen(true)}
-                   className="h-10 w-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center relative shadow-sm active:scale-95 transition-all"
+                   className="h-11 w-11 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center relative shadow-sm active:scale-95 transition-all"
                   >
                     <Bell size={20} className="text-primary" />
                     {unreadCount > 0 && (
@@ -158,3 +164,5 @@ export const Navbar = () => {
     </nav>
   )
 }
+
+export default Navbar

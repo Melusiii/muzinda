@@ -21,25 +21,32 @@
     --bg-surface: #F4F8F5;
   }
   body {
-    @apply bg-surface-bright text-[#191C1C] font-dm-sans;
+    @apply bg-surface-bright text-[#191C1C] font-dm-sans overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/40 backdrop-blur-md border border-white/40;
+    @apply bg-white/40 backdrop-blur-[12px] border border-white/40;
   }
   .glass-dark {
-    @apply bg-black/40 backdrop-blur-md border border-white/10;
+    @apply bg-black/40 backdrop-blur-[16px] border border-white/10;
+  }
+  .no-scrollbar, .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar, .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .touch-callout-none {
+    -webkit-touch-callout: none;
+    user-select: none;
   }
 }
 
-/* Global Mobile Navigation Padding */
-@media (max-width: 767px) {
-  main, .flex-1, .min-h-screen {
-    padding-bottom: 0 !important;
-  }
-}
 
 /* Obsidian Glass Effects */
 .glass {

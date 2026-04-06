@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import { Sidebar } from '../components/Sidebar'
-import { Navbar } from '../components/Navbar'
 import { useAuth } from '../context/AuthContext'
 import { 
   User, 
@@ -43,10 +42,9 @@ export const Profile = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
-      <Navbar />
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative z-10 pb-32">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative z-10 pb-32">
         {/* Header Section */}
         <PageHeader 
           title="Digital Identity" 

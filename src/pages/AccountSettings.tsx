@@ -21,7 +21,6 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '../utils/cn'
 import { PageHeader } from '../components/PageHeader'
-import { Navbar } from '../components/Navbar'
 import { Sidebar } from '../components/Sidebar'
 import { 
   useProfile, 
@@ -146,10 +145,9 @@ export const AccountSettings = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-x-hidden">
-      <Navbar />
       <Sidebar />
 
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-32 pt-28 md:pt-8">
+      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-32 pt-28 md:pt-28">
         <div className="max-w-4xl space-y-10">
           
           {/* Top Bar with Back Button */}
@@ -191,7 +189,7 @@ export const AccountSettings = () => {
             
             {/* Sidebar Navigation (Desktop) / Horizontal Scroll (Mobile) */}
             <div className="lg:col-span-1 space-y-2">
-              <div className="flex lg:flex-col gap-2 overflow-x-auto pb-4 lg:pb-0 scrollbar-hide">
+              <div className="flex lg:flex-col gap-2 overflow-x-auto pb-4 lg:pb-0 no-scrollbar">
                 {sections.map((section) => (
                   <button
                     key={section.id}
@@ -228,7 +226,7 @@ export const AccountSettings = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
-                  <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-10">
+                  <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-10">
                     <div className="flex flex-col md:flex-row items-center gap-8">
                       <div className="relative group">
                         <div className="w-24 h-24 rounded-[2.2rem] bg-primary/5 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl relative text-primary">
@@ -312,7 +310,7 @@ export const AccountSettings = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
-                  <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
+                  <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
                     <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Access Protocol</h3>
                     
                     <div className="space-y-4">
@@ -361,7 +359,7 @@ export const AccountSettings = () => {
                     </div>
                   </div>
 
-                  <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
+                  <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
                       <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Session Terminal</h3>
                       <span className="px-3 py-1 bg-primary/10 text-primary text-[8px] font-black uppercase rounded-full tracking-widest">1 Active</span>
@@ -397,7 +395,7 @@ export const AccountSettings = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
-                  <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-8">
+                  <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-8">
                      <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Communications Protocol</h3>
                      
                       <div className="space-y-6">
@@ -441,7 +439,7 @@ export const AccountSettings = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
-                  <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-8">
+                  <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-8">
                      <div className="flex justify-between items-center">
                         <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Treasury Control</h3>
                         <button className="text-[9px] font-black text-primary uppercase tracking-widest">View History</button>
@@ -480,7 +478,7 @@ export const AccountSettings = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
-                   <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-10">
+                   <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-10">
                      <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Global Directives</h3>
                      
                      <div className="space-y-8">

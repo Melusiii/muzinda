@@ -228,66 +228,112 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
              </div>
           </div>
           
-          <div className="overflow-x-auto px-2 pb-6">
-            <table className="w-full text-left border-separate border-spacing-y-4">
-              <thead>
-                <tr className="text-[9px] font-black text-primary-dark/30 uppercase tracking-[0.3em]">
-                  <th className="px-8 pb-4">ID</th>
-                  <th className="px-8 pb-4">Date</th>
-                  <th className="px-8 pb-4">Student</th>
-                  <th className="px-8 pb-4">Amount</th>
-                  <th className="px-8 pb-4 text-center">Status</th>
-                  <th className="px-8 pb-4 text-right">Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.recent_transactions.map((tx, idx) => (
-                  <motion.tr 
-                    key={tx.id} 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (idx * 0.05) }}
-                    className="group"
-                  >
-                    <td className="px-8 py-8 glass bg-white/60 border-l border-t border-b border-white rounded-l-[2rem] first:rounded-l-[2.5rem] text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">#{tx.id.slice(0, 6)}</td>
-                    <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white text-[10px] font-black text-primary-dark/60 uppercase tracking-tighter italic">{tx.date}</td>
-                    <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-[10px] font-black border border-primary/10 shadow-inner group-hover:scale-110 transition-transform">
-                          {tx.student_name.charAt(0)}
+          <div className="px-2 pb-6">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-separate border-spacing-y-4">
+                <thead>
+                  <tr className="text-[9px] font-black text-primary-dark/30 uppercase tracking-[0.3em]">
+                    <th className="px-8 pb-4">ID</th>
+                    <th className="px-8 pb-4">Date</th>
+                    <th className="px-8 pb-4">Student</th>
+                    <th className="px-8 pb-4">Amount</th>
+                    <th className="px-8 pb-4 text-center">Status</th>
+                    <th className="px-8 pb-4 text-right">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recent_transactions.map((tx, idx) => (
+                    <motion.tr 
+                      key={tx.id} 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (idx * 0.05) }}
+                      className="group"
+                    >
+                      <td className="px-8 py-8 glass bg-white/60 border-l border-t border-b border-white rounded-l-[2rem] first:rounded-l-[2.5rem] text-[10px] font-black text-primary-dark/40 uppercase tracking-widest">#{tx.id.slice(0, 6)}</td>
+                      <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white text-[10px] font-black text-primary-dark/60 uppercase tracking-tighter italic">{tx.date}</td>
+                      <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-[10px] font-black border border-primary/10 shadow-inner group-hover:scale-110 transition-transform">
+                            {tx.student_name.charAt(0)}
+                          </div>
+                          <div className="flex flex-col">
+                             <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{tx.student_name}</span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                           <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{tx.student_name}</span>
+                      </td>
+                      <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white">
+                        <span className="text-xl font-black text-primary-dark font-manrope italic leading-none group-hover:text-primary transition-colors">${tx.amount.toLocaleString()}</span>
+                      </td>
+                      <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white text-center">
+                        <div className={cn(
+                          "inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-xl border transition-all duration-700",
+                          tx.status === 'paid' ? "bg-primary/5 text-primary border-primary/20 shadow-primary/5" :
+                          tx.status === 'pending' ? "bg-accent-amber/5 text-accent-amber border-accent-amber/20 shadow-accent-amber/5" :
+                          "bg-red-50 text-red-500 border-red-100 shadow-red-500/5"
+                        )}>
+                          <div className={cn("w-2 h-2 rounded-full shadow-lg", 
+                            tx.status === 'paid' ? "bg-primary shadow-primary/80" : 
+                            tx.status === 'pending' ? "bg-accent-amber shadow-accent-amber/80 animate-pulse" : 
+                            "bg-red-500 shadow-red-500/80"
+                          )} />
+                          {tx.status}
                         </div>
+                      </td>
+                      <td className="px-8 py-8 glass bg-white/60 border-r border-t border-b border-white rounded-r-[2rem] last:rounded-r-[2.5rem] text-right">
+                        <button className="p-4 bg-primary/5 text-primary rounded-xl hover:bg-primary-dark hover:text-white transition-all shadow-lg border border-primary/10">
+                          <ArrowUpRight size={18}/>
+                        </button>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card Stack */}
+            <div className="md:hidden space-y-6">
+               {data.recent_transactions.map((tx, idx) => (
+                <motion.div 
+                  key={tx.id} 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="glass p-6 rounded-[2rem] border border-white bg-white/60 space-y-6 shadow-xl"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-[10px] font-black border border-primary/10 shadow-inner">
+                        {tx.student_name.charAt(0)}
                       </div>
-                    </td>
-                    <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white">
-                      <span className="text-xl font-black text-primary-dark font-manrope italic leading-none group-hover:text-primary transition-colors">${tx.amount.toLocaleString()}</span>
-                    </td>
-                    <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white text-center">
-                      <div className={cn(
-                        "inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-xl border transition-all duration-700",
-                        tx.status === 'paid' ? "bg-primary/5 text-primary border-primary/20 shadow-primary/5" :
-                        tx.status === 'pending' ? "bg-accent-amber/5 text-accent-amber border-accent-amber/20 shadow-accent-amber/5" :
-                        "bg-red-50 text-red-500 border-red-100 shadow-red-500/5"
+                      <div className="flex flex-col">
+                         <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{tx.student_name}</span>
+                         <span className="text-[8px] font-black text-primary-dark/30 uppercase tracking-widest">{tx.date}</span>
+                      </div>
+                    </div>
+                    <div className={cn(
+                        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border transition-all",
+                        tx.status === 'paid' ? "bg-primary/5 text-primary border-primary/20" :
+                        tx.status === 'pending' ? "bg-accent-amber/5 text-accent-amber border-accent-amber/20" :
+                        "bg-red-50 text-red-500 border-red-100"
                       )}>
-                        <div className={cn("w-2 h-2 rounded-full shadow-lg", 
-                          tx.status === 'paid' ? "bg-primary shadow-primary/80" : 
-                          tx.status === 'pending' ? "bg-accent-amber shadow-accent-amber/80 animate-pulse" : 
-                          "bg-red-500 shadow-red-500/80"
-                        )} />
+                        <div className={cn("w-1.5 h-1.5 rounded-full", tx.status === 'paid' ? "bg-primary" : tx.status === 'pending' ? "bg-accent-amber animate-pulse" : "bg-red-500")} />
                         {tx.status}
-                      </div>
-                    </td>
-                    <td className="px-8 py-8 glass bg-white/60 border-r border-t border-b border-white rounded-r-[2rem] last:rounded-r-[2.5rem] text-right">
-                      <button className="p-4 bg-primary/5 text-primary rounded-xl hover:bg-primary-dark hover:text-white transition-all shadow-lg border border-primary/10">
-                        <ArrowUpRight size={18}/>
-                      </button>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-end border-t border-primary/5 pt-4">
+                    <div className="flex flex-col">
+                      <span className="text-[8px] font-black text-primary-dark/20 uppercase tracking-[0.3em] mb-1">Total Amount</span>
+                      <span className="text-2xl font-black text-primary-dark font-manrope italic">${tx.amount.toLocaleString()}</span>
+                    </div>
+                    <button className="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                       <ArrowUpRight size={18}/>
+                    </button>
+                  </div>
+                </motion.div>
+               ))}
+            </div>
           </div>
         </div>
       </div>

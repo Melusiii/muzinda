@@ -35,7 +35,7 @@ export const ProviderDashboard = () => {
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
 
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative z-10">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative z-10">
         {/* HEADER */}
         <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-6">
@@ -100,7 +100,7 @@ export const ProviderDashboard = () => {
                   </div>
                </div>
                
-               <div className="bg-white p-8 rounded-[3.5rem] border border-primary/5 shadow-sm flex flex-col justify-between">
+               <div className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm flex flex-col justify-between transition-all hover:shadow-xl group">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary"><Users size={24} /></div>
                     <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Active</span>
@@ -111,7 +111,7 @@ export const ProviderDashboard = () => {
                   </div>
                </div>
 
-               <div className="bg-white p-8 rounded-[3.5rem] border border-primary/5 shadow-sm flex flex-col justify-between">
+               <div className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm flex flex-col justify-between transition-all hover:shadow-xl group">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-accent-gold/5 rounded-2xl flex items-center justify-center text-accent-gold"><Clock size={24} /></div>
                     <span className="text-[10px] font-black text-accent-gold/40 uppercase tracking-widest">Incoming</span>
@@ -122,7 +122,7 @@ export const ProviderDashboard = () => {
                   </div>
                </div>
 
-               <div className="bg-white p-8 rounded-[3.5rem] border border-primary/5 shadow-sm flex flex-col justify-between">
+               <div className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm flex flex-col justify-between transition-all hover:shadow-xl group">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary"><Bus size={24} /></div>
                     <div className="flex h-2 w-2 relative">
@@ -158,7 +158,7 @@ export const ProviderDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white p-8 rounded-[3.5rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group"
+                            className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group"
                           >
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                                <div className="flex gap-6 items-center">
@@ -241,7 +241,7 @@ export const ProviderDashboard = () => {
 
             {/* SIDEBAR INTEL */}
             <aside className="lg:col-span-4 space-y-12">
-               <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-sm space-y-8">
+               <div className="bg-white p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] border border-primary/5 shadow-sm space-y-8">
                   <div className="flex items-center gap-4">
                      <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary"><CreditCard size={24} /></div>
                      <h4 className="text-xl font-manrope font-black text-primary-dark uppercase italic">Billing Status</h4>

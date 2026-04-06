@@ -89,6 +89,8 @@ export interface Property {
   name?: string
   status?: string
   gender_preference?: 'Boys Only' | 'Girls Only' | 'Mixed' | string
+  nearby_university?: string
+  walk_minutes_to_campus?: number
 }
 
 export interface Application {
@@ -274,7 +276,7 @@ export const submitApplication = async (propertyId: string, message: string) => 
 
   if (error) {
     if (error.code === '23505') {
-      throw new Error("You have already applied for this property. One handshake is enough!");
+      throw new Error("You have already applied for this property. One application is enough!");
     }
     throw error;
   }

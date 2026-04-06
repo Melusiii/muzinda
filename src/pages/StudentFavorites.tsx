@@ -10,7 +10,7 @@ export const StudentFavorites = () => {
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative pb-32">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative pb-32">
         <header className="mb-12">
           <h1 className="text-5xl font-black tracking-tighter text-primary-dark font-manrope leading-none mb-4">
             Saved Properties

@@ -3,6 +3,7 @@ import { X, User, ChevronLeft, Shield, LogOut } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { cn } from '../utils/cn'
 import { supabase } from '../lib/supabase'
+import { createPortal } from 'react-dom'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -14,9 +15,9 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
 
   if (!isOpen || !user) return null
 
-  return (
+  const modalContent = (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center md:justify-end">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center md:justify-end overflow-hidden">
         {/* Responsive Backdrop */}
         <motion.div 
           initial={{ opacity: 0 }}
@@ -34,7 +35,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
           className={cn(
             "relative bg-white shadow-2xl flex flex-col overflow-hidden",
             "h-[92vh] mt-auto w-full rounded-t-[3rem]",
-            "md:h-full md:mt-0 md:max-w-md md:rounded-none"
+            "md:h-screen md:mt-0 md:max-w-md md:rounded-none"
           )}
         >
           {/* Mobile Handle */}
@@ -252,4 +253,6 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
       </div>
     </AnimatePresence>
   )
+
+  return createPortal(modalContent, document.body)
 }

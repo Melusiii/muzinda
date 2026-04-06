@@ -22,6 +22,7 @@ import {
   X
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSearchParams } from 'react-router-dom'
 import { cn } from '../utils/cn'
 import { 
   useLandlordStats, 
@@ -39,10 +40,30 @@ const PROPERTY_TYPES = ['Single', 'Shared', 'Apartment', 'Hostel']
 const GENDER_PREFERENCES = ['Boys Only', 'Girls Only', 'Mixed']
 
 export const LandlordDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview')
+  
   const { stats, loading: statsLoading, refetch: refetchStats } = useLandlordStats()
   const { finance, loading: financeLoading, refetch: refetchFinance } = useLandlordFinance()
   const { applications, loading: appsLoading, refetch: refetchApps } = useLandlordApplications()
+  
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab)
+    } else if (!tab && activeTab !== 'overview') {
+      setActiveTab('overview')
+    }
+  }, [searchParams, activeTab])
+
+  const handleTabChange = (tab: string) => {
+    if (tab === 'overview') {
+      setSearchParams({})
+    } else {
+      setSearchParams({ tab })
+    }
+    setActiveTab(tab)
+  }
   
   const [showAddFlow, setShowAddFlow] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -196,7 +217,7 @@ export const LandlordDashboard = () => {
         />
       </div>
       
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-24 md:pt-8 min-h-screen relative z-10">
+      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-24 md:pt-28 pb-32 md:pb-8 min-h-screen relative z-10">
         {(statsLoading && activeTab === 'overview') || (appsLoading && activeTab === 'applications') ? (
           <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" size={40} /></div>
         ) : (
@@ -218,12 +239,12 @@ export const LandlordDashboard = () => {
                 </p>
               </div>
 
-              <div className="flex flex-wrap lg:flex-nowrap items-center gap-4 w-full lg:w-auto">
+              <div className="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto">
                 <nav className="hidden md:flex p-1.5 bg-white/40 backdrop-blur-2xl rounded-2xl border border-white shadow-xl w-full lg:w-auto">
                   {['overview', 'applications', 'finance'].map((tab) => (
                     <button
                       key={tab}
-                      onClick={() => setActiveTab(tab)}
+                      onClick={() => handleTabChange(tab)}
                       className={cn(
                         "flex-1 md:flex-none px-3 md:px-6 py-2.5 md:py-3 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-wider md:tracking-widest transition-all",
                         activeTab === tab ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-primary-dark/40 hover:text-primary"
@@ -233,12 +254,31 @@ export const LandlordDashboard = () => {
                     </button>
                   ))}
                 </nav>
+
+                {/* Mobile Navigation */}
+                <nav className="flex md:hidden w-full overflow-x-auto no-scrollbar gap-2 pb-2">
+                   {['overview', 'applications', 'finance'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => handleTabChange(tab)}
+                      className={cn(
+                        "whitespace-nowrap px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border shrink-0",
+                        activeTab === tab 
+                          ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
+                          : "bg-white/60 text-primary-dark/40 border-white hover:text-primary"
+                      )}
+                    >
+                      {tab === 'overview' ? 'Summary' : tab === 'applications' ? 'Applicants' : 'Earnings'}
+                    </button>
+                  ))}
+                </nav>
+
                 <button 
                   onClick={() => setShowAddFlow(true)}
-                  className="bg-primary text-white p-4 rounded-2xl flex items-center gap-3 shadow-2xl shadow-primary/30 border border-white/20 hover:scale-105 active:scale-95 transition-all group"
+                  className="bg-primary text-white p-4 rounded-2xl flex items-center justify-center gap-3 shadow-2xl shadow-primary/30 border border-white/20 hover:scale-105 active:scale-95 transition-all group w-full md:w-auto"
                 >
                   <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-                  <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">List My House</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">List My House</span>
                 </button>
               </div>
             </header>
@@ -372,7 +412,7 @@ export const LandlordDashboard = () => {
                         <div className="space-y-6 relative px-2">
                            <h4 className="text-[9px] font-black text-primary uppercase tracking-[0.6em]">Live Today</h4>
                            {[
-                             { icon: Check, title: 'Handshake Secured', time: '2h ago', desc: 'Blessing M. confirmed payment for Fern Valley Heights.', color: 'text-primary' },
+                             { icon: Check, title: 'Application Secured', time: '2h ago', desc: 'Blessing M. confirmed payment for Fern Valley Heights.', color: 'text-primary' },
                              { icon: AlertCircle, title: 'Inquiry Logged', time: '5h ago', desc: 'Message from Takunda in Unit 4B about water pressure.', color: 'text-accent-amber' },
                              { icon: Plus, title: 'Listed New House', time: 'Yesterday', desc: 'Mutare Heights added to your portfolio.', color: 'text-blue-500' }
                            ].map((activity, idx) => (
@@ -517,8 +557,8 @@ export const LandlordDashboard = () => {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 overflow-y-auto bg-[#F4F8F5]/95 backdrop-blur-xl"
           >
-            <div className="w-full max-w-6xl bg-white rounded-[3rem] shadow-2xl border border-white overflow-hidden flex flex-col max-h-[90vh]">
-               <header className="p-8 border-b border-primary/5 flex justify-between items-center bg-white sticky top-0 z-20">
+            <div className="w-full max-w-6xl bg-white md:rounded-[3rem] shadow-2xl border border-white overflow-hidden flex flex-col h-full md:max-h-[90vh]">
+               <header className="p-6 md:p-8 border-b border-primary/5 flex justify-between items-center bg-white sticky top-0 z-20">
                   <div className="space-y-1">
                      <h2 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">List My House</h2>
                      <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.5em]">Create a premium property profile</p>
@@ -528,7 +568,7 @@ export const LandlordDashboard = () => {
                   </button>
                </header>
 
-               <form onSubmit={handleAddProperty} className="flex-1 overflow-y-auto p-8 md:p-12 space-y-16">
+               <form onSubmit={handleAddProperty} className="flex-1 overflow-y-auto p-6 md:p-12 space-y-10 md:space-y-16">
                   {/* Image Section */}
                   <div className="space-y-8">
                      <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.6em] border-l-2 border-primary pl-4">Cover Photo</h4>
@@ -669,13 +709,13 @@ export const LandlordDashboard = () => {
                   <div className="h-24" /> {/* Spacer */}
                </form>
 
-               <footer className="p-8 border-t border-primary/5 bg-white flex justify-end items-center sticky bottom-0 z-20">
-                  <div className="flex gap-4">
-                     <button type="button" onClick={() => setShowAddFlow(false)} className="px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary-dark/40 hover:bg-primary/5 transition-all">Cancel</button>
+               <footer className="p-6 md:p-8 border-t border-primary/5 bg-white flex flex-col md:flex-row justify-end items-center sticky bottom-0 z-20 gap-4">
+                  <div className="flex gap-4 w-full md:w-auto">
+                     <button type="button" onClick={() => setShowAddFlow(false)} className="flex-1 md:flex-none px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary-dark/40 hover:bg-primary/5 transition-all">Cancel</button>
                      <button 
                        type="submit" 
                        disabled={isSubmitting}
-                       className="px-12 py-5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/40 flex items-center gap-3 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                       className="flex-1 md:flex-none px-12 py-5 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/40 flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
                      >
                         {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <><Check size={18} /> List My House</>}
                      </button>

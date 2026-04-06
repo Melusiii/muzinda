@@ -10,7 +10,7 @@ export const Earnings = () => {
 
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <main className="flex-1 md:ml-64 p-6 md:p-8 pt-28 md:pt-8 min-h-screen relative z-10 space-y-12">
+      <main className="flex-1 md:ml-64 p-6 md:p-8 pt-28 md:pt-28 min-h-screen relative z-10 space-y-12">
          <header className="flex justify-between items-center bg-white p-8 rounded-[3rem] border border-primary/5 shadow-sm">
             <div>
                <h1 className="text-4xl font-extrabold tracking-tighter text-primary-dark font-manrope">Earnings Hub</h1>

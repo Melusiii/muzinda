@@ -4,6 +4,7 @@ import { useNotifications } from '../hooks/useSupabase'
 import type { Notification } from '../hooks/useSupabase'
 import { cn } from '../utils/cn'
 import { formatDistanceToNow } from 'date-fns'
+import { createPortal } from 'react-dom'
 
 interface NotificationsModalProps {
   isOpen: boolean
@@ -28,10 +29,10 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
     }
   }
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center md:justify-end">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center md:justify-end overflow-hidden">
           {/* Responsive Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -50,7 +51,7 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
             className={cn(
               "relative bg-white shadow-2xl flex flex-col overflow-hidden",
               "h-[92vh] mt-auto w-full rounded-t-[3rem]",
-              "md:h-full md:mt-0 md:max-w-md md:rounded-none"
+              "md:h-screen md:mt-0 md:max-w-md md:rounded-none"
             )}
           >
             {/* Mobile Handle */}
@@ -182,4 +183,6 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
       )}
     </AnimatePresence>
   )
+
+  return createPortal(modalContent, document.body)
 }

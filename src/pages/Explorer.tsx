@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Sidebar } from '../components/Sidebar'
-import { Navbar } from '../components/Navbar'
 import { 
   Wifi, 
   Zap, 
@@ -17,7 +16,8 @@ import {
   Shield,
   Coffee,
   Wind,
-  CheckCircle2
+  CheckCircle2,
+  Lock
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -45,6 +45,17 @@ export const Explorer = () => {
   const [selectedType, setSelectedType] = useState('All')
   const [priceRange, setPriceRange] = useState(1200)
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
+  const [showFilters, setShowFilters] = useState(false)
+  const [selectedUniversity, setSelectedUniversity] = useState('All')
+
+  const UNIVERSITIES = [
+    { id: 'All', label: 'All areas' },
+    { id: 'UZ', label: 'Near UZ' },
+    { id: 'MSU', label: 'Near MSU' },
+    { id: 'NUST', label: 'Near NUST' },
+    { id: 'CUT', label: 'Near CUT' },
+    { id: 'HIT', label: 'Near HIT' },
+  ]
 
   useEffect(() => {
     const q = searchParams.get('q')
@@ -71,7 +82,10 @@ export const Explorer = () => {
     // Amenities Logic
     const matchesAmenities = selectedAmenities.every(a => p.amenities?.includes(a))
 
-    return matchesSearch && matchesGender && matchesPrice && matchesType && matchesAmenities
+    const matchesUniversity = selectedUniversity === 'All' || 
+                             p.nearby_university === selectedUniversity
+
+    return matchesSearch && matchesGender && matchesPrice && matchesType && matchesAmenities && matchesUniversity
   })
 
   const propertyTypes = [
@@ -88,17 +102,127 @@ export const Explorer = () => {
     )
   }
 
+  const filterPanelContent = (
+    <>
+      {/* Search */}
+      <div className="space-y-4">
+        <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Search</h3>
+        <div className="relative">
+          <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-primary-dark/20" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Neighbourhood or house..."
+            className="w-full pl-14 pr-5 py-4 bg-surface-bright rounded-[1rem] border border-primary/5 outline-none text-sm font-dm-sans focus:border-primary/20 transition-all font-bold"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-5 top-1/2 -translate-y-1/2 text-primary-dark/20">
+              <X size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Near campus */}
+      <div className="space-y-4">
+        <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Near campus</h3>
+        <div className="flex flex-wrap gap-2">
+          {UNIVERSITIES.map((uni) => (
+            <button
+              key={uni.id}
+              onClick={() => setSelectedUniversity(uni.id)}
+              className={cn(
+                "px-4 py-2 rounded-xl text-xs font-bold border transition-all",
+                selectedUniversity === uni.id
+                  ? "bg-primary text-white border-primary"
+                  : "bg-surface-bright text-primary-dark/50 border-primary/5 hover:border-primary/20"
+              )}
+            >
+              {uni.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Living Preference */}
+      <div className="space-y-4">
+        <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Living Preference</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {['All', 'Girls Only', 'Boys Only', 'Mixed'].map((gender) => (
+            <button
+              key={gender}
+              onClick={() => setSelectedGender(gender)}
+              className={cn(
+                "px-4 py-3 rounded-xl text-sm font-bold border transition-all text-left",
+                selectedGender === gender
+                  ? "bg-primary text-white border-primary"
+                  : "bg-surface-bright text-primary-dark/50 border-primary/5 shadow-sm"
+              )}
+            >
+              {gender}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Budget */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-end">
+          <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Budget Limit</h3>
+          <div className="text-right">
+             <span className="text-primary font-black text-xl font-manrope">${priceRange}</span>
+             <p className="text-[10px] text-primary-dark/30 font-bold">All prices in USD.</p>
+          </div>
+        </div>
+        <input
+          type="range"
+          min="50"
+          max="1200"
+          step="10"
+          value={priceRange}
+          onChange={(e) => setPriceRange(Number(e.target.value))}
+          className="w-full h-2 bg-surface-bright rounded-lg appearance-none cursor-pointer accent-primary"
+        />
+        <div className="flex justify-between text-[10px] text-primary-dark/30 font-black uppercase tracking-widest">
+          <span>$50</span><span>$1200+</span>
+        </div>
+      </div>
+
+      {/* Amenities */}
+      <div className="space-y-4">
+        <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Key Amenities</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {AMENITY_LIST.map(amenity => (
+            <button
+              key={amenity.id}
+              onClick={() => toggleAmenity(amenity.id)}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl border text-xs font-bold transition-all",
+                selectedAmenities.includes(amenity.id)
+                  ? "bg-primary text-white border-primary"
+                  : "bg-surface-bright border-primary/5 text-primary-dark/40"
+              )}
+            >
+              <amenity.icon size={14} />
+              {amenity.label.split(' ')[0]}
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <Navbar />
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-8 md:p-8 min-h-screen relative">
+      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative pb-28 md:pb-8">
         <div className="max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Content (Left) */}
           <section className="lg:col-span-8 space-y-12">
             <PageHeader 
-              title="Find your Spot" 
+              title="Search for Houses" 
               subtitle={`${filtered.length} verified results across Mutare`}
             >
               <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-2xl border border-primary/5 shadow-sm self-start md:self-auto">
@@ -112,8 +236,40 @@ export const Explorer = () => {
               </div>
             </PageHeader>
 
-            {/* Quick Type Selection */}
-            <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+            {/* Mobile filter trigger */}
+            <div className="lg:hidden sticky top-[72px] z-20 -mx-6 px-6 py-3 bg-surface-bright/90 backdrop-blur-md border-b border-primary/5 flex gap-3 mb-6 overflow-hidden">
+              <button
+                onClick={() => setShowFilters(true)}
+                className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl border border-primary/5 shadow-sm font-black text-[10px] text-primary-dark/60 uppercase tracking-widest"
+              >
+                <Filter size={14} className="text-primary" />
+                Filters
+                {(selectedAmenities.length > 0 || selectedGender !== 'All' || selectedType !== 'All' || selectedUniversity !== 'All') && (
+                  <span className="w-5 h-5 bg-primary text-white rounded-full text-[10px] flex items-center justify-center font-black">
+                    {selectedAmenities.length + (selectedGender !== 'All' ? 1 : 0) + (selectedType !== 'All' ? 1 : 0) + (selectedUniversity !== 'All' ? 1 : 0)}
+                  </span>
+                )}
+              </button>
+              <div className="flex gap-2 overflow-x-auto no-scrollbar flex-1">
+                {propertyTypes.map((type) => (
+                  <button
+                    key={type.label}
+                    onClick={() => setSelectedType(type.label)}
+                    className={cn(
+                      "px-4 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest whitespace-nowrap border transition-all flex-shrink-0",
+                      selectedType === type.label
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white text-primary-dark/40 border-primary/5"
+                    )}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop Quick Type Selection (hidden on mobile) */}
+            <div className="hidden lg:flex gap-3 overflow-x-auto pb-4 no-scrollbar">
                {propertyTypes.map((type) => (
                  <button
                   key={type.label}
@@ -132,10 +288,16 @@ export const Explorer = () => {
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
               {loading ? (
                 [1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-[4/5] bg-white border border-primary/5 animate-pulse rounded-[2rem]" />
+                  <div key={i} className="flex flex-col gap-4">
+                    <div className="h-44 md:h-64 bg-white border border-primary/5 animate-pulse rounded-[2rem]" />
+                    <div className="space-y-3 px-4">
+                      <div className="h-4 w-3/4 bg-white border border-primary/5 animate-pulse rounded-lg" />
+                      <div className="h-3 w-1/2 bg-white border border-primary/5 animate-pulse rounded-lg" />
+                    </div>
+                  </div>
                 ))
               ) : error ? (
                 <div className="col-span-full py-20 text-center">
@@ -155,24 +317,34 @@ export const Explorer = () => {
                   {filtered.map((prop, idx) => (
                     <motion.div
                       key={prop.id}
-                      layout
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
+                      transition={{ delay: idx * 0.02, duration: 0.2 }}
                       className="group bg-white rounded-[2rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 text-left"
                     >
-                      <Link to={`/property/${prop.id}`}>
-                        <div className="relative h-64 overflow-hidden">
+                       <Link to={`/property/${prop.id}`}>
+                        <div className="relative h-44 md:h-64 overflow-hidden">
                           <img 
                             src={getImageUrl(prop.image_url)} 
                             alt={prop.title} 
-                            className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
+                            className={cn(
+                              "w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110",
+                              prop.available_rooms === 0 && "grayscale contrast-125 opacity-50"
+                            )}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop';
                             }}
                           />
-                          <div className="absolute top-6 right-6 z-10">
+                          {prop.available_rooms === 0 && (
+                            <div className="absolute inset-0 bg-primary-dark/40 backdrop-blur-[2px] flex items-center justify-center z-20">
+                               <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl border border-white/20">
+                                  <Lock size={16} className="text-primary-dark/40" />
+                                  <span className="text-[11px] font-black text-primary-dark uppercase tracking-widest">Fully Occupied</span>
+                               </div>
+                            </div>
+                          )}
+                          <div className="absolute top-4 right-4 z-10">
                             <button 
                               onClick={(e) => {
                                 e.preventDefault();
@@ -187,52 +359,52 @@ export const Explorer = () => {
                               <Heart size={18} className={isFavorited(prop.id) ? "fill-current" : ""} />
                             </button>
                           </div>
-                          <div className="absolute top-6 left-6">
+                          <div className="absolute top-4 left-4">
                             <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2 shadow-xl border border-white/20">
-                              <CheckCircle2 size={14} className="text-primary" />
-                              <span className="text-[11px] font-black text-primary-dark">{prop.rating || '4.8'}</span>
+                              {prop.rating ? (
+                                <>
+                                  <CheckCircle2 size={12} className="text-primary" />
+                                  <span className="text-[11px] font-black text-primary-dark">{prop.rating}</span>
+                                </>
+                              ) : (
+                                <span className="text-[10px] font-black text-primary uppercase tracking-widest">New Oasis</span>
+                              )}
                             </div>
                           </div>
-                          <div className="absolute bottom-6 left-6 flex gap-2">
-                            <span className="bg-primary/90 backdrop-blur-md px-4 py-2 rounded-xl text-[9px] font-black text-white uppercase tracking-[0.1em]">
+                          <div className="absolute bottom-4 left-4 flex gap-2">
+                            <span className="bg-primary/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-white uppercase tracking-[0.1em]">
                               {prop.type}
-                            </span>
-                            <span className={cn(
-                               "bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.1em] shadow-sm",
-                               prop.gender_preference === 'Boys Only' ? "text-blue-500" : prop.gender_preference === 'Girls Only' ? "text-pink-500" : "text-primary-dark"
-                            )}>
-                              {prop.gender_preference || 'Mixed'}
                             </span>
                           </div>
                         </div>
-                        <div className="p-8">
-                          <div className="flex justify-between items-start mb-4 gap-4">
+                        <div className="p-6 md:p-8">
+                          <div className="flex justify-between items-start mb-3 gap-4">
                             <div className="min-w-0 flex-1">
-                              <h2 className="text-xl font-black text-primary-dark font-manrope tracking-tighter leading-tight mb-2 truncate">{prop.title}</h2>
-                              <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-widest flex items-center gap-1.5 leading-none">
+                              <h2 className="text-lg md:text-xl font-black text-primary-dark font-manrope tracking-tighter leading-tight truncate">{prop.title}</h2>
+                              <p className="text-[11px] text-primary-dark/40 font-bold uppercase tracking-widest flex items-center gap-1.5 leading-none mt-2">
                                 <MapPin size={10} className="text-primary" /> {prop.location}
                               </p>
                             </div>
-                            <div className="text-right shrink-0">
-                              <span className="text-primary-dark font-black text-xl tracking-tighter font-manrope">${prop.price}</span>
-                              <p className="text-[9px] text-primary-dark/30 font-bold uppercase tracking-[0.2em] mt-1 leading-none">/mo</p>
+                            <div className="shrink-0 pt-1 text-right">
+                              <span className="text-primary-dark font-black text-lg md:text-xl tracking-tighter font-manrope italic">${prop.price}</span>
+                              <p className="text-[9px] text-primary-dark/30 font-bold uppercase tracking-[0.2em] leading-none">USD</p>
                             </div>
                           </div>
                           
-                          <div className="flex items-center justify-between pt-6 border-t border-primary/5">
+                          <div className="flex items-center justify-between pt-5 border-t border-primary/5 mt-2">
                             <div className="flex gap-4">
                                {prop.amenities?.slice(0, 2).map((aId: string) => {
                                   const amenity = AMENITY_LIST.find(al => al.id === aId);
                                   if (!amenity) return null;
                                   return (
                                     <div key={aId} className="flex items-center gap-2 text-primary-dark/30">
-                                      <amenity.icon size={14} />
-                                      <span className="text-[9px] font-black uppercase tracking-widest">{amenity.label.split(' ')[0]}</span>
+                                      <amenity.icon size={13} />
+                                      <span className="text-[11px] font-bold uppercase tracking-widest bg-primary/5 px-2 py-0.5 rounded-md">{amenity.label.split(' ')[0]}</span>
                                     </div>
                                   )
-                               })}
+                                })}
                             </div>
-                            <div className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px] group-hover:gap-4 transition-all">
+                            <div className="hidden md:flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px] group-hover:gap-4 transition-all">
                               View <ArrowRight size={16} />
                             </div>
                           </div>
@@ -245,103 +417,10 @@ export const Explorer = () => {
             </div>
           </section>
 
-          {/* Sidebar Filters (Right) */}
-          <aside className="lg:col-span-4 space-y-8">
+          {/* Desktop sidebar filters */}
+          <aside className="hidden lg:block lg:col-span-4 space-y-8">
             <div className="bg-white rounded-[2rem] p-10 space-y-12 border border-primary/5 shadow-sm sticky top-32 overflow-y-auto max-h-[80vh] scrollbar-hide pb-12">
-              <div className="space-y-6">
-                <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Search for Houses</h3>
-                <div className="relative">
-                    <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-primary-dark/20" />
-                    <input 
-                      type="text" 
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Neighborhood or house..."
-                      className="w-full pl-16 pr-6 py-5 bg-surface-bright rounded-[1rem] border border-primary/5 outline-none text-sm font-dm-sans focus:border-primary/20 transition-all font-bold"
-                    />
-                    {search && (
-                      <button onClick={() => setSearch('')} className="absolute right-6 top-1/2 -translate-y-1/2 text-primary-dark/20 hover:text-primary">
-                        <X size={16} />
-                      </button>
-                    )}
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Living Preference</h3>
-                <div className="flex flex-col gap-4">
-                  {['Girls Only', 'Boys Only', 'Mixed', 'All'].map((gender) => (
-                    <button 
-                      key={gender} 
-                      onClick={() => setSelectedGender(gender)}
-                      className="flex items-center gap-4 group text-left"
-                    >
-                      <div className={cn(
-                        "w-6 h-6 rounded-xl border-2 transition-all flex items-center justify-center",
-                        selectedGender === gender ? "border-primary bg-primary" : "border-primary/10 bg-white group-hover:border-primary/30"
-                      )}>
-                        {selectedGender === gender && <div className="w-2 h-2 bg-white rounded-full" />}
-                      </div>
-                      <span className={cn(
-                        "text-sm font-bold transition-colors",
-                        selectedGender === gender ? "text-primary-dark" : "text-primary-dark/40 group-hover:text-primary-dark"
-                      )}>{gender}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                 <div className="flex justify-between items-end">
-                  <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Budget Limit</h3>
-                  <span className="text-primary font-black text-2xl font-manrope tracking-tighter">${priceRange}</span>
-                 </div>
-                <input 
-                  type="range" 
-                  min="50" 
-                  max="1200" 
-                  step="10"
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full h-2 bg-surface-bright rounded-lg appearance-none cursor-pointer accent-primary" 
-                />
-                <div className="flex justify-between text-[10px] text-primary-dark/30 font-black uppercase tracking-widest leading-none">
-                  <span>$50</span>
-                  <span>$1200+</span>
-                </div>
-              </div>
-
-              <div className="space-y-8">
-                <h3 className="text-primary-dark font-manrope font-black text-[10px] uppercase tracking-[0.3em]">Key Amenities</h3>
-                <div className="grid grid-cols-1 gap-4">
-                   {AMENITY_LIST.map(amenity => (
-                     <button 
-                      key={amenity.id}
-                      onClick={() => toggleAmenity(amenity.id)}
-                      className="flex items-center gap-4 group"
-                     >
-                        <div className={cn(
-                          "w-6 h-6 rounded-lg border-2 transition-all flex items-center justify-center",
-                          selectedAmenities.includes(amenity.id) ? "border-primary bg-primary" : "border-primary/10 group-hover:border-primary/30"
-                        )}>
-                           {selectedAmenities.includes(amenity.id) && <div className="w-2 h-2 bg-white rounded-full" />}
-                        </div>
-                        <div className="flex items-center gap-2">
-                           <amenity.icon size={14} className={cn(
-                             selectedAmenities.includes(amenity.id) ? "text-primary" : "text-primary-dark/20"
-                           )} />
-                           <span className={cn(
-                             "text-xs font-bold transition-colors",
-                             selectedAmenities.includes(amenity.id) ? "text-primary-dark" : "text-primary-dark/40 group-hover:text-primary-dark"
-                           )}>
-                             {amenity.label}
-                           </span>
-                        </div>
-                     </button>
-                   ))}
-                </div>
-              </div>
-
+              {filterPanelContent}
               <div className="pt-8 border-t border-primary/5">
                 <div className="bg-primary/5 p-6 rounded-[2rem] border border-primary/10 border-dashed text-center">
                   <p className="text-[10px] text-primary/60 font-black uppercase tracking-widest mb-2 leading-none">Notice</p>
@@ -350,6 +429,55 @@ export const Explorer = () => {
               </div>
             </div>
           </aside>
+
+          {/* Mobile filter bottom sheet */}
+          <AnimatePresence>
+            {showFilters && (
+              <div className="fixed inset-0 z-[60] lg:hidden">
+                {/* backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowFilters(false)}
+                  className="absolute inset-0 bg-primary-dark/40 backdrop-blur-sm"
+                />
+                {/* sheet */}
+                <motion.div
+                  initial={{ y: '100%' }}
+                  animate={{ y: 0 }}
+                  exit={{ y: '100%' }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                  className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] max-h-[85vh] overflow-y-auto pb-10 shadow-2xl"
+                >
+                  {/* drag handle */}
+                  <div className="flex justify-center pt-4 pb-2">
+                    <div className="w-12 h-1.5 bg-primary/10 rounded-full" />
+                  </div>
+                  <div className="flex justify-between items-center px-10 pb-6">
+                    <h3 className="font-manrope font-black text-primary-dark text-xl italic tracking-tighter">Filters</h3>
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="w-11 h-11 rounded-full bg-surface-bright flex items-center justify-center text-primary-dark/40 border border-primary/5"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="px-10 space-y-10">
+                    {filterPanelContent}
+                  </div>
+                  <div className="px-10 pt-10">
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="w-full bg-primary text-white py-5 rounded-2xl font-manrope font-black text-sm shadow-xl shadow-primary/20"
+                    >
+                      Show {filtered.length} Results
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
     </div>

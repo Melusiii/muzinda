@@ -5,11 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserApplications, useUserTickets, useProperties } from '../hooks/useSupabase'
-import { useState } from 'react'
 import { getImageUrl } from '../utils/supabase-helpers'
-import { NotificationsModal } from '../components/NotificationsModal'
-import { Navbar } from '../components/Navbar'
-import { SettingsModal } from '../components/SettingsModal'
 import { PageHeader } from '../components/PageHeader'
 
 export const StudentDashboard = () => {
@@ -18,8 +14,6 @@ export const StudentDashboard = () => {
   const { properties, loading: loadingProps } = useProperties()
   const { applications: apps } = useUserApplications()
   const { tickets } = useUserTickets()
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   
   const hasSecuredHousing = user?.hasSecuredHousing || false
   const featuredProperties = properties?.slice(0, 4) || []
@@ -39,13 +33,12 @@ export const StudentDashboard = () => {
 
   return (
     <div className="flex bg-[#F4F8F5] min-h-screen font-dm-sans overflow-x-hidden">
-      <Navbar />
       <Sidebar />
       
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-32 pt-28 md:pt-8">
+      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-28 md:pb-0 pt-28 md:pt-28">
         <PageHeader 
           title={hasSecuredHousing ? `Your Oasis, ${user?.name?.split(' ')[0] || 'Resident'}` : "Student Home"}
           subtitle="Muzinda Concierge • Your Independent Housing Partner"
@@ -358,8 +351,6 @@ export const StudentDashboard = () => {
             </>
           )}
         </motion.div>
-        <NotificationsModal isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
-        <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       </main>
     </div>
   )
