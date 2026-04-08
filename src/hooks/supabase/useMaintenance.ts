@@ -110,6 +110,26 @@ export const useProviderJobs = () => {
   return { jobs, loading, refetch: fetchJobs }
 }
 
+export const uploadMaintenanceImage = async (file: File) => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Unauthorized")
+
+  const fileExt = file.name.split('.').pop()
+  const filePath = `maintenance/${user.id}-${Math.random()}.${fileExt}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('property-images')
+    .upload(filePath, file)
+
+  if (uploadError) throw uploadError
+
+  const { data } = supabase.storage
+    .from('property-images')
+    .getPublicUrl(filePath)
+
+  return data.publicUrl
+}
+
 export const postMaintenanceMarketplaceRequest = async (propertyId: string, data: any) => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Unauthorized")
@@ -123,6 +143,7 @@ export const postMaintenanceMarketplaceRequest = async (propertyId: string, data
       is_emergency: data.is_emergency || false,
       landlord_id: user.id,
       property_id: propertyId,
+      images: data.images || [],
       status: 'open' // Standardize to 'open' so it shows in the marketplace feed
     }])
     .select()
@@ -258,6 +279,7 @@ export const submitMaintenanceRequest = async (propertyId: string, data: any) =>
     ...data,
     student_id: user.id,
     property_id: propertyId,
+    images: data.images || [],
     status: 'pending'
   }])
 
@@ -278,6 +300,19 @@ export const dispatchTicketToMarketplace = async (ticketId: string, budget: numb
 
   if (fetchError) throw fetchError
 
+  // 0. Check if already dispatched to avoid duplicates
+  const { data: existingReq } = await supabase
+    .from('maintenance_requests')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .maybeSingle()
+
+  if (existingReq) {
+    // Already dispatched, just ensure status is updated and return
+    await supabase.from('maintenance_tickets').update({ status: 'in_progress' }).eq('id', ticketId)
+    return existingReq
+  }
+
   // 1. Create the marketplace request
   const { data: request, error: reqError } = await supabase
     .from('maintenance_requests')
@@ -290,12 +325,26 @@ export const dispatchTicketToMarketplace = async (ticketId: string, budget: numb
       property_id: ticket.property_id,
       student_id: ticket.student_id,
       ticket_id: ticket.id,
+      image_url: (ticket.images && ticket.images.length > 0) ? ticket.images[0] : null,
       status: 'open'
     }])
     .select()
     .single()
 
   if (reqError) throw reqError
+
+  // 2. Notify all handymen
+  const { data: handymen } = await supabase.from('profiles').select('id').eq('provider_type', 'handyman')
+  if (handymen) {
+    for (const h of handymen) {
+      await createNotification(
+        h.id,
+        'New Job in Marketplace',
+        `A new ${ticket.category} task is available at ${ticket.property?.title}.`,
+        'marketplace'
+      )
+    }
+  }
 
   // 2. Update the student ticket status
   await supabase.from('maintenance_tickets').update({ status: 'in_progress' }).eq('id', ticketId)

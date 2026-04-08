@@ -1,5 +1,5 @@
 import { Sidebar } from '../components/Sidebar'
-import { Wrench, CheckCircle2, Clock, Star, MapPin, Loader2, RefreshCw } from 'lucide-react'
+import { Wrench, CheckCircle2, Clock, MapPin, Loader2, RefreshCw } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import { useMaintenanceMarketplace, useProviderJobs, submitMaintenanceBid } from '../hooks/supabase/useMaintenance'
@@ -29,69 +29,13 @@ export const HandymanDashboard = () => {
   const activeJobs = (jobs || []).filter(j => j.status === 'accepted')
   const pendingBids = (jobs || []).filter(j => j.status === 'pending')
   
-  // Stats calculation
-  const totalEarnings = (jobs || [])
-    .filter(j => j.status === 'completed' || j.status === 'accepted')
-    .reduce((acc, j) => acc + (j.amount || 0), 0)
-
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
       <main className="flex-1 md:ml-64 p-6 md:p-12 overflow-x-hidden pt-32 md:pt-32">
-        {/* Performance Section */}
-        <header className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <div className="lg:col-span-2 bg-primary-dark p-8 md:p-10 rounded-[2rem] text-white relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl opacity-50" />
-            <div className="relative z-10 h-full flex flex-col justify-between">
-              <div>
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white/60 mb-6 border border-white/5">
-                   <Star size={14} className="text-accent-gold fill-accent-gold" />
-                   <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verified Pro Status</span>
-                </div>
-                <h1 className="text-3xl md:text-5xl font-manrope font-extrabold tracking-tighter mb-4 leading-none italic uppercase">Earnings Hub</h1>
-              </div>
-              <div className="flex items-end justify-between mt-12 gap-6">
-                <div className="space-y-1">
-                   <p className="text-[10px] uppercase tracking-[0.4em] font-black text-white/30 mb-2">Total Yield</p>
-                   <p className="text-6xl font-black font-manrope italic leading-none">${totalEarnings.toLocaleString()}</p>
-                </div>
-                <div className="hidden md:flex -space-x-3">
-                   {[1,2,3].map(i => (
-                     <div key={i} className="w-12 h-12 rounded-full border-4 border-primary-dark bg-white/10 backdrop-blur-md flex items-center justify-center shadow-lg overflow-hidden">
-                        <img src={`https://i.pravatar.cc/100?u=${i+10}`} alt="Rating" className="w-full h-full object-cover opacity-50" />
-                     </div>
-                   ))}
-                   <div className="w-12 h-12 rounded-full border-4 border-primary-dark bg-accent-gold flex items-center justify-center shadow-lg relative z-10">
-                      <Star size={20} fill="currentColor" className="text-primary-dark" />
-                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm flex flex-col justify-center items-center text-center">
-            <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-[0.4em] mb-8">Work Efficiency</p>
-            <div className="relative w-40 h-40 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle className="text-primary/5" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeWidth="8"></circle>
-                <motion.circle 
-                  initial={{ strokeDashoffset: 465 }}
-                  animate={{ strokeDashoffset: 465 - (465 * 0.94) }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="text-primary" cx="80" cy="80" fill="transparent" r="74" stroke="currentColor" strokeLinecap="round" strokeDasharray="465" strokeWidth="10"
-                ></motion.circle>
-              </svg>
-              <div className="absolute text-center">
-                <span className="text-5xl font-black text-primary-dark font-manrope leading-none block italic">94%</span>
-                <span className="text-[10px] font-black text-primary-dark/20 uppercase tracking-widest mt-1 block">Rating</span>
-              </div>
-            </div>
-            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mt-8 bg-primary/5 px-4 py-2 rounded-full">Top Tier Artisan</p>
-          </div>
-        </header>
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
           {/* Available Jobs Board */}
           <section className="lg:col-span-8 space-y-10">
             <div className="flex justify-between items-center bg-white/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white shadow-xl">
@@ -123,8 +67,8 @@ export const HandymanDashboard = () => {
                     >
                       <div className="flex flex-col md:flex-row gap-8 items-start">
                         <div className="w-24 h-24 bg-surface-bright rounded-[2rem] overflow-hidden flex-shrink-0 border-4 border-white shadow-lg">
-                           {request.property?.image_url ? (
-                             <img src={getImageUrl(request.property.image_url)} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                           {(request.image_url || request.property?.image_url) ? (
+                             <img src={getImageUrl(request.image_url || request.property?.image_url)} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                            ) : (
                              <div className="w-full h-full flex items-center justify-center text-primary/20"><Wrench size={32} /></div>
                            )}

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import { 
   useProviderService, 
   useServiceApplications, 
@@ -42,7 +43,9 @@ export const ProviderDashboard = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string>('transport')
   
+  const { user } = useAuth()
   const { service, loading: serviceLoading, refetch: refetchService } = useProviderService()
   const { applications, loading: appsLoading, refetch: refetchApps } = useServiceApplications(service?.id)
   
@@ -51,12 +54,17 @@ export const ProviderDashboard = () => {
     setIsSubmitting(true)
     try {
       const formData = new FormData(e.currentTarget)
-      const data = {
+      const data: any = {
         name: formData.get('name') as string,
         category: formData.get('category') as string,
         price: parseFloat(formData.get('price') as string),
-        capacity: parseInt(formData.get('capacity') as string),
         description: formData.get('description') as string,
+        provider_id: user?.id
+      }
+
+      const capacity = formData.get('capacity')
+      if (capacity && data.category === 'transport') {
+        data.capacity = parseInt(capacity as string)
       }
 
       let imageUrl = service?.image_url || ''
@@ -389,7 +397,7 @@ export const ProviderDashboard = () => {
                 </button>
               </header>
 
-              <form onSubmit={handleSetupService} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-10">
+              <form id="service-setup-form" onSubmit={handleSetupService} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-10">
                 {/* Category Selection */}
                 <div className="space-y-6">
                   <h4 className="text-[10px] font-extrabold text-primary uppercase tracking-[0.6em] border-l-2 border-primary pl-4">Your Niche</h4>
@@ -399,6 +407,7 @@ export const ProviderDashboard = () => {
                         key={cat}
                         type="button"
                         onClick={() => {
+                          setSelectedCategory(cat);
                           const nameInput = document.querySelector('input[name="name"]') as HTMLInputElement;
                           if (nameInput && !nameInput.value) {
                              nameInput.value = cat.charAt(0).toUpperCase() + cat.slice(1) + ' Solutions';
@@ -481,16 +490,18 @@ export const ProviderDashboard = () => {
                       className="w-full p-4 md:p-5 rounded-xl bg-surface-bright border border-primary/5 font-bold outline-none focus:bg-white focus:border-primary/20 transition-all" 
                     />
                   </div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-extrabold text-primary-dark/30 uppercase tracking-widest ml-4">Capacity (Students)</label>
-                    <input 
-                      name="capacity" 
-                      type="number" 
-                      required 
-                      defaultValue={service?.capacity || 14} 
-                      className="w-full p-4 md:p-5 rounded-xl bg-surface-bright border border-primary/5 font-bold outline-none focus:bg-white focus:border-primary/20 transition-all" 
-                    />
-                  </div>
+                  {selectedCategory === 'transport' && (
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-extrabold text-primary-dark/30 uppercase tracking-widest ml-4">Capacity (Students)</label>
+                      <input 
+                        name="capacity" 
+                        type="number" 
+                        required 
+                        defaultValue={service?.capacity || 14} 
+                        className="w-full p-4 md:p-5 rounded-xl bg-surface-bright border border-primary/5 font-bold outline-none focus:bg-white focus:border-primary/20 transition-all" 
+                      />
+                    </div>
+                  )}
                   <div className="md:col-span-2 space-y-4">
                     <label className="text-[10px] font-extrabold text-primary-dark/30 uppercase tracking-widest ml-4">Description</label>
                     <textarea 
@@ -516,10 +527,8 @@ export const ProviderDashboard = () => {
                   Cancel
                 </button>
                 <button 
-                  onClick={(e: any) => {
-                    const form = (e.target as HTMLElement).closest('motion.div')?.querySelector('form') as HTMLFormElement;
-                    if (form) form.requestSubmit();
-                  }}
+                  type="submit"
+                  form="service-setup-form"
                   disabled={isSubmitting}
                   className="px-10 py-4 bg-primary text-white rounded-xl font-extrabold font-manrope text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
                 >

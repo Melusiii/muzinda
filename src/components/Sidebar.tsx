@@ -59,7 +59,7 @@ export const Sidebar = () => {
       // If Artisan (Handyman) sub-role
       if (user?.category === 'handyman') {
         platform.push(
-          { icon: Wrench, label: 'Artisan Hub', href: '/handyman' },
+          { icon: Wrench, label: 'Marketplace', href: '/handyman' },
           { icon: DollarSign, label: 'Earnings', href: '/earnings' }
         )
       } 
@@ -73,7 +73,7 @@ export const Sidebar = () => {
       // Fallback for providers with no sub-role (show both)
       else {
         platform.push(
-          { icon: Wrench, label: 'Artisan Hub', href: '/handyman' },
+          { icon: Wrench, label: 'Marketplace', href: '/handyman' },
           { icon: DollarSign, label: 'Earnings', href: '/earnings' }
         )
       }

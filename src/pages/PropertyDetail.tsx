@@ -292,7 +292,7 @@ export const PropertyDetail = () => {
                             onClick={handleApplyClick}
                             className="w-full bg-white text-primary-dark py-6 rounded-3xl font-manrope font-black text-xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group/btn italic uppercase"
                           >
-                            Secure Seat
+                            Apply for House
                             <ArrowRight size={24} className="group-hover/btn:translate-x-1 transition-transform" />
                           </button>
                        )}
@@ -347,7 +347,7 @@ export const PropertyDetail = () => {
               onClick={handleApplyClick}
               className="w-full bg-primary text-white py-5 rounded-2xl font-black text-sm shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 uppercase tracking-widest italic"
             >
-              Secure Stay • ${property.price}/mo
+              Apply for House • ${property.price}/mo
               <ArrowRight size={18} />
             </button>
          ) : null}
@@ -404,7 +404,7 @@ export const PropertyDetail = () => {
                          </>
                       ) : (
                         <>
-                          Finalize Interest
+                          Submit Application
                           <MessageSquare size={24} className="group-hover:translate-x-1 transition-transform" />
                         </>
                       )}

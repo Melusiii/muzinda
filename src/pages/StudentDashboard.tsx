@@ -16,14 +16,15 @@ import {
   Users,
   X,
   Camera,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserApplications, useUserTickets, useProperties, useFavorites } from '../hooks/useSupabase'
-import { useMaintenance, submitMaintenanceRequest, useStudentResidency } from '../hooks/supabase/useMaintenance'
+import { useMaintenance, submitMaintenanceRequest, useStudentResidency, uploadMaintenanceImage } from '../hooks/supabase/useMaintenance'
 import { getImageUrl } from '../utils/supabase-helpers'
 import { PageHeader } from '../components/PageHeader'
 
@@ -466,14 +467,31 @@ export const StudentDashboard = () => {
 // PREMIUM MAINTENANCE MODAL COMPONENT
 const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void, tickets: any[], residency: any }) => {
   const [step, setStep] = useState<'list' | 'create'>('list')
-  const [formData, setFormData] = useState<{ category: string, priority: 'low' | 'medium' | 'high' | 'emergency', description: string }>({ 
+  const [formData, setFormData] = useState<{ category: string, priority: 'low' | 'medium' | 'high' | 'emergency', description: string, images: string[] }>({ 
     category: 'plumbing', 
     priority: 'medium', 
-    description: '' 
+    description: '',
+    images: []
   })
+  const [isUploading, setIsUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   // Get active property for the current resident
   const activePropertyId = residency?.property?.id
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    setIsUploading(true)
+    try {
+      const url = await uploadMaintenanceImage(file)
+      setFormData(prev => ({ ...prev, images: [...prev.images, url] }))
+    } catch (err: any) {
+      alert("Failed to upload image. Please try again.")
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -482,6 +500,7 @@ const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void
     try {
       await submitMaintenanceRequest(activePropertyId, formData)
       setStep('list')
+      setFormData({ category: 'plumbing', priority: 'medium', description: '', images: [] })
     } catch (err: any) {
       alert(err.message || "Failed to submit request")
     } finally {
@@ -556,7 +575,17 @@ const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void
                             {t.status}
                           </div>
                        </div>
-                       <p className="text-xs text-primary-dark/60 line-clamp-2 italic leading-relaxed">{t.description}</p>
+                       <p className="text-xs text-primary-dark/60 line-clamp-2 italic leading-relaxed mb-4">{t.description}</p>
+                       
+                       {t.images && t.images.length > 0 && (
+                         <div className="flex gap-2">
+                           {t.images.map((img: string, i: number) => (
+                             <div key={i} className="w-12 h-12 rounded-xl overflow-hidden border border-primary/10 shadow-sm">
+                               <img src={img} className="w-full h-full object-cover" alt="issue detail" />
+                             </div>
+                           ))}
+                         </div>
+                       )}
                     </div>
                   ))
                 )}
@@ -614,10 +643,39 @@ const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void
                     />
                   </div>
 
-                  <div className="p-6 bg-primary/5 rounded-[2rem] border border-dashed border-primary/20 flex flex-col items-center justify-center gap-3">
-                     <div className="w-10 h-10 bg-white rounded-xl shadow-lg flex items-center justify-center text-primary/40"><Camera size={18} /></div>
-                     <span className="text-[10px] font-black text-primary-dark/30 uppercase tracking-widest">Add Evidence Photo (Optional)</span>
+                  <div className="relative group">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="p-6 bg-primary/5 rounded-[2rem] border border-dashed border-primary/20 flex flex-col items-center justify-center gap-3 group-hover:bg-primary/10 transition-all">
+                       <div className="w-10 h-10 bg-white rounded-xl shadow-lg flex items-center justify-center text-primary/40 group-hover:scale-110 transition-transform">
+                          {isUploading ? <Loader2 className="animate-spin text-primary" size={18} /> : <Camera size={18} />}
+                       </div>
+                       <span className="text-[10px] font-black text-primary-dark/30 uppercase tracking-widest">
+                          {isUploading ? 'Uploading Snapshot...' : formData.images.length > 0 ? `${formData.images.length} Photo(s) Attached` : 'Snap Evidence Photo'}
+                       </span>
+                    </div>
                   </div>
+
+                  {formData.images.length > 0 && (
+                    <div className="flex flex-wrap gap-3 px-2">
+                       {formData.images.map((url, i) => (
+                         <div key={i} className="relative w-16 h-16 rounded-2xl overflow-hidden border border-primary/10 shadow-xl group/img">
+                            <img src={url} className="w-full h-full object-cover" alt="preview" />
+                            <button 
+                              type="button"
+                              onClick={() => setFormData(p => ({ ...p, images: p.images.filter((_, idx) => idx !== i) }))}
+                              className="absolute inset-0 bg-red-500/80 text-white opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center"
+                            >
+                              <X size={16} />
+                            </button>
+                         </div>
+                       ))}
+                    </div>
+                  )}
                </div>
 
                <div className="flex gap-4 pt-4">

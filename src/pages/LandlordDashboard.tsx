@@ -19,7 +19,8 @@ import {
   Loader2, 
   AlertCircle,
   X,
-  Sparkles
+  Sparkles,
+  Clock
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
@@ -580,43 +581,72 @@ export const LandlordDashboard = () => {
                                  </div>
                               </div>
                               
-                              <p className="text-sm text-primary-dark/70 bg-white/40 p-4 rounded-xl border border-white/40 italic leading-relaxed mb-6 h-20 overflow-y-auto">
+                              <p className="text-sm text-primary-dark/70 bg-white/40 p-4 rounded-xl border border-white/40 italic leading-relaxed mb-4 h-20 overflow-y-auto">
                                 "{ticket.description}"
                               </p>
+
+                              {ticket.images && ticket.images.length > 0 && (
+                                <div className="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+                                   {ticket.images.map((img: string, i: number) => (
+                                     <div key={i} className="w-16 h-16 rounded-xl overflow-hidden border border-white shadow-sm flex-shrink-0">
+                                       <img src={img} className="w-full h-full object-cover" alt="issue detail" />
+                                     </div>
+                                   ))}
+                                </div>
+                              )}
 
                               <div className="flex gap-3">
                                  {ticket.status !== 'resolved' ? (
                                     <>
-                                       <button 
-                                         onClick={() => updateTicketStatus(ticket.id, 'in_progress').then(() => refetchMaint())}
-                                         className={cn(
-                                           "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm",
-                                           ticket.status === 'in_progress' ? "bg-primary/10 text-primary border border-primary/20" : "bg-white text-primary-dark/40 border border-white"
-                                         )}
-                                       >
-                                         {ticket.status === 'in_progress' ? 'Active' : 'Acknowledge'}
-                                       </button>
-                                       <button 
-                                         onClick={async () => {
-                                           setNewMarketplaceRequest({
-                                             property_id: ticket.property_id,
-                                             title: ticket.category,
-                                             description: ticket.description,
-                                             starting_price: 50,
-                                             issue_type: ticket.category
-                                           });
-                                           await dispatchTicketToMarketplace(ticket.id, 20); refetchMaint();
-                                         }}
-                                         className="flex-1 py-3 bg-accent-gold text-primary-dark rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-accent-gold/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
-                                       >
-                                          <Sparkles size={12} /> Dispatch
-                                       </button>
-                                       <button 
-                                         onClick={() => updateTicketStatus(ticket.id, 'resolved').then(() => refetchMaint())}
-                                         className="flex-1 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
-                                       >
-                                         Resolve
-                                       </button>
+                                       {ticket.status === 'pending' ? (
+                                         <>
+                                           <button 
+                                              disabled={isActioning === ticket.id}
+                                              onClick={async () => {
+                                                setIsActioning(ticket.id);
+                                                await updateTicketStatus(ticket.id, 'in_progress');
+                                                await refetchMaint();
+                                                setIsActioning(null);
+                                              }}
+                                              className="flex-1 py-3 bg-white text-primary-dark rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm border border-primary/10 hover:bg-primary/5"
+                                           >
+                                              {isActioning === ticket.id ? <Loader2 className="animate-spin h-3 w-3 mx-auto" /> : 'Acknowledge'}
+                                           </button>
+                                           <button 
+                                              disabled={isActioning === ticket.id}
+                                              onClick={() => {
+                                                setNewMarketplaceRequest({
+                                                  ticket_id: ticket.id,
+                                                  property_id: ticket.property_id,
+                                                  title: ticket.category,
+                                                  description: ticket.description,
+                                                  starting_price: 50,
+                                                  issue_type: ticket.category
+                                                });
+                                                setShowMarketplacePost(true);
+                                              }}
+                                              className="flex-1 py-3 bg-accent-gold text-primary-dark rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-accent-gold/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                           >
+                                              <Sparkles size={12} /> Dispatch
+                                           </button>
+                                         </>
+                                       ) : (
+                                          <div className="flex-1 py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-primary/10 italic">
+                                             <Clock size={12} /> Active & Linked
+                                          </div>
+                                       )}
+                                        <button 
+                                          disabled={isActioning === ticket.id}
+                                          onClick={async () => {
+                                            setIsActioning(ticket.id);
+                                            await updateTicketStatus(ticket.id, 'resolved');
+                                            await refetchMaint();
+                                            setIsActioning(null);
+                                          }}
+                                          className="flex-1 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                                        >
+                                          {isActioning === ticket.id ? <Loader2 className="animate-spin h-3 w-3 mx-auto" /> : 'Resolve'}
+                                        </button>
                                     </>
                                  ) : (
                                     <div className="w-full py-3 bg-green-50 text-green-600 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-green-100 italic font-manrope">
@@ -1139,17 +1169,30 @@ export const LandlordDashboard = () => {
                   setIsPosting(true)
                   const formData = new FormData(e.currentTarget)
                   try {
-                    await postMaintenanceMarketplaceRequest(formData.get('property_id') as string, {
-                      title: formData.get('title') as string,
-                      description: formData.get('description') as string,
-                      budget: Number(formData.get('budget')),
-                      is_emergency: formData.get('priority') === 'emergency'
-                    })
+                    const budget = Number(formData.get('budget'))
+                    if (newMarketplaceRequest?.ticket_id) {
+                      await dispatchTicketToMarketplace(newMarketplaceRequest.ticket_id, budget)
+                      // Small delay to ensure DB consistency before refetch
+                      await new Promise(resolve => setTimeout(resolve, 500))
+                      await refetchMaint()
+                    } else {
+                      await postMaintenanceMarketplaceRequest(formData.get('property_id') as string, {
+                        title: formData.get('title') as string,
+                        description: formData.get('description') as string,
+                        budget: budget,
+                        is_emergency: formData.get('priority') === 'emergency'
+                      })
+                    }
                     await refetchMarketplace()
                     setShowMarketplacePost(false)
-                  } catch (err) {
-                    console.error(err)
-                    alert("Failed to Dispatch request.")
+                    setNewMarketplaceRequest(null)
+                  } catch (err: any) {
+                    console.error('Dispatch detail:', err)
+                    if (err?.message?.includes('duplicate key')) {
+                       alert("This ticket has already been dispatched.")
+                    } else {
+                       alert("Failed to Dispatch request. Please check the network log.")
+                    }
                   } finally {
                     setIsPosting(false)
                   }
