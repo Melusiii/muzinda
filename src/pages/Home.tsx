@@ -42,23 +42,23 @@ export const Home = () => {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto text-center space-y-10"
         >
-          <h2 className="font-manrope text-5xl md:text-7xl font-extrabold text-primary-dark tracking-tighter">
+          <h2 className="font-manrope text-4xl md:text-6xl font-extrabold text-primary-dark tracking-tighter">
             Ready to find your <br />
             <span className="text-[#4F7C2C] italic">perfect home?</span>
           </h2>
-          <p className="text-primary-dark/50 text-xl font-dm-sans max-w-2xl mx-auto leading-relaxed">
+          <p className="text-primary-dark/50 text-lg font-dm-sans max-w-2xl mx-auto leading-relaxed">
             Join the most trusted student network in Mutare. Secure your stay, book repairs, and ride with confidence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link 
               to={isAuthenticated ? "/dashboard" : "/signup"}
-              className="bg-[#1E3011] text-white px-12 py-5 rounded-2xl font-bold font-manrope text-lg shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+              className="bg-[#1E3011] text-white px-8 py-3.5 rounded-xl font-bold font-manrope text-base shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
             >
               Get Started Now
             </Link>
             <Link 
               to="/explorer"
-              className="bg-white text-primary-dark border border-primary/10 px-12 py-5 rounded-2xl font-bold font-manrope text-lg hover:bg-[#F8F9F8] transition-all"
+              className="bg-white text-primary-dark border border-primary/10 px-8 py-3.5 rounded-xl font-bold font-manrope text-base hover:bg-[#F8F9F8] transition-all"
             >
               Browse Homes
             </Link>

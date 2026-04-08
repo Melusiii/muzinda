@@ -65,10 +65,15 @@ export const useMaintenanceMarketplace = () => {
 
   useEffect(() => {
     fetchMarketplace()
+    const autoRefresh = setInterval(fetchMarketplace, 30000) // 30s auto-refresh
+    
     const channel = supabase.channel('marketplace-live')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'maintenance_requests' }, () => fetchMarketplace())
       .subscribe()
-    return () => { channel.unsubscribe() }
+    return () => { 
+      clearInterval(autoRefresh)
+      channel.unsubscribe() 
+    }
   }, [fetchMarketplace])
 
   return { requests, loading, refetch: fetchMarketplace }
@@ -118,7 +123,7 @@ export const postMaintenanceMarketplaceRequest = async (propertyId: string, data
       is_emergency: data.is_emergency || false,
       landlord_id: user.id,
       property_id: propertyId,
-      status: 'pending' // Marketplace jobs usually start as pending/open
+      status: 'open' // Standardize to 'open' so it shows in the marketplace feed
     }])
     .select()
     .single()
@@ -182,6 +187,16 @@ export const updateBidStatus = async (bidId: string, status: 'accepted' | 'decli
         'Your bid for the maintenance job has been accepted. Contact the landlord to start.',
         'job_status'
     )
+
+    // Notify Student if this was a student ticket
+    if (bid.request && bid.request.student_id) {
+        await createNotification(
+            bid.request.student_id,
+            'Handyman Assigned!',
+            `A professional has been assigned to your repair request.`,
+            'maintenance'
+        )
+    }
   }
 }
 
@@ -203,7 +218,7 @@ export const useStudentResidency = () => {
           property:properties(*)
         `)
         .eq('student_id', user.id)
-        .eq('status', 'accepted')
+        .in('status', ['accepted', 'secured'])
         .maybeSingle()
 
       if (error) throw error
@@ -232,7 +247,7 @@ export const submitMaintenanceRequest = async (propertyId: string, data: any) =>
     .select('id')
     .eq('student_id', user.id)
     .eq('property_id', propertyId)
-    .eq('status', 'accepted')
+    .in('status', ['accepted', 'secured'])
     .maybeSingle()
 
   if (resError || !residency) {
@@ -252,4 +267,46 @@ export const submitMaintenanceRequest = async (propertyId: string, data: any) =>
 export const updateTicketStatus = async (ticketId: string, status: string) => {
   const { error } = await supabase.from('maintenance_tickets').update({ status }).eq('id', ticketId)
   if (error) throw error
+}
+
+export const dispatchTicketToMarketplace = async (ticketId: string, budget: number) => {
+  const { data: ticket, error: fetchError } = await supabase
+    .from('maintenance_tickets')
+    .select('*, property:properties(*)')
+    .eq('id', ticketId)
+    .single()
+
+  if (fetchError) throw fetchError
+
+  // 1. Create the marketplace request
+  const { data: request, error: reqError } = await supabase
+    .from('maintenance_requests')
+    .insert([{
+      issue_type: ticket.category,
+      description: ticket.description,
+      starting_price: budget,
+      is_emergency: ticket.priority === 'emergency',
+      landlord_id: ticket.property.landlord_id,
+      property_id: ticket.property_id,
+      student_id: ticket.student_id,
+      ticket_id: ticket.id,
+      status: 'open'
+    }])
+    .select()
+    .single()
+
+  if (reqError) throw reqError
+
+  // 2. Update the student ticket status
+  await supabase.from('maintenance_tickets').update({ status: 'in_progress' }).eq('id', ticketId)
+
+  // 3. Notify student
+  await createNotification(
+    ticket.student_id,
+    'Issue Dispatched!',
+    `Your report for "${ticket.description.substring(0, 20)}..." has been sent to the Handyman Marketplace.`,
+    'maintenance'
+  )
+
+  return request
 }

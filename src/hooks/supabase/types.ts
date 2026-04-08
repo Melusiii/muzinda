@@ -142,5 +142,32 @@ export interface MaintenanceTicket {
   property?: {
     title: string
     location: string
+    landlord_id?: string
   }
+}
+
+export interface MaintenanceRequest {
+  id: string
+  property_id: string
+  landlord_id: string
+  student_id: string
+  ticket_id?: string // Link to the original student report
+  issue_type: string
+  description: string
+  starting_price: number
+  is_emergency: boolean
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
+  created_at: string
+  property?: Property
+}
+
+export interface MaintenanceBid {
+  id: string
+  request_id: string
+  provider_id: string
+  amount: number
+  message?: string
+  status: 'pending' | 'accepted' | 'rejected'
+  created_at: string
+  request?: MaintenanceRequest
 }

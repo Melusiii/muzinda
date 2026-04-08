@@ -20,7 +20,7 @@ export const Hero = () => {
               <span className="text-xs font-black text-primary uppercase tracking-widest">Verified student housing</span>
             </div>
 
-            <h1 className="font-manrope text-4xl sm:text-5xl md:text-[5rem] font-extrabold tracking-tight text-primary-dark leading-[1.05]">
+            <h1 className="font-manrope text-4xl sm:text-5xl md:text-[4.25rem] font-extrabold tracking-tight text-primary-dark leading-[1.05]">
               Find your room<br />
               <span className="text-[#4F7C2C]">near campus.</span>
             </h1>
@@ -48,13 +48,13 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
               to="/signup"
-              className="bg-[#1E3011] text-white px-8 py-4 rounded-2xl font-bold font-manrope text-base shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-center"
+              className="bg-[#1E3011] text-white px-7 py-3 rounded-xl font-bold font-manrope text-base shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-center"
             >
               Get started — it's free
             </Link>
             <Link
               to="/auth"
-              className="bg-white text-primary-dark border border-primary/10 px-8 py-4 rounded-2xl font-bold font-manrope text-base hover:bg-surface-bright transition-all text-center"
+              className="bg-white text-primary-dark border border-primary/10 px-7 py-3 rounded-xl font-bold font-manrope text-base hover:bg-surface-bright transition-all text-center"
             >
               Sign in
             </Link>
@@ -74,7 +74,7 @@ export const Hero = () => {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="relative hidden lg:block"
         >
-          <div className="aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)]">
+          <div className="aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_-10px_rgba(0,0,0,0.15)]">
             <img
               src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1935&auto=format&fit=crop"
               alt="Muzinda Student Housing"
@@ -87,7 +87,7 @@ export const Hero = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="absolute -bottom-6 -left-6 bg-white p-5 rounded-[2rem] shadow-2xl flex items-center gap-4 border border-primary/5"
+            className="absolute -bottom-6 -left-6 bg-white p-5 rounded-[1.5rem] shadow-2xl flex items-center gap-4 border border-primary/5"
           >
             <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center">
               <Star size={20} className="text-[#D4AF37] fill-[#D4AF37]" />

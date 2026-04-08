@@ -60,7 +60,7 @@ export const Messages = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10 pt-28 md:pt-28">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10 pt-32 md:pt-32">
 
         <div className="flex-1 flex overflow-hidden relative">
           {/* List */}

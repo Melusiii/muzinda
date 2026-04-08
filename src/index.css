@@ -14,14 +14,14 @@
 
 @layer base {
   :root {
-    --radius-card: 2rem;
-    --radius-section: 4rem;
-    --radius-button: 1rem;
-    --radius-input: 1.25rem;
+    --radius-card: 1.5rem;
+    --radius-section: 2.5rem;
+    --radius-button: 0.75rem;
+    --radius-input: 1rem;
     --bg-surface: #F4F8F5;
   }
   body {
-    @apply bg-surface-bright text-[#191C1C] font-dm-sans overflow-x-hidden;
+    @apply bg-surface-bright text-[#191C1C] font-dm-sans overflow-x-hidden antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

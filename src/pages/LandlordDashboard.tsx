@@ -29,13 +29,14 @@ import {
   useLandlordStats, 
   useLandlordApplications, 
   updateApplicationStatus, 
-  useLandlordFinance,
-  useMaintenance,
-  updateTicketStatus
+  useLandlordFinance
 } from '../hooks/useSupabase'
 import { 
+  useMaintenance,
+  updateTicketStatus,
   useMaintenanceMarketplace, 
-  postMaintenanceMarketplaceRequest
+  postMaintenanceMarketplaceRequest,
+  dispatchTicketToMarketplace
 } from '../hooks/supabase/useMaintenance'
 import {
   createProperty as addProperty,
@@ -251,7 +252,7 @@ export const LandlordDashboard = () => {
         />
       </div>
       
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-24 md:pt-28 pb-safe md:pb-8 min-h-screen relative z-10">
+      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-32 md:pt-32 pb-safe md:pb-8 min-h-screen relative z-10">
         {(statsLoading && activeTab === 'overview') || (appsLoading && activeTab === 'applications') || (maintLoading && activeTab === 'maintenance') ? (
           <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" size={40} /></div>
         ) : (
@@ -596,7 +597,7 @@ export const LandlordDashboard = () => {
                                          {ticket.status === 'in_progress' ? 'Active' : 'Acknowledge'}
                                        </button>
                                        <button 
-                                         onClick={() => {
+                                         onClick={async () => {
                                            setNewMarketplaceRequest({
                                              property_id: ticket.property_id,
                                              title: ticket.category,
@@ -604,11 +605,11 @@ export const LandlordDashboard = () => {
                                              starting_price: 50,
                                              issue_type: ticket.category
                                            });
-                                           setShowMarketplacePost(true);
+                                           await dispatchTicketToMarketplace(ticket.id, 20); refetchMaint();
                                          }}
                                          className="flex-1 py-3 bg-accent-gold text-primary-dark rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-accent-gold/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
                                        >
-                                          <Sparkles size={12} /> Broadcast
+                                          <Sparkles size={12} /> Dispatch
                                        </button>
                                        <button 
                                          onClick={() => updateTicketStatus(ticket.id, 'resolved').then(() => refetchMaint())}
@@ -1118,14 +1119,14 @@ export const LandlordDashboard = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Broadcast Request Modal */}
+      {/* Dispatch Request Modal */}
       <AnimatePresence>
         {showMarketplacePost && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-primary-dark/80 backdrop-blur-3xl">
              <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl relative">
                 <header className="p-8 border-b border-primary/5 flex justify-between items-center">
                    <div>
-                      <h3 className="text-2xl font-manrope font-black text-primary-dark italic uppercase tracking-tighter">Marketplace Broadcast</h3>
+                      <h3 className="text-2xl font-manrope font-black text-primary-dark italic uppercase tracking-tighter">Marketplace Dispatch</h3>
                       <p className="text-primary-dark/40 text-[10px] font-black uppercase tracking-[0.4em]">Deploy to Handyman Network</p>
                    </div>
                    <button onClick={() => setShowMarketplacePost(false)} className="w-10 h-10 rounded-full hover:bg-red-50 hover:text-red-500 transition-all flex items-center justify-center bg-primary-dark/5 text-primary-dark">
@@ -1148,7 +1149,7 @@ export const LandlordDashboard = () => {
                     setShowMarketplacePost(false)
                   } catch (err) {
                     console.error(err)
-                    alert("Failed to broadcast request.")
+                    alert("Failed to Dispatch request.")
                   } finally {
                     setIsPosting(false)
                   }
@@ -1193,5 +1194,6 @@ export const LandlordDashboard = () => {
     </div>
   )
 }
+
 
 

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import { LoadingScreen } from './components/LoadingScreen'
+import { ScrollToTop } from './components/ScrollToTop'
 
 // Premium Lazy-loaded Pages
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })))
@@ -88,6 +89,7 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
+        <ScrollToTop />
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             {/* Public Routes */}

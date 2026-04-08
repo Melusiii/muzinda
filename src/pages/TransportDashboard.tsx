@@ -29,7 +29,7 @@ export const TransportDashboard = () => {
 
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <main className="flex-1 md:ml-64 p-6 md:p-8 pt-28 md:pt-28 min-h-screen relative z-10 pb-32">
+      <main className="flex-1 md:ml-64 p-6 md:p-8 pt-32 md:pt-32 min-h-screen relative z-10 pb-32">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/10">

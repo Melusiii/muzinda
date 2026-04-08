@@ -1,5 +1,5 @@
 import { Sidebar } from '../components/Sidebar'
-import { Wrench, CheckCircle, Clock, Star, MapPin, Loader2, RefreshCw } from 'lucide-react'
+import { Wrench, CheckCircle2, Clock, Star, MapPin, Loader2, RefreshCw } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import { useMaintenanceMarketplace, useProviderJobs, submitMaintenanceBid } from '../hooks/supabase/useMaintenance'
@@ -38,10 +38,10 @@ export const HandymanDashboard = () => {
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 md:p-12 overflow-x-hidden pt-28 md:pt-28">
+      <main className="flex-1 md:ml-64 p-6 md:p-12 overflow-x-hidden pt-32 md:pt-32">
         {/* Performance Section */}
         <header className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <div className="lg:col-span-2 bg-primary-dark p-10 rounded-[3rem] text-white relative overflow-hidden shadow-2xl">
+          <div className="lg:col-span-2 bg-primary-dark p-8 md:p-10 rounded-[2rem] text-white relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl opacity-50" />
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div>
@@ -49,7 +49,7 @@ export const HandymanDashboard = () => {
                    <Star size={14} className="text-accent-gold fill-accent-gold" />
                    <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verified Pro Status</span>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-manrope font-extrabold tracking-tighter mb-4 leading-none italic uppercase">Earnings Hub</h1>
+                <h1 className="text-3xl md:text-5xl font-manrope font-extrabold tracking-tighter mb-4 leading-none italic uppercase">Earnings Hub</h1>
               </div>
               <div className="flex items-end justify-between mt-12 gap-6">
                 <div className="space-y-1">
@@ -70,7 +70,7 @@ export const HandymanDashboard = () => {
             </div>
           </div>
           
-          <div className="bg-white p-10 rounded-[3rem] border border-primary/5 shadow-sm flex flex-col justify-center items-center text-center">
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm flex flex-col justify-center items-center text-center">
             <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-[0.4em] mb-8">Work Efficiency</p>
             <div className="relative w-40 h-40 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
@@ -96,7 +96,7 @@ export const HandymanDashboard = () => {
           <section className="lg:col-span-8 space-y-10">
             <div className="flex justify-between items-center bg-white/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white shadow-xl">
               <div>
-                <h2 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Marketplace Feed</h2>
+                <h2 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tighter uppercase italic">Marketplace Feed</h2>
                 <p className="text-primary-dark/30 font-bold text-[10px] uppercase tracking-[0.4em] mt-1">Live Requests • Mutare District</p>
               </div>
               <button 
@@ -119,7 +119,7 @@ export const HandymanDashboard = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="group bg-white p-8 rounded-[3.5rem] border border-primary/5 shadow-sm hover:shadow-2xl transition-all duration-500"
+                      className="group bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm hover:shadow-2xl transition-all duration-500"
                     >
                       <div className="flex flex-col md:flex-row gap-8 items-start">
                         <div className="w-24 h-24 bg-surface-bright rounded-[2rem] overflow-hidden flex-shrink-0 border-4 border-white shadow-lg">
@@ -132,13 +132,13 @@ export const HandymanDashboard = () => {
                         <div className="flex-1 space-y-4">
                           <div className="flex justify-between items-start">
                             <div>
-                               <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tight leading-none mb-1 italic uppercase">{request.title}</h3>
+                               <h3 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tight leading-none mb-1 italic uppercase">{request.title}</h3>
                                <div className="flex items-center gap-2 text-[10px] font-black text-primary-dark/30 uppercase tracking-[0.2em]">
                                   <MapPin size={12} className="text-primary" /> {request.property?.title} • {request.property?.location}
                                </div>
                             </div>
                             <div className="text-right">
-                               <p className="text-3xl font-manrope font-black text-primary italic leading-none">${request.budget || '0'}</p>
+                               <p className="text-2xl font-manrope font-extrabold text-primary italic leading-none">${request.budget || '0'}</p>
                                <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-widest mt-1">Est. Value</p>
                             </div>
                           </div>
@@ -164,7 +164,7 @@ export const HandymanDashboard = () => {
                               disabled={!!isSubmitting}
                               className="px-12 py-5 bg-primary text-white rounded-[1.5rem] font-black font-manrope text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
                             >
-                               {isSubmitting === request.id ? <Loader2 size={18} className="animate-spin" /> : <><CheckCircle size={18} /> Accept Job</>}
+                               {isSubmitting === request.id ? <Loader2 size={18} className="animate-spin" /> : <><CheckCircle2 size={18} /> Accept Job</>}
                             </button>
                           </div>
                         </div>
@@ -183,7 +183,7 @@ export const HandymanDashboard = () => {
 
           {/* Active Job Tracker */}
           <aside className="lg:col-span-4 space-y-12">
-              <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-2xl space-y-10 sticky top-32 z-10 overflow-hidden">
+              <div className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-2xl space-y-8 sticky top-32 z-10 overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/5 rounded-full -mr-16 -mt-16 blur-2xl" />
                   
                   <div className="flex items-center gap-4 relative z-10">
@@ -207,7 +207,7 @@ export const HandymanDashboard = () => {
                           <div className="space-y-6 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[2px] before:bg-primary/10">
                              <div className="relative pl-10">
                                 <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                                  <CheckCircle size={14} />
+                                  <CheckCircle2 size={14} />
                                 </div>
                                 <p className="text-[11px] font-black uppercase tracking-widest text-primary-dark">Job Confirmed</p>
                              </div>
@@ -220,7 +220,7 @@ export const HandymanDashboard = () => {
                           </div>
 
                           <div className="pt-4 space-y-3">
-                             <button className="w-full bg-primary-dark text-white py-5 rounded-2xl font-black font-manrope text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary-dark/40 hover:scale-[1.02] active:scale-95 transition-all">
+                             <button className="w-full bg-primary-dark text-white py-4 rounded-xl font-manrope font-extrabold text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary-dark/40 hover:scale-[1.02] active:scale-95 transition-all">
                                 Complete & Invoice
                              </button>
                              <button className="w-full py-4 text-[10px] font-black text-primary-dark/20 uppercase tracking-widest hover:text-red-500 transition-colors">

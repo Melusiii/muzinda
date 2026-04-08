@@ -217,8 +217,8 @@ export const Explorer = () => {
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative pb-safe md:pb-8">
-        <div className="max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative pb-safe md:pb-8">
+        <div className="max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Main Content (Left) */}
           <section className="lg:col-span-8 space-y-12">
             <PageHeader 
@@ -237,7 +237,7 @@ export const Explorer = () => {
             </PageHeader>
 
             {/* Mobile filter trigger */}
-            <div className="lg:hidden sticky top-[96px] z-20 -mx-6 px-6 py-3 bg-surface-bright/90 backdrop-blur-md border-b border-primary/5 flex gap-3 mb-6 overflow-hidden">
+            <div className="lg:hidden sticky top-[90px] z-20 -mx-6 px-6 py-3 bg-surface-bright/90 backdrop-blur-md border-b border-primary/5 flex gap-3 mb-6 overflow-hidden">
               <button
                 onClick={() => setShowFilters(true)}
                 className="flex items-center gap-2 bg-white px-5 py-2.5 rounded-xl border border-primary/5 shadow-sm font-black text-[10px] text-primary-dark/60 uppercase tracking-widest"
@@ -275,7 +275,7 @@ export const Explorer = () => {
                   key={type.label}
                   onClick={() => setSelectedType(type.label)}
                   className={cn(
-                    "px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-3 whitespace-nowrap shadow-sm border",
+                    "px-5 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 whitespace-nowrap shadow-sm border",
                     selectedType === type.label 
                       ? "bg-primary text-white border-primary shadow-xl shadow-primary/20" 
                       : "bg-white text-primary-dark/40 border-primary/5 hover:border-primary/20"
@@ -320,7 +320,7 @@ export const Explorer = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.02, duration: 0.2 }}
-                      className="group bg-white rounded-[2rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 text-left"
+                      className="group bg-white rounded-[1.5rem] overflow-hidden border border-primary/5 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 text-left"
                     >
                        <Link to={`/property/${prop.id}`}>
                         <div className="relative aspect-video overflow-hidden">
@@ -362,16 +362,16 @@ export const Explorer = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="p-6 md:p-8">
+                        <div className="p-5 md:p-6">
                           <div className="flex justify-between items-start mb-3 gap-4">
                             <div className="min-w-0 flex-1">
-                              <h2 className="text-lg md:text-xl font-black text-primary-dark font-manrope tracking-tighter leading-tight truncate">{prop.title || prop.name || 'Untitled House'}</h2>
+                              <h2 className="text-md md:text-lg font-extrabold text-primary-dark font-manrope tracking-tighter leading-tight truncate">{prop.title || prop.name || 'Untitled House'}</h2>
                               <p className="text-[11px] text-primary-dark/40 font-bold uppercase tracking-widest flex items-center gap-1.5 leading-none mt-2">
                                 <MapPin size={10} className="text-primary" strokeWidth={3} /> {prop.location || 'Mutare, ZW'}
                               </p>
                             </div>
                             <div className="shrink-0 pt-1 text-right">
-                              <span className="text-primary-dark font-black text-lg md:text-xl tracking-tighter font-manrope italic">${prop.price}</span>
+                              <span className="text-primary-dark font-extrabold text-md md:text-lg tracking-tighter font-manrope italic">${prop.price}</span>
                               <p className="text-[11px] text-primary-dark/30 font-bold uppercase tracking-[0.2em] leading-none">USD</p>
                             </div>
                           </div>
@@ -429,7 +429,7 @@ export const Explorer = () => {
 
           {/* Desktop sidebar filters */}
           <aside className="hidden lg:block lg:col-span-4 space-y-8">
-            <div className="bg-white rounded-[2rem] p-10 space-y-12 border border-primary/5 shadow-sm sticky top-32 overflow-y-auto max-h-[80vh] scrollbar-hide pb-12">
+            <div className="bg-white rounded-[1.5rem] p-8 space-y-10 border border-primary/5 shadow-sm sticky top-32 overflow-y-auto max-h-[80vh] scrollbar-hide pb-12">
               {filterPanelContent}
               <div className="pt-8 border-t border-primary/5">
                 <div className="bg-primary/5 p-6 rounded-[2rem] border border-primary/10 border-dashed text-center">

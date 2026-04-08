@@ -3,7 +3,7 @@ import { Briefcase, Info, Lock } from 'lucide-react'
 export const ProviderMarketplace = () => {
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <main className="flex-1 md:ml-64 p-6 md:p-8 pt-28 md:pt-28 min-h-screen relative z-10 pb-32 flex flex-col items-center justify-center text-center">
+      <main className="flex-1 md:ml-64 p-6 md:p-8 pt-32 md:pt-32 min-h-screen relative z-10 pb-32 flex flex-col items-center justify-center text-center">
          <div className="max-w-md space-y-6">
             <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mx-auto mb-8 shadow-xl shadow-primary/5">
                <Briefcase size={40} />

@@ -159,7 +159,7 @@ export const AccountSettings = () => {
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-x-hidden">
       <Sidebar />
 
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-32 pt-28 md:pt-28">
+      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-32 pt-32 md:pt-32">
         <div className="max-w-4xl space-y-10">
           
           {/* Top Bar with Back Button */}

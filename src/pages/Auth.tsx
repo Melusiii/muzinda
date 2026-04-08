@@ -66,7 +66,7 @@ export const Auth = () => {
           
           {/* Left Column: Role Selection */}
           <div className={cn("flex flex-col gap-6", showPortal ? "hidden lg:flex" : "flex")}>
-            <h2 className="text-3xl font-manrope font-black text-primary-dark mb-2 px-2">Access Portal</h2>
+            <h2 className="text-2xl font-manrope font-extrabold text-primary-dark mb-1 px-2">Access Portal</h2>
             <div className="grid gap-6 flex-1">
               {roleOptions.map((role) => (
                 <button
@@ -76,7 +76,7 @@ export const Auth = () => {
                     setShowPortal(true)
                   }}
                   className={cn(
-                    "relative p-8 rounded-[2.5rem] text-left transition-all duration-500 overflow-hidden group flex flex-col justify-between h-48",
+                    "relative p-6 rounded-[2rem] text-left transition-all duration-500 overflow-hidden group flex flex-col justify-between h-40",
                     selectedRole === role.id 
                       ? (role.id === 'student' ? "bg-[#1E3011] text-white shadow-2xl shadow-[#1E3011]/20 scale-[1.02]" : "bg-[#1E1E1E] text-white shadow-2xl scale-[1.02]")
                       : "bg-white text-primary-dark border border-primary/5 hover:border-primary/20 hover:bg-[#F0F2F0]"
@@ -98,7 +98,7 @@ export const Auth = () => {
                   
                   <div className="flex justify-between items-end">
                     <div>
-                      <h3 className="text-2xl font-manrope font-black mb-1">{role.title}</h3>
+                      <h3 className="text-xl font-manrope font-extrabold mb-0.5">{role.title}</h3>
                       <p className={cn(
                         "text-sm font-dm-sans leading-tight",
                         selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
@@ -122,7 +122,7 @@ export const Auth = () => {
 
           {/* Right Column: Integrated Login Form */}
           <div className={cn(
-            "bg-white rounded-[3.5rem] p-8 md:p-16 border border-primary/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] flex flex-col justify-center",
+            "bg-white rounded-[2.5rem] p-8 md:p-14 border border-primary/5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] flex flex-col justify-center",
             !showPortal && "hidden lg:flex"
           )}>
             <AnimatePresence mode="wait">
@@ -139,9 +139,9 @@ export const Auth = () => {
                        <div className="w-8 h-[2px] bg-current opacity-20" />
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Welcome Back</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-manrope font-black text-primary-dark tracking-tighter">
+                    <h1 className="text-3xl md:text-4xl font-manrope font-extrabold text-primary-dark tracking-tighter">
                       Login to <br />
-                      <span className="text-primary-dark/40">Muzinda Portal</span>
+                      <span className="text-primary-dark/40 font-manrope">Muzinda Portal</span>
                     </h1>
                   </div>
 
@@ -155,7 +155,7 @@ export const Auth = () => {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-3.5 rounded-xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-dm-sans transition-all"
                         />
                       </div>
                       <div className="relative">
@@ -166,7 +166,7 @@ export const Auth = () => {
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-3.5 rounded-xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-dm-sans transition-all"
                         />
                       </div>
                     </div>
@@ -182,7 +182,7 @@ export const Auth = () => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#1E3011] text-white py-6 rounded-2xl font-manrope font-black text-xl shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
+                      className="w-full bg-[#1E3011] text-white py-4.5 rounded-xl font-manrope font-extrabold text-lg shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
                     >
                       Log In
                       <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />

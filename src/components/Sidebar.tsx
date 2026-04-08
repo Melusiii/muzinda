@@ -74,7 +74,6 @@ export const Sidebar = () => {
       else {
         platform.push(
           { icon: Wrench, label: 'Artisan Hub', href: '/handyman' },
-          { icon: Bus, label: 'Transport Hub', href: '/transport-hub' },
           { icon: DollarSign, label: 'Earnings', href: '/earnings' }
         )
       }
@@ -92,7 +91,7 @@ export const Sidebar = () => {
         key={idx}
         to={item.href || '#'}
         className={cn(
-          "flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-sm transition-all group",
+          "flex items-center gap-4 px-6 py-3 rounded-xl font-extrabold text-sm transition-all group",
           isActive
             ? "bg-primary text-white shadow-lg shadow-primary/20" 
             : "text-primary-dark/40 hover:bg-primary/5 hover:text-primary"
@@ -116,19 +115,19 @@ export const Sidebar = () => {
 
           <button 
             onClick={() => setIsNotificationsOpen(true)}
-            className="flex items-center justify-between w-full p-4 bg-primary/5 rounded-[1.5rem] border border-primary/10 hover:bg-primary/10 transition-all group mb-8 relative"
+            className="flex items-center justify-between w-full p-3 bg-primary/5 rounded-2xl border border-primary/10 hover:bg-primary/10 transition-all group mb-8 relative"
           >
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
                 <Bell size={20} />
               </div>
               <div className="text-left">
-                <p className="text-xs font-black text-primary-dark tracking-tight">Notifications</p>
-                <p className="text-[11px] font-bold text-primary-dark/30 uppercase tracking-widest mt-1">Status Alerts</p>
+                <p className="text-xs font-extrabold text-primary-dark tracking-tight">Notifications</p>
+                <p className="text-[10px] font-extrabold text-primary-dark/30 uppercase tracking-widest mt-1">Status Alerts</p>
               </div>
             </div>
             {unreadCount > 0 && (
-              <span className="bg-primary text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-primary/20">
+              <span className="bg-primary text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow-lg shadow-primary/20">
                 {unreadCount}
               </span>
             )}
@@ -137,7 +136,7 @@ export const Sidebar = () => {
           <nav className="flex-1 overflow-y-auto pr-2 space-y-8 scrollbar-hide">
              {/* PRIMARY SECTION */}
              <div className="space-y-3">
-                <p className="px-6 text-[11px] font-black text-primary-dark/20 uppercase tracking-[0.2em]">Primary</p>
+                <p className="px-6 text-[10px] font-extrabold text-primary-dark/20 uppercase tracking-[0.2em]">Primary</p>
                 <div className="space-y-1">
                   {primary.map((item, idx) => renderLink(item, idx))}
                 </div>
@@ -145,7 +144,7 @@ export const Sidebar = () => {
 
              {/* PLATFORM SECTION */}
              <div className="space-y-3">
-                <p className="px-6 text-[11px] font-black text-primary-dark/20 uppercase tracking-[0.2em]">Platform</p>
+                <p className="px-6 text-[10px] font-extrabold text-primary-dark/20 uppercase tracking-[0.2em]">Platform</p>
                 <div className="space-y-1">
                   {platform.map((item, idx) => renderLink(item, idx))}
                 </div>
@@ -154,12 +153,12 @@ export const Sidebar = () => {
 
           <div className="mt-auto pt-8 border-t border-primary/5 space-y-6">
             <div className="space-y-3">
-               <p className="px-6 text-[11px] font-black text-primary-dark/20 uppercase tracking-[0.2em]">Account</p>
+               <p className="px-6 text-[10px] font-extrabold text-primary-dark/30 uppercase tracking-[0.2em]">Account</p>
                <div className="space-y-1">
                   <Link 
                     to="/settings"
                     className={cn(
-                      "flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-sm transition-all group",
+                      "flex items-center gap-4 px-6 py-3 rounded-xl font-extrabold text-sm transition-all group",
                       location.pathname === '/settings' ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-primary-dark/40 hover:bg-surface-bright"
                     )}
                   >
@@ -168,7 +167,7 @@ export const Sidebar = () => {
                   </Link>
                   <button 
                     onClick={() => logout()}
-                    className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold text-sm text-accent-amber hover:bg-accent-amber/5 transition-all text-left"
+                    className="w-full flex items-center gap-4 px-6 py-3 rounded-xl font-extrabold text-sm text-accent-amber hover:bg-accent-amber/5 transition-all text-left"
                   >
                     <LogOut size={18} />
                     Logout

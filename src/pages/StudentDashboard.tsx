@@ -8,15 +8,15 @@ import {
   MapPin, 
   Building, 
   Clock, 
-  Zap, 
-  Users, 
-  CreditCard, 
-  Check, 
-  ShieldCheck, 
-  Wrench, 
-  X, 
-  AlertCircle,
-  Heart
+  Zap,
+  ShieldCheck,
+  Check,
+  Wrench,
+  Heart,
+  Users,
+  X,
+  Camera,
+  AlertCircle
 } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useAuth } from '../context/AuthContext'
@@ -31,14 +31,16 @@ export const StudentDashboard = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { properties, loading: loadingProps } = useProperties()
-  const { residency } = useStudentResidency()
+  const { residency, loading: residencyLoading } = useStudentResidency()
   const { favorites } = useFavorites()
   const { applications: apps } = useUserApplications()
   const { tickets } = useUserTickets()
   const { tickets: maintTickets } = useMaintenance()
   const [isMaintModalOpen, setIsMaintModalOpen] = useState(false)
   
-  const hasSecuredHousing = !!residency
+  const isSyncing = loadingProps || residencyLoading
+  // Strict guard to prevent flicker: if we are loading residency, housing is definitely NOT secured yet in our UI state
+  const hasSecuredHousing = residencyLoading ? false : !!residency
   const featuredProperties = properties?.slice(0, 4) || []
 
   const containerVariants = {
@@ -61,11 +63,28 @@ export const StudentDashboard = () => {
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
-      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-safe md:pb-8 pt-28 md:pt-28">
-        <PageHeader 
-          title={hasSecuredHousing ? `Your House, ${(user?.name || 'Resident').split(' ')[0]}` : "Student Home"}
-          subtitle="Muzinda Concierge • Your Independent Housing Partner"
-        />
+      <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-safe md:pb-8 pt-32 md:pt-32">
+        {isSyncing ? (
+          <div className="flex flex-col items-center justify-center h-[60vh] space-y-6">
+             <div className="relative w-20 h-20">
+                <div className="absolute inset-0 border-4 border-primary/10 rounded-full" />
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 border-4 border-transparent border-t-primary rounded-full" 
+                />
+             </div>
+             <div className="text-center space-y-2">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.4em] text-primary/40 animate-pulse">Synchronizing Identity</p>
+                <p className="text-[9px] font-medium text-primary-dark/20 uppercase tracking-widest">Muzinda Secure Gate</p>
+             </div>
+          </div>
+        ) : (
+          <>
+            <PageHeader 
+              title={hasSecuredHousing ? `Your House, ${(user?.name || 'Resident').split(' ')[0]}` : "Student Home"}
+              subtitle="Muzinda Concierge • Your Independent Housing Partner"
+            />
 
         <motion.div 
           variants={containerVariants}
@@ -78,69 +97,73 @@ export const StudentDashboard = () => {
             <>
               {/* PRIMARY ROW */}
               <motion.section variants={itemVariants} className="lg:col-span-8 space-y-6 md:space-y-8">
-                {/* Digital Rent Card */}
-                <div className="bg-primary-dark p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group min-h-[280px] md:min-h-[320px] flex flex-col justify-between">
-                  <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 rounded-full -mr-32 -mt-32 blur-[80px] pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-gold/10 rounded-full -ml-32 -mb-32 blur-[60px] pointer-events-none" />
-                  
-                  <div className="relative z-10 flex justify-between items-start">
-                    <div className="space-y-2">
-                       <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 w-fit">
-                          <CreditCard size={14} className="text-accent-gold" />
-                          <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Resident Pass</span>
-                       </div>
-                    </div>
-                    <div className="h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                       <ShieldCheck className="text-primary/40" />
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                    <div>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-wider mb-2">Account Balance</p>
-                      <h2 className="text-5xl md:text-7xl font-manrope font-black tracking-tighter leading-none">$0.00</h2>
-                      <div className="flex items-center gap-4 mt-6">
-                         <div className="flex -space-x-3">
-                            {[1,2].map(i => (
-                              <div key={i} className="w-8 h-8 rounded-full bg-white/20 border-2 border-primary-dark backdrop-blur-md flex items-center justify-center text-[10px] font-bold">
-                                {i === 1 ? '⚡' : '💧'}
+                {/* Active Residence Card */}
+                {residency?.property && (
+                  <div className="relative group overflow-hidden rounded-[1.5rem] md:rounded-[2rem] border border-primary/10 shadow-2xl bg-white min-h-[350px] flex flex-col md:flex-row mb-12">
+                     {/* Property Image Side */}
+                     <div className="md:w-1/2 relative overflow-hidden h-64 md:h-auto">
+                        <img 
+                          src={getImageUrl(residency.property.image_url)} 
+                          alt={residency.property.title} 
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-primary-dark/80 via-primary-dark/40 to-transparent" />
+                        
+                        <div className="absolute bottom-8 left-8 text-white z-10">
+                           <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
+                                 <Building size={16} />
                               </div>
-                            ))}
-                         </div>
-                         <span className="text-[10px] font-bold uppercase text-white/60 tracking-widest">Active Services</span>
-                      </div>
-                    </div>
-                    <button className="w-full md:w-auto px-10 py-5 bg-white text-primary-dark rounded-2xl md:rounded-3xl font-black font-manrope transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-black/20 flex items-center justify-center gap-3">
-                      Add Funds <ArrowRight size={20} />
-                    </button>
-                  </div>
-                </div>
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] font-manrope">Current Residence</span>
+                           </div>
+                           <h2 className="text-2xl md:text-4xl font-manrope font-extrabold tracking-tighter leading-none italic uppercase">{residency.property.title}</h2>
+                           <p className="text-sm text-white/60 mt-2 font-medium flex items-center gap-2">
+                             <MapPin size={14} className="text-primary" /> {residency.property.location}
+                           </p>
+                        </div>
+                     </div>
 
-                {/* Home Manager Bento */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
-                  <div 
-                    onClick={() => setIsMaintModalOpen(true)}
-                    className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden cursor-pointer active:scale-[0.98]"
-                  >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-accent-amber/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-                    <div className="w-14 h-14 rounded-2xl bg-accent-amber/10 flex items-center justify-center mb-6 text-accent-amber shadow-inner">
-                      <Wrench size={24} />
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-manrope font-black text-primary-dark tracking-tight">Maintenance <span className="italic text-primary">Hub</span></h3>
-                    <p className="text-[10px] text-primary-dark/40 font-bold uppercase mt-2 tracking-widest leading-none">
-                      {(maintTickets || []).filter(t => t.status !== 'resolved').length} Active Requests
-                    </p>
-                  </div>
+                     {/* Info & Actions Side */}
+                     <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-between bg-surface-bright relative">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
+                        
+                        <div>
+                           <div className="flex justify-between items-start mb-10">
+                              <div className="space-y-1">
+                                 <p className="text-[10px] font-black text-primary-dark/30 uppercase tracking-[0.4em]">Managing since</p>
+                                 <p className="text-sm font-black text-primary-dark uppercase italic tracking-tight">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+                              </div>
+                              <div className="px-4 py-2 bg-green-50 text-green-600 rounded-2xl border border-green-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                                 <ShieldCheck size={12} /> Verified Home
+                              </div>
+                           </div>
 
-                    <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-primary/5 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-                      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-primary shadow-inner">
-                        <Building size={24} />
-                      </div>
-                      <h3 className="text-xl md:text-2xl font-manrope font-black text-primary-dark tracking-tight">Lease Details</h3>
-                      <p className="text-[10px] text-primary-dark/40 font-bold uppercase mt-2 tracking-widest leading-none">Expires June 2026</p>
-                    </div>
+                           <div className="grid grid-cols-2 gap-4 mb-10">
+                              <div className="p-6 bg-white rounded-3xl border border-primary/5 shadow-sm">
+                                 <p className="text-[9px] font-black text-primary-dark/30 uppercase tracking-widest mb-1.5">Monthly Rent</p>
+                                 <p className="text-2xl font-black text-primary-dark tracking-tighter italic font-manrope">${residency.property.price}</p>
+                              </div>
+                              <div className="p-6 bg-white rounded-3xl border border-primary/5 shadow-sm">
+                                 <p className="text-[9px] font-black text-primary-dark/30 uppercase tracking-widest mb-1.5">Due Date</p>
+                                 <p className="text-2xl font-black text-primary-dark tracking-tighter italic font-manrope">1st</p>
+                              </div>
+                           </div>
+                        </div>
+
+                        <div className="space-y-4 relative z-10">
+                           <button 
+                             onClick={() => setIsMaintModalOpen(true)}
+                             className="w-full py-4 bg-primary text-white rounded-2xl font-manrope font-extrabold text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                           >
+                             <Wrench size={18} /> Report Maintenance Issue
+                           </button>
+                           <p className="text-center text-[9px] font-black text-primary-dark/20 uppercase tracking-widest">
+                             {(maintTickets || []).filter(t => t.status !== 'resolved').length} Active Support Tickets
+                           </p>
+                        </div>
+                     </div>
                   </div>
+                )}
 
                 {/* Saved Houses Horizontal Carousel */}
                 {(favorites || []).length > 0 && (
@@ -181,9 +204,9 @@ export const StudentDashboard = () => {
 
               {/* ASIDE ROW */}
               <motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6 md:space-y-8">
-                <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm space-y-8">
+                <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm space-y-6">
                    <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-manrope font-black text-primary-dark tracking-tight">Quick <span className="italic text-primary">Services</span></h3>
+                    <h3 className="text-lg font-manrope font-extrabold text-primary-dark tracking-tight">Quick <span className="italic text-primary">Services</span></h3>
                     <div className="w-10 h-1 bg-primary/10 rounded-full" />
                    </div>
                    <div className="grid grid-cols-1 gap-4">
@@ -212,10 +235,10 @@ export const StudentDashboard = () => {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] border border-primary/5 shadow-sm"
+                      className="bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm"
                     >
                         <div className="flex items-center justify-between mb-6">
-                           <h4 className="text-md font-manrope font-black text-primary-dark tracking-tight flex items-center gap-2">
+                           <h4 className="text-sm font-manrope font-extrabold text-primary-dark tracking-tight flex items-center gap-2">
                               <Bus size={18} className="text-primary" /> Active Trips
                            </h4>
                            <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-black uppercase">{(tickets || []).length}</span>
@@ -241,13 +264,13 @@ export const StudentDashboard = () => {
             <>
               {/* PRIMARY BENTO: MARKETPLACE PULSE */}
               <motion.section variants={itemVariants} className="lg:col-span-8 space-y-6 md:space-y-10">
-                <div className="bg-white p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] border border-primary/5 shadow-sm relative overflow-hidden group">
+                <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-primary/5 shadow-sm relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
                   
                   <div className="flex justify-between items-end mb-8 md:mb-10 relative z-10">
                     <div className="space-y-1">
                        <p className="text-[11px] font-black text-primary uppercase tracking-[0.3em]">House Explorer</p>
-                       <h3 className="text-3xl md:text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-none">Featured <span className="italic text-primary">Stays</span></h3>
+                       <h3 className="text-2xl md:text-3xl font-manrope font-extrabold text-primary-dark tracking-tighter leading-none">Featured <span className="italic text-primary">Stays</span></h3>
                     </div>
                     <Link to="/explorer" className="flex items-center gap-2 text-[10px] font-black text-primary-dark/40 hover:text-primary transition-all uppercase tracking-[0.2em]">
                       Explore <ArrowRight size={14} />
@@ -303,7 +326,7 @@ export const StudentDashboard = () => {
                     <div className="flex justify-between items-end px-2">
                        <div>
                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Personal Collection</p>
-                          <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tight">Saved <span className="italic text-primary text-3xl font-serif">Houses</span></h3>
+                          <h3 className="text-xl font-manrope font-extrabold text-primary-dark tracking-tight">Saved <span className="italic text-primary text-2xl font-serif">Houses</span></h3>
                        </div>
                        <Link to="/explorer" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">See Hearted</Link>
                     </div>
@@ -355,14 +378,14 @@ export const StudentDashboard = () => {
 
               {/* SIDEBAR ASIDE: RESIDENT PATH (MOBILE OPTIMIZED) */}
               <motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6 md:space-y-8">
-                 <div className="bg-primary-dark p-8 md:p-10 rounded-[2.5rem] md:rounded-[4rem] text-white relative overflow-hidden shadow-2xl flex flex-col justify-between min-h-[400px] md:min-h-[500px]">
+                 <div className="bg-primary-dark p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl flex flex-col justify-between min-h-[350px] md:min-h-[450px]">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
                     
                     <div className="relative z-10">
                        <div className="flex justify-between items-start mb-8 md:mb-10">
                           <div className="space-y-1">
                              <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">Lifecycle</p>
-                             <h3 className="text-xl md:text-2xl font-manrope font-black text-white tracking-tighter uppercase">My Journey</h3>
+                             <h3 className="text-lg md:text-xl font-manrope font-extrabold text-white tracking-tighter uppercase">My Journey</h3>
                           </div>
                           <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/5"><Zap size={20} className="text-accent-gold" /></div>
                        </div>
@@ -411,11 +434,11 @@ export const StudentDashboard = () => {
                     </div>
                     <div className="flex -space-x-3 pt-1">
                       {[1,2,3,4,5].map(i => (
-                        <div key={i} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-4 border-white bg-primary/10 overflow-hidden">
+                        <div key={i} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white bg-primary/10 overflow-hidden">
                            <img src={`https://i.pravatar.cc/150?u=${i+10}`} alt="user" className="w-full h-full object-cover grayscale opacity-50" />
                         </div>
                       ))}
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-4 border-white bg-primary text-white flex items-center justify-center text-[11px] font-black shadow-lg">+14</div>
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[11px] font-black shadow-lg">+14</div>
                     </div>
                  </div>
               </motion.aside>
@@ -429,16 +452,19 @@ export const StudentDashboard = () => {
             <MaintenanceModal 
               onClose={() => setIsMaintModalOpen(false)} 
               tickets={maintTickets}
+              residency={residency}
             />
           )}
         </AnimatePresence>
-      </main>
-    </div>
+      </>
+    )}
+  </main>
+</div>
   )
 }
 
 // PREMIUM MAINTENANCE MODAL COMPONENT
-const MaintenanceModal = ({ onClose, tickets }: { onClose: () => void, tickets: any[] }) => {
+const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void, tickets: any[], residency: any }) => {
   const [step, setStep] = useState<'list' | 'create'>('list')
   const [formData, setFormData] = useState<{ category: string, priority: 'low' | 'medium' | 'high' | 'emergency', description: string }>({ 
     category: 'plumbing', 
@@ -446,10 +472,8 @@ const MaintenanceModal = ({ onClose, tickets }: { onClose: () => void, tickets: 
     description: '' 
   })
   const [submitting, setSubmitting] = useState(false)
-  const { applications } = useUserApplications()
-  
   // Get active property for the current resident
-  const activePropertyId = applications.find(a => a.status === 'secured')?.property_id
+  const activePropertyId = residency?.property?.id
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -458,8 +482,8 @@ const MaintenanceModal = ({ onClose, tickets }: { onClose: () => void, tickets: 
     try {
       await submitMaintenanceRequest(activePropertyId, formData)
       setStep('list')
-    } catch (err) {
-      alert("Failed to submit request")
+    } catch (err: any) {
+      alert(err.message || "Failed to submit request")
     } finally {
       setSubmitting(false)
     }
@@ -481,9 +505,14 @@ const MaintenanceModal = ({ onClose, tickets }: { onClose: () => void, tickets: 
       >
         {/* Header */}
         <div className="p-8 md:p-10 flex justify-between items-center border-b border-primary/5">
-          <div>
-            <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Maintenance <span className="text-primary italic">Hub</span></h3>
-            <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.4em] mt-1">Status Tracking • Request Repairs</p>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+              <ShieldCheck size={24} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Maintenance <span className="text-primary italic">Hub</span></h3>
+              <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-[0.4em] mt-1">{residency?.property?.title || 'Private Report'} • Official Request</p>
+            </div>
           </div>
           <button onClick={onClose} className="p-3 bg-primary/5 text-primary-dark/40 hover:text-primary transition-all rounded-2xl"><X size={20} /></button>
         </div>
@@ -583,6 +612,11 @@ const MaintenanceModal = ({ onClose, tickets }: { onClose: () => void, tickets: 
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
                       className="w-full h-32 p-6 glass bg-white/50 rounded-[2rem] border border-primary/10 outline-none focus:border-primary/30 transition-all text-sm font-medium italic"
                     />
+                  </div>
+
+                  <div className="p-6 bg-primary/5 rounded-[2rem] border border-dashed border-primary/20 flex flex-col items-center justify-center gap-3">
+                     <div className="w-10 h-10 bg-white rounded-xl shadow-lg flex items-center justify-center text-primary/40"><Camera size={18} /></div>
+                     <span className="text-[10px] font-black text-primary-dark/30 uppercase tracking-widest">Add Evidence Photo (Optional)</span>
                   </div>
                </div>
 

@@ -14,7 +14,7 @@ export const StudentFavorites = () => {
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 p-6 pt-28 md:pt-28 md:p-8 min-h-screen relative pb-32">
+      <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative pb-32">
         <PageHeader 
           title="Saved Houses" 
           subtitle="Your curated collection of Muzinda favorites"

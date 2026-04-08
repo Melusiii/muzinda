@@ -101,42 +101,40 @@ export const PropertyDetail = () => {
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
       <Sidebar />
       
-      <main className="flex-1 md:ml-64 pb-24 relative pt-28 md:pt-0">
-        {/* Navigation Floating Header (Mobile Friendly) */}
-        <div className="fixed top-24 md:top-8 left-0 md:left-64 right-0 z-[45] px-6 pointer-events-none">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <button 
-              onClick={() => navigate(-1)}
-              className="pointer-events-auto flex items-center gap-3 bg-white/90 backdrop-blur-md px-5 py-3 rounded-2xl border border-primary/5 text-primary-dark font-black shadow-xl hover:bg-white transition-all group"
-            >
-              <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[10px] uppercase tracking-widest leading-none">Back</span>
-            </button>
-            <div className="flex gap-3 pointer-events-auto">
-               <button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleFavorite(property.id);
-                }}
-                className={cn(
-                  "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all shadow-xl group",
-                  isFavorited(property.id) 
-                    ? "bg-red-500 text-white border-red-400" 
-                    : "bg-white/90 backdrop-blur-md border-primary/5 text-primary-dark hover:text-red-500"
-                )}
-               >
-                 <Heart size={20} className={cn("transition-transform", isFavorited(property.id) ? "fill-current scale-110" : "group-hover:scale-125")} />
-               </button>
-               <button className="w-12 h-12 bg-white/90 backdrop-blur-md rounded-2xl border border-primary/5 flex items-center justify-center text-primary-dark hover:text-primary transition-all shadow-xl">
-                 <Share2 size={20} />
-               </button>
-            </div>
-          </div>
-        </div>
-
+      <main className="flex-1 md:ml-64 pb-24 relative pt-32 md:pt-32">
         {/* Cinematic Gallery Overhaul */}
         <div className="md:px-6 max-w-7xl mx-auto md:pt-8">
            <div className="relative group overflow-hidden md:rounded-[3.5rem] shadow-2xl bg-primary-dark aspect-[16/10] md:aspect-[21/9]">
+              {/* Overlay Actions */}
+              <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-center pointer-events-none">
+                 <button 
+                   onClick={() => navigate(-1)}
+                   className="pointer-events-auto flex items-center gap-3 bg-black/20 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/10 text-white font-extrabold shadow-2xl hover:bg-black/40 transition-all group"
+                 >
+                   <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                   <span className="text-[10px] uppercase tracking-widest leading-none">Back</span>
+                 </button>
+                 <div className="flex gap-3 pointer-events-auto">
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleFavorite(property.id);
+                      }}
+                      className={cn(
+                        "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all shadow-2xl group backdrop-blur-xl",
+                        isFavorited(property.id) 
+                          ? "bg-red-500 text-white border-red-400" 
+                          : "bg-black/20 border-white/10 text-white hover:bg-white hover:text-red-500"
+                      )}
+                    >
+                      <Heart size={20} className={cn("transition-transform", isFavorited(property.id) ? "fill-current scale-110" : "group-hover:scale-125")} />
+                    </button>
+                    <button className="w-12 h-12 bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all shadow-2xl">
+                      <Share2 size={20} />
+                    </button>
+                 </div>
+              </div>
+
               <img 
                 src={getImageUrl(property.image_url)} 
                 alt={property.title} 
