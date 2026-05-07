@@ -28,6 +28,7 @@ import { useMaintenance, submitMaintenanceRequest, useStudentResidency, uploadMa
 import { getImageUrl } from '../utils/supabase-helpers'
 import { PageHeader } from '../components/PageHeader'
 import { Logo } from '../components/Logo'
+import { LoadingScreen } from '../components/LoadingScreen'
 
 export const StudentDashboard = () => {
   const { user } = useAuth()
@@ -66,23 +67,7 @@ export const StudentDashboard = () => {
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-accent-gold/5 rounded-full blur-[100px] -ml-48 -mb-48 pointer-events-none" />
       <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-safe md:pb-8 pt-32 md:pt-32">
         {isSyncing ? (
-          <div className="flex flex-col items-center justify-center h-[60vh] space-y-8">
-             <div className="relative w-24 h-24">
-                <div className="absolute inset-0 border-4 border-primary/10 rounded-[2rem]" />
-                <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 border-4 border-transparent border-t-primary rounded-[2rem]" 
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <Logo />
-                </div>
-             </div>
-             <div className="text-center space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.6em] text-primary animate-pulse">Syncing Identity</p>
-                <p className="text-[9px] font-black text-primary-dark/20 uppercase tracking-widest italic">Secure Profile Sync</p>
-             </div>
-          </div>
+          <LoadingScreen />
         ) : (
           <>
             <PageHeader 
