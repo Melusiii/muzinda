@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 export const StudentFavorites = () => {
   const navigate = useNavigate()
-  const { favorites, toggleFavorite, loading } = useFavorites()
+  const { favorites, toggleFavorite, isLoading } = useFavorites()
 
   return (
     <div className="flex bg-surface-bright min-h-screen font-geist">
@@ -18,7 +18,7 @@ export const StudentFavorites = () => {
           subtitle="Your curated collection of Muzinda favorites"
         />
 
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map(i => (
               <div key={i} className="aspect-[4/5] bg-white rounded-[2.5rem] animate-pulse border border-primary/5" />
