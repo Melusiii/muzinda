@@ -28,7 +28,7 @@ interface AuthContextType {
   logout: (scope?: 'local' | 'global') => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     profilePromiseRef.current = (async () => {
       try {
-        let { data: profile, error: fetchError } = await supabase
+        const { data: profile, error: fetchError } = await supabase
           .from('profiles')
           .select('id, email, full_name, role, avatar_url, verification_status, phone, bio, gender')
           .eq('id', sessionUser.id)
@@ -60,7 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (fetchError) throw fetchError;
 
         // Auto-create profile if missing (common in local dev or quick-start flows)
-        if (!profile) {
+        let activeProfile = profile;
+        if (!activeProfile) {
           console.warn(`AuthContext: Profile missing for ${sessionUser.email}, auto-creating...`);
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
@@ -73,11 +74,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .select()
             .single();
           if (createError) throw createError;
-          profile = newProfile;
+          activeProfile = newProfile;
         }
 
         let serviceCategory = undefined;
-        if (profile.role === 'provider') {
+        if (activeProfile.role === 'provider') {
           const { data: service } = await supabase
             .from('services')
             .select('category')
@@ -87,17 +88,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         const userData: User = {
-          id: profile.id,
-          email: profile.email,
-          name: profile.full_name,
-          role: profile.role as Role,
-          avatar_url: profile.avatar_url,
-          verificationStatus: (profile.verification_status as VerificationStatus) || 'unverified',
-          gender: profile.gender,
+          id: activeProfile.id,
+          email: activeProfile.email,
+          name: activeProfile.full_name,
+          role: activeProfile.role as Role,
+          avatar_url: activeProfile.avatar_url,
+          verificationStatus: (activeProfile.verification_status as VerificationStatus) || 'unverified',
+          gender: activeProfile.gender,
           category: serviceCategory,
-          hasSecuredHousing: profile.role === 'student' ? false : undefined,
-          phone: profile.phone,
-          bio: profile.bio,
+          hasSecuredHousing: activeProfile.role === 'student' ? false : undefined,
+          phone: activeProfile.phone,
+          bio: activeProfile.bio,
         };
 
         setUser(userData);
@@ -236,10 +237,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};

@@ -13,7 +13,7 @@ import {
   Bell 
 } from 'lucide-react'
 import { cn } from '../utils/cn'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { Logo } from './Logo'
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'

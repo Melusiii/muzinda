@@ -1,6 +1,6 @@
 import { Wrench, Bus, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 
 export const BentoServices = () => {
   const { isAuthenticated } = useAuth()

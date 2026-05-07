@@ -25,7 +25,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import { cn } from '../utils/cn'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { 
   useLandlordStats, 
   useLandlordApplications, 

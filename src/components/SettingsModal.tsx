@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, User, ChevronLeft, Shield, LogOut } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { cn } from '../utils/cn'
 import { supabase } from '../lib/supabase'
 import { createPortal } from 'react-dom'

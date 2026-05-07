@@ -16,7 +16,7 @@ import {
   Languages,
   Monitor
 } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '../utils/cn'

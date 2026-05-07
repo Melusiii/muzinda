@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../useAuth'
 import type { Application } from './types'
 import { withLockRetry, createNotification } from './shared'
 
@@ -24,7 +24,7 @@ export const useUserApplications = () => {
        );
       
       if (error) throw error;
-      const processed = (data || []).map((app: any) => ({
+      const processed = (data || []).map((app: Application) => ({
         ...app,
         property: Array.isArray(app.property) ? app.property[0] : app.property
       }));

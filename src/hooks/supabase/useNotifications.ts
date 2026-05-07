@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../useAuth'
 import type { Notification } from './types'
 import { withLockRetry } from './shared'
 
@@ -13,13 +13,13 @@ export const useNotifications = () => {
   const fetchNotifications = useCallback(async () => {
     if (!user) return
     try {
-       const { data } = await withLockRetry<any>(() => 
-         supabase
+      const { data } = await withLockRetry<Notification[]>(() => 
+        supabase
           .from('notifications')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-       );
+      );
   
       const result = (data as Notification[]) || []
       setNotifications(result)

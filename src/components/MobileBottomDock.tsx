@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LayoutDashboard, Users, DollarSign, Compass, MessageSquare, CreditCard, User, Heart, Wrench } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { cn } from '../utils/cn'
 
 export const MobileBottomDock = () => {

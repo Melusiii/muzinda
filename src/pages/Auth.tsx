@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { School, Building, Briefcase, ArrowRight, ShieldCheck, Mail, Lock } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { cn } from '../utils/cn'
 import { useEffect } from 'react'
 

@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Sidebar'
 import { useProperty, useFavorites, useUserApplications, type Application } from '../hooks/useSupabase'
 import { submitApplication } from '../hooks/useSupabase'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { cn } from '../utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 

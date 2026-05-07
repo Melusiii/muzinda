@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Sidebar } from '../components/Sidebar'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { 
   User, 
   Settings, 

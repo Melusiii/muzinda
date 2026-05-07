@@ -6,7 +6,7 @@ import { Neighborhoods } from '../components/Neighborhoods'
 import { StudentFavorites } from '../components/StudentFavorites'
 import { motion } from 'framer-motion'
 import { Link, Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 
 export const Home = () => {
   const { isAuthenticated, user, loading } = useAuth()

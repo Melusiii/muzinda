@@ -20,7 +20,7 @@ import {
   Loader2
 } from 'lucide-react'
 import { cn } from '../utils/cn'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserApplications, useUserTickets, useProperties, useFavorites } from '../hooks/useSupabase'

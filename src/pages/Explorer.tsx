@@ -40,7 +40,7 @@ export const Explorer = () => {
   const { properties, loading, error } = useProperties()
   const { toggleFavorite, isFavorited } = useFavorites()
   
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(() => searchParams.get('q') || '')
   const [selectedGender, setSelectedGender] = useState('All')
   const [selectedType, setSelectedType] = useState('All')
   const [priceRange, setPriceRange] = useState(1200)
@@ -59,8 +59,8 @@ export const Explorer = () => {
 
   useEffect(() => {
     const q = searchParams.get('q')
-    if (q) setSearch(q)
-  }, [searchParams])
+    if (q && q !== search) setSearch(q)
+  }, [searchParams, search])
 
   const filtered = properties.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || 

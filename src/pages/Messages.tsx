@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { MessageSquare, Send, Loader2, ChevronLeft } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { useConversations, useMessages, sendMessage } from '../hooks/useSupabase'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 
 export const Messages = () => {
   const { user } = useAuth()
