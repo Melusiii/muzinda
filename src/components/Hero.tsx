@@ -53,7 +53,7 @@ export const Hero = () => {
           {/* Minimalist Search Bar */}
           <form 
             onSubmit={handleSearch}
-            className="relative w-full max-w-md mx-auto group px-2"
+            className="relative w-full max-w-md mx-auto md:mx-0 group px-2 md:px-0"
           >
             <div className="relative bg-white border border-primary/10 p-1.5 rounded-[1.5rem] shadow-2xl shadow-primary/10 flex items-center gap-1.5 focus-within:ring-4 focus-within:ring-primary/5 transition-all">
               <div className="pl-2 text-primary-dark/20">
@@ -129,7 +129,7 @@ export const Hero = () => {
           {/* University Trust Indicators */}
           <div className="pt-6 space-y-4">
             <p className="text-[9px] font-black text-primary-dark/20 uppercase tracking-[0.3em]">Trusted by Mutare Students</p>
-            <div className="flex flex-wrap gap-x-6 gap-y-3 items-center justify-center opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 items-center justify-center md:justify-start opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
                <span className="font-manrope font-black text-sm md:text-lg tracking-tighter">AFRICA UNIVERSITY</span>
                <span className="font-manrope font-black text-sm md:text-lg tracking-tighter">MUTARE POLY</span>
                <span className="font-manrope font-black text-sm md:text-lg tracking-tighter">MSU</span>
