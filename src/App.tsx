@@ -30,9 +30,6 @@ const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Pro
 const AccountSettings = lazy(() => import('./pages/AccountSettings').then(m => ({ default: m.AccountSettings })))
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })))
 
-import { Navbar } from './components/Navbar'
-import { Sidebar } from './components/Sidebar'
-import { MobileBottomDock } from './components/MobileBottomDock'
 
 function ErrorFallback({ error, resetErrorBoundary }: { error: any; resetErrorBoundary: () => void }) {
   return (
