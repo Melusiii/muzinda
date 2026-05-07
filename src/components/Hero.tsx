@@ -19,13 +19,13 @@ export const Hero = () => {
   }
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-40 md:pb-32 px-5 md:px-6 overflow-hidden bg-white">
+    <section className="relative pt-16 pb-12 md:pt-28 md:pb-20 px-5 md:px-6 overflow-hidden bg-white">
       {/* Dynamic Background Accents */}
       <div className="absolute top-0 right-0 w-full md:w-1/3 h-full bg-primary/5 rounded-l-[10rem] -mr-20 hidden lg:block -z-0" />
       <div className="absolute top-20 right-10 w-32 h-32 bg-primary/10 rounded-full blur-[60px] lg:hidden -z-0" />
       <div className="absolute bottom-10 left-10 w-64 h-64 bg-accent-gold/5 rounded-full blur-[100px] -ml-32 -z-0" />
 
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center relative z-10">
 
         {/* Text + CTA */}
         <motion.div
@@ -40,7 +40,7 @@ export const Hero = () => {
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Verified Student Hub</span>
             </div>
 
-            <h1 className="font-manrope text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-primary-dark leading-[0.95] md:leading-[0.9]">
+            <h1 className="font-manrope text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-primary-dark leading-[0.95] md:leading-[0.9]">
               Find your room<br />
               <span className="text-primary italic">near campus.</span>
             </h1>
@@ -53,25 +53,25 @@ export const Hero = () => {
           {/* Minimalist Search Bar */}
           <form 
             onSubmit={handleSearch}
-            className="relative max-w-lg group"
+            className="relative w-full max-w-md mx-auto group px-2"
           >
-            <div className="relative bg-white border border-primary/10 p-2 rounded-[2rem] shadow-2xl shadow-primary/10 flex items-center gap-2 focus-within:ring-4 focus-within:ring-primary/5 transition-all">
-              <div className="pl-4 text-primary-dark/20">
-                <Search size={20} />
+            <div className="relative bg-white border border-primary/10 p-1.5 rounded-[1.5rem] shadow-2xl shadow-primary/10 flex items-center gap-1.5 focus-within:ring-4 focus-within:ring-primary/5 transition-all">
+              <div className="pl-2 text-primary-dark/20">
+                <Search size={16} />
               </div>
               <input 
                 type="text" 
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search neighborhood..."
-                className="flex-1 bg-transparent border-none outline-none font-dm-sans font-bold text-sm py-4"
+                className="flex-1 bg-transparent border-none outline-none font-dm-sans font-bold text-xs md:text-sm py-3"
               />
               <button 
                 type="submit"
-                className="bg-primary text-white w-14 h-14 md:w-auto md:px-8 rounded-[1.5rem] font-black text-sm hover:bg-primary-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                className="bg-primary text-white w-10 h-10 md:w-auto md:px-6 rounded-[1rem] font-black text-[9px] md:text-xs hover:bg-primary-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
               >
                 <span className="hidden md:inline uppercase tracking-widest">Search</span>
-                <ArrowRight size={20} />
+                <ArrowRight size={14} />
               </button>
             </div>
           </form>
@@ -99,7 +99,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="lg:hidden w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl"
+            className="lg:hidden w-full aspect-video rounded-[2rem] overflow-hidden shadow-2xl my-4"
           >
             <img
               src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1935&auto=format&fit=crop"
@@ -111,28 +111,28 @@ export const Hero = () => {
           </motion.div>
 
           {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 md:pt-0">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 md:pt-0">
             <Link
               to="/signup"
-              className="bg-primary-dark text-white px-8 py-5 rounded-2xl font-black font-manrope text-sm uppercase tracking-widest shadow-2xl shadow-primary-dark/20 hover:translate-y-[-2px] active:scale-95 transition-all text-center"
+              className="bg-primary-dark text-white px-6 py-4 rounded-xl font-black font-manrope text-[11px] md:text-xs uppercase tracking-widest shadow-2xl shadow-primary-dark/20 hover:translate-y-[-2px] active:scale-95 transition-all text-center"
             >
               Get started — it's free
             </Link>
             <Link
               to="/auth"
-              className="bg-white text-primary-dark border-2 border-primary/5 px-8 py-5 rounded-2xl font-black font-manrope text-sm uppercase tracking-widest hover:bg-primary/5 transition-all text-center"
+              className="bg-white text-primary-dark border-2 border-primary/5 px-6 py-4 rounded-xl font-black font-manrope text-[11px] md:text-xs uppercase tracking-widest hover:bg-primary/5 transition-all text-center"
             >
               Sign in
             </Link>
           </div>
 
           {/* University Trust Indicators */}
-          <div className="pt-6 space-y-5">
-            <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-[0.3em]">Trusted by Mutare Students</p>
-            <div className="flex flex-wrap gap-x-8 gap-y-4 items-center opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
-               <span className="font-manrope font-black text-lg tracking-tighter">AFRICA UNIVERSITY</span>
-               <span className="font-manrope font-black text-lg tracking-tighter">MUTARE POLY</span>
-               <span className="font-manrope font-black text-lg tracking-tighter">MSU</span>
+          <div className="pt-6 space-y-4">
+            <p className="text-[9px] font-black text-primary-dark/20 uppercase tracking-[0.3em]">Trusted by Mutare Students</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 items-center justify-center opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+               <span className="font-manrope font-black text-sm md:text-lg tracking-tighter">AFRICA UNIVERSITY</span>
+               <span className="font-manrope font-black text-sm md:text-lg tracking-tighter">MUTARE POLY</span>
+               <span className="font-manrope font-black text-sm md:text-lg tracking-tighter">MSU</span>
             </div>
           </div>
         </motion.div>

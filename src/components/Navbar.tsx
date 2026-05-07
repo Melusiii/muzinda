@@ -79,8 +79,8 @@ export const Navbar = () => {
         : "bg-white/40 backdrop-blur-md border-b border-white/10"
     )}>
       <div className={cn(
-        "flex w-full items-center transition-all px-4 sm:px-6",
-        isAuthenticated ? "justify-between md:justify-end md:px-12" : "max-w-7xl mx-auto justify-between"
+        "flex w-full items-center transition-all",
+        isAuthenticated ? "justify-between md:justify-end md:px-12 px-6" : "max-w-7xl mx-auto justify-between px-6"
       )}>
         <Link 
           to={user?.role === 'student' ? '/dashboard' : (user?.role === 'landlord' ? '/landlord' : (user?.role === 'provider' ? '/provider' : '/'))}
@@ -154,7 +154,7 @@ export const Navbar = () => {
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Link to="/auth" className="bg-primary text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-[10px] md:text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+              <Link to="/auth" className="bg-primary text-white px-3 py-2 md:px-6 md:py-3 rounded-xl font-bold text-[9px] md:text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                 Get Started
               </Link>
             </div>
