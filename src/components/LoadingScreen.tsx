@@ -3,7 +3,7 @@ import { Home } from 'lucide-react'
 
 export const LoadingScreen = () => {
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-surface-bright font-dm-sans">
+    <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-surface-bright font-geist">
       <div className="relative">
         {/* Ambient Glows */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/10 rounded-full blur-[100px]" />
@@ -36,7 +36,7 @@ export const LoadingScreen = () => {
             <motion.h2 
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="text-lg font-manrope font-extrabold tracking-tighter text-primary-dark uppercase italic"
+              className="text-lg font-geist font-extrabold tracking-tighter text-primary-dark uppercase italic"
             >
               Preparing your House
             </motion.h2>

@@ -238,7 +238,7 @@ export const LandlordDashboard = () => {
   }
 
   return (
-    <div className="flex bg-[#F4F8F5] min-h-screen font-dm-sans relative max-w-[100vw] overflow-x-hidden">
+    <div className="flex bg-[#F4F8F5] min-h-screen font-geist relative max-w-[100vw] overflow-x-hidden">
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <motion.div 
@@ -266,7 +266,7 @@ export const LandlordDashboard = () => {
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                   <h2 className="text-3xl md:text-5xl font-manrope font-black text-primary-dark tracking-tighter uppercase leading-none">
+                   <h2 className="text-3xl md:text-5xl font-geist font-black text-primary-dark tracking-tighter uppercase leading-none">
                      {activeTab === 'overview' ? 'My Hub' : activeTab === 'applications' ? 'Applicants' : activeTab === 'maintenance' ? 'Service Hub' : 'Earnings'}
                    </h2>
                 </div>
@@ -339,7 +339,7 @@ export const LandlordDashboard = () => {
                       <stat.icon size={20} className="md:w-6 md:h-6" />
                     </div>
                     <div className="relative">
-                      <h4 className="text-xl md:text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-none">{stat.value}</h4>
+                      <h4 className="text-xl md:text-4xl font-geist font-black text-primary-dark tracking-tighter leading-none">{stat.value}</h4>
                       <p className="text-[11px] md:text-[11px] font-black text-primary-dark/30 uppercase tracking-[0.3em] mt-2 leading-none">{stat.label}</p>
                     </div>
                   </motion.div>
@@ -361,7 +361,7 @@ export const LandlordDashboard = () => {
                      <div className="space-y-8">
                         <div className="flex justify-between items-end px-4">
                            <div className="space-y-1">
-                              <h3 className="text-2xl md:text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase">Your <span className="italic text-primary">Houses</span></h3>
+                              <h3 className="text-2xl md:text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase">Your <span className="italic text-primary">Houses</span></h3>
                               <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.4em]">Active Portfolio</p>
                            </div>
                            <button 
@@ -393,15 +393,15 @@ export const LandlordDashboard = () => {
                                      <div className="flex-1 bg-white/90 backdrop-blur-xl p-3 rounded-xl border border-white shadow-xl flex justify-between items-center transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                                         <div className="flex flex-col">
                                            <span className="text-[11px] font-black uppercase text-primary-dark/30 tracking-widest leading-none mb-1">Price</span>
-                                           <span className="text-sm font-black text-primary-dark font-manrope leading-none">${prop.price}<span className="text-[11px] font-bold opacity-30">/mo</span></span>
+                                           <span className="text-sm font-black text-primary-dark font-geist leading-none">${prop.price}<span className="text-[11px] font-bold opacity-30">/mo</span></span>
                                         </div>
                                      </div>
                                   </div>
                                 </div>
                                 <div className="p-6 space-y-6">
                                   <div className="space-y-1">
-                                    <h4 className="font-manrope font-black text-lg text-primary-dark tracking-tighter leading-tight uppercase group-hover:text-primary transition-colors">{prop.title}</h4>
-                                    <p className="text-[11px] text-primary-dark/40 font-bold uppercase tracking-[0.2em] flex items-center gap-1 font-dm-sans">
+                                    <h4 className="font-geist font-black text-lg text-primary-dark tracking-tighter leading-tight uppercase group-hover:text-primary transition-colors">{prop.title}</h4>
+                                    <p className="text-[11px] text-primary-dark/40 font-bold uppercase tracking-[0.2em] flex items-center gap-1 font-geist">
                                       <MapPin size={10} className="text-primary" /> {prop.location}
                                     </p>
                                   </div>
@@ -437,7 +437,7 @@ export const LandlordDashboard = () => {
                      <div className="glass p-8 md:p-12 rounded-[3.5rem] border border-white shadow-xl space-y-10 relative overflow-hidden bg-white/30">
                         <div className="flex justify-between items-center px-2 relative">
                            <div className="space-y-1">
-                              <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter uppercase">System <span className="italic text-primary">Activity</span></h3>
+                              <h3 className="text-2xl font-geist font-black text-primary-dark tracking-tighter uppercase">System <span className="italic text-primary">Activity</span></h3>
                               <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.5em]">Real-time system events</p>
                            </div>
                            <div className="w-12 h-12 rounded-xl bg-white shadow-lg flex items-center justify-center text-primary border border-white">
@@ -461,7 +461,7 @@ export const LandlordDashboard = () => {
                                 </div>
                                 <div className="space-y-1.5 flex-1">
                                    <div className="flex justify-between items-center">
-                                      <h5 className="font-manrope font-black text-primary-dark text-sm uppercase tracking-tighter italic leading-none">{activity.title}</h5>
+                                      <h5 className="font-geist font-black text-primary-dark text-sm uppercase tracking-tighter italic leading-none">{activity.title}</h5>
                                       <span className="text-[11px] font-black text-primary-dark/20 uppercase tracking-widest leading-none">{activity.time}</span>
                                    </div>
                                    <p className="text-[10px] text-primary-dark/50 font-bold leading-relaxed">{activity.desc}</p>
@@ -475,7 +475,7 @@ export const LandlordDashboard = () => {
                   <div className="space-y-10 pb-20">
                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-4">
                         <div className="space-y-1">
-                           <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase">Review <span className="italic text-primary">Applicants</span></h3>
+                           <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase">Review <span className="italic text-primary">Applicants</span></h3>
                            <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.5em]">Review student requests</p>
                         </div>
                         <div className="relative w-full md:w-auto">
@@ -504,7 +504,7 @@ export const LandlordDashboard = () => {
                                     </div>
                                  </div>
                                  <div className="space-y-2">
-                                    <h4 className="font-manrope font-black text-xl text-primary-dark tracking-tighter leading-none italic uppercase">{app.student?.full_name}</h4>
+                                    <h4 className="font-geist font-black text-xl text-primary-dark tracking-tighter leading-none italic uppercase">{app.student?.full_name}</h4>
                                     <p className="text-[11px] text-primary-dark/40 font-black uppercase tracking-widest leading-none italic">Applying For • {app.property?.title}</p>
                                  </div>
                               </div>
@@ -540,7 +540,7 @@ export const LandlordDashboard = () => {
                         ))}
                         {applications.length === 0 && (
                            <div className="py-24 text-center glass rounded-[3rem] border border-dashed border-primary/20 bg-white/40">
-                              <p className="text-primary-dark/40 font-black uppercase tracking-[0.5em] text-[10px] font-manrope italic">No pending requests</p>
+                              <p className="text-primary-dark/40 font-black uppercase tracking-[0.5em] text-[10px] font-geist italic">No pending requests</p>
                            </div>
                         )}
                       </div>
@@ -549,7 +549,7 @@ export const LandlordDashboard = () => {
                    <div className="space-y-10 pb-20">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 px-4">
                          <div className="space-y-1">
-                            <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase">Service <span className="italic text-primary">Hub</span></h3>
+                            <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase">Service <span className="italic text-primary">Hub</span></h3>
                             <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.5em]">Resolve Property Issues</p>
                          </div>
                       </div>
@@ -569,7 +569,7 @@ export const LandlordDashboard = () => {
                                        <Zap size={20} />
                                     </div>
                                     <div>
-                                       <h4 className="font-manrope font-black text-lg text-primary-dark tracking-tighter leading-none italic uppercase">{ticket.category}</h4>
+                                       <h4 className="font-geist font-black text-lg text-primary-dark tracking-tighter leading-none italic uppercase">{ticket.category}</h4>
                                        <p className="text-[10px] text-primary-dark/40 font-black uppercase tracking-widest mt-1.5">{ticket.property?.title}</p>
                                     </div>
                                  </div>
@@ -649,7 +649,7 @@ export const LandlordDashboard = () => {
                                         </button>
                                     </>
                                  ) : (
-                                    <div className="w-full py-3 bg-green-50 text-green-600 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-green-100 italic font-manrope">
+                                    <div className="w-full py-3 bg-green-50 text-green-600 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-green-100 italic font-geist">
                                        <Check size={14} /> Ticket Resolved
                                     </div>
                                  )}
@@ -658,7 +658,7 @@ export const LandlordDashboard = () => {
                          ))}
                          {maintTickets.length === 0 && (
                             <div className="col-span-full py-24 text-center glass rounded-[3rem] border border-dashed border-primary/20 bg-white/40">
-                               <p className="text-primary-dark/40 font-black uppercase tracking-[0.5em] text-[10px] font-manrope italic">No active maintenance requests</p>
+                               <p className="text-primary-dark/40 font-black uppercase tracking-[0.5em] text-[10px] font-geist italic">No active maintenance requests</p>
                             </div>
                          )}
                       </div>
@@ -675,7 +675,7 @@ export const LandlordDashboard = () => {
                   <div className="glass p-10 rounded-[3rem] border border-white shadow-xl space-y-8 bg-white/40">
                     <div className="flex justify-between items-center px-2">
                        <div className="space-y-1">
-                          <h3 className="font-manrope font-black text-2xl text-primary-dark tracking-tighter uppercase italic">Checks</h3>
+                          <h3 className="font-geist font-black text-2xl text-primary-dark tracking-tighter uppercase italic">Checks</h3>
                           <p className="text-[11px] font-black text-primary-dark/30 uppercase tracking-widest">Active Tickets</p>
                        </div>                       <div className="flex items-center gap-2">
                           <span className="text-[10px] font-black text-primary-dark/20 uppercase">{(maintTickets || []).filter(t => t.status !== 'resolved').length}</span>
@@ -688,7 +688,7 @@ export const LandlordDashboard = () => {
                       {maintTickets.filter(t => t.status !== 'resolved').slice(0, 3).map((ticket) => (
                         <div key={ticket.id} className="p-6 rounded-[2rem] bg-white border border-white shadow-sm space-y-4">
                           <div className="space-y-1">
-                             <h5 className="font-manrope font-black text-primary-dark text-sm italic uppercase truncate">{ticket.category}</h5>
+                             <h5 className="font-geist font-black text-primary-dark text-sm italic uppercase truncate">{ticket.category}</h5>
                              <p className="text-[10px] text-primary-dark/40 font-black uppercase tracking-[0.2em] truncate">{ticket.property?.title}</p>
                           </div>
                           <button 
@@ -731,7 +731,7 @@ export const LandlordDashboard = () => {
             <div className="w-full max-w-6xl bg-white md:rounded-[3rem] shadow-2xl border border-white overflow-hidden flex flex-col h-full md:max-h-[90vh]">
                <header className="p-6 md:p-8 border-b border-primary/5 flex justify-between items-center bg-white sticky top-0 z-20">
                   <div className="space-y-1">
-                     <h2 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">List My House</h2>
+                     <h2 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase italic">List My House</h2>
                      <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.5em]">Create a premium property profile</p>
                   </div>
                   <button onClick={() => setShowAddFlow(false)} className="w-12 h-12 rounded-2xl bg-primary/5 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm">
@@ -918,7 +918,7 @@ export const LandlordDashboard = () => {
                    <Check size={64} strokeWidth={3} />
                 </div>
                 <div className="space-y-2">
-                   <h2 className="text-5xl font-manrope font-black text-white italic uppercase tracking-tighter">House Listed</h2>
+                   <h2 className="text-5xl font-geist font-black text-white italic uppercase tracking-tighter">House Listed</h2>
                    <p className="text-white/40 text-[10px] font-black tracking-[0.5em] uppercase">Updating your portfolio...</p>
                 </div>
              </motion.div>
@@ -960,7 +960,7 @@ export const LandlordDashboard = () => {
                         {isEditing ? (
                           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-12 max-w-4xl mx-auto">
                             <div className="space-y-4">
-                              <h2 className="text-5xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase leading-none">Update House Details</h2>
+                              <h2 className="text-5xl font-geist font-black text-primary-dark tracking-tighter italic uppercase leading-none">Update House Details</h2>
                               <p className="text-primary-dark/30 font-black uppercase tracking-[0.5em] text-[10px]">Adjust pricing or description.</p>
                             </div>
                             
@@ -1067,7 +1067,7 @@ export const LandlordDashboard = () => {
                           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                              <div className="lg:col-span-12 flex flex-col md:flex-row justify-between items-center gap-8">
                                 <div className="space-y-2">
-                                   <h2 className="text-5xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase leading-none">{prop.title}</h2>
+                                   <h2 className="text-5xl font-geist font-black text-primary-dark tracking-tighter italic uppercase leading-none">{prop.title}</h2>
                                    <div className="flex items-center gap-3">
                                       <div className="px-4 py-1.5 bg-primary-dark text-white rounded-full text-[11px] font-black uppercase tracking-widest">{prop.type}</div>
                                       <p className="text-primary-dark/40 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 italic">
@@ -1101,20 +1101,20 @@ export const LandlordDashboard = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                    <div className="glass p-8 rounded-[2.5rem] border border-white shadow-xl bg-white/60 space-y-2">
                                       <span className="text-[11px] font-black text-primary-dark/20 uppercase tracking-widest">Monthly Rate</span>
-                                      <h4 className="text-4xl font-manrope font-black text-primary-dark italic">${prop.price}</h4>
+                                      <h4 className="text-4xl font-geist font-black text-primary-dark italic">${prop.price}</h4>
                                    </div>
                                    <div className="glass p-8 rounded-[2.5rem] border border-white shadow-xl bg-white/60 space-y-2">
                                       <span className="text-[11px] font-black text-primary-dark/20 uppercase tracking-widest">Available Spots</span>
-                                      <h4 className="text-4xl font-manrope font-black text-primary-dark italic">{prop.available_rooms || 1}</h4>
+                                      <h4 className="text-4xl font-geist font-black text-primary-dark italic">{prop.available_rooms || 1}</h4>
                                    </div>
                                    <div className="glass p-8 rounded-[2.5rem] border border-white shadow-xl bg-white/60 space-y-2">
                                       <span className="text-[11px] font-black text-primary-dark/20 uppercase tracking-widest">Total Checks</span>
-                                      <h4 className="text-4xl font-manrope font-black text-primary-dark italic">12</h4>
+                                      <h4 className="text-4xl font-geist font-black text-primary-dark italic">12</h4>
                                    </div>
                                 </div>
 
                                 <div className="glass p-12 rounded-[3.5rem] border border-white shadow-xl bg-white/40 space-y-8">
-                                   <h3 className="text-2xl font-manrope font-black text-primary-dark italic uppercase tracking-tighter">About this House</h3>
+                                   <h3 className="text-2xl font-geist font-black text-primary-dark italic uppercase tracking-tighter">About this House</h3>
                                    <p className="text-primary-dark/60 text-sm font-bold leading-relaxed whitespace-pre-wrap">{prop.description}</p>
                                 </div>
                              </div>
@@ -1122,7 +1122,7 @@ export const LandlordDashboard = () => {
                              <div className="lg:col-span-4 space-y-8">
                                 <div className="glass p-10 rounded-[3rem] border border-white shadow-xl bg-primary-dark space-y-8 relative overflow-hidden">
                                    <div className="relative space-y-6">
-                                      <h3 className="text-2xl font-manrope font-black text-white italic uppercase tracking-tighter">Applicants</h3>
+                                      <h3 className="text-2xl font-geist font-black text-white italic uppercase tracking-tighter">Applicants</h3>
                                       <div className="space-y-4">
                                          {applications.filter(app => app.property_id === managedPropertyId).slice(0, 3).map((app: any) => (
                                            <div key={app.id} className="p-4 bg-white/10 rounded-2xl border border-white/10 flex items-center gap-4">
@@ -1156,7 +1156,7 @@ export const LandlordDashboard = () => {
              <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white w-full max-w-xl rounded-[3rem] overflow-hidden shadow-2xl relative">
                 <header className="p-8 border-b border-primary/5 flex justify-between items-center">
                    <div>
-                      <h3 className="text-2xl font-manrope font-black text-primary-dark italic uppercase tracking-tighter">Marketplace Dispatch</h3>
+                      <h3 className="text-2xl font-geist font-black text-primary-dark italic uppercase tracking-tighter">Marketplace Dispatch</h3>
                       <p className="text-primary-dark/40 text-[10px] font-black uppercase tracking-[0.4em]">Deploy to Handyman Network</p>
                    </div>
                    <button onClick={() => setShowMarketplacePost(false)} className="w-10 h-10 rounded-full hover:bg-red-50 hover:text-red-500 transition-all flex items-center justify-center bg-primary-dark/5 text-primary-dark">

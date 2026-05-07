@@ -68,7 +68,7 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
                     className="md:hidden p-2 -ml-2 text-primary hover:bg-primary/5 rounded-xl flex items-center gap-1 transition-all"
                    >
                      <ChevronLeft size={20} />
-                     <span className="text-xs font-extrabold font-manrope uppercase tracking-tight text-primary-dark">Back</span>
+                     <span className="text-xs font-extrabold font-geist uppercase tracking-tight text-primary-dark">Back</span>
                    </button>
                    <div className="hidden md:flex w-10 h-10 bg-primary/5 rounded-xl items-center justify-center text-primary relative shadow-inner">
                       <Bell size={20} />
@@ -79,7 +79,7 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
                       )}
                    </div>
                    <div>
-                      <h2 className="text-lg md:text-xl font-manrope font-extrabold text-primary-dark tracking-tight">Activity <span className="text-primary italic">Feed</span></h2>
+                      <h2 className="text-lg md:text-xl font-geist font-extrabold text-primary-dark tracking-tight">Activity <span className="text-primary italic">Feed</span></h2>
                       <p className="hidden md:block text-[9px] font-extrabold text-primary-dark/30 uppercase tracking-[0.2em]">Institutional Hub</p>
                    </div>
                 </div>
@@ -151,7 +151,7 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
                         </div>
                         <div className="space-y-1 pr-6 flex-1">
                           <h4 className={cn(
-                             "font-manrope font-extrabold text-sm tracking-tight leading-tight",
+                             "font-geist font-extrabold text-sm tracking-tight leading-tight",
                              n.read ? "text-primary-dark/60" : "text-primary-dark"
                           )}>{n.title || 'Notification'}</h4>
                           <p className="text-xs text-primary-dark/40 font-medium leading-relaxed">{n.message || 'No message content'}</p>
@@ -169,7 +169,7 @@ export const NotificationsModal = ({ isOpen, onClose }: NotificationsModalProps)
                       <Bell size={32} />
                    </div>
                    <div className="space-y-1">
-                      <h3 className="text-lg font-manrope font-extrabold text-primary-dark">No updates yet</h3>
+                      <h3 className="text-lg font-geist font-extrabold text-primary-dark">No updates yet</h3>
                       <p className="text-[10px] text-primary-dark/30 font-bold max-w-[180px] mx-auto uppercase tracking-wider">Your activity feed is clear</p>
                    </div>
                 </div>

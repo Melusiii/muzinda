@@ -29,6 +29,7 @@ export const Navbar = () => {
       return [
         { name: 'Browse Home', path: '/' },
         { name: 'Explore Housing', path: '/explorer' },
+        { name: 'List Property', path: '/auth?role=landlord' },
       ]
     }
     
@@ -100,13 +101,14 @@ export const Navbar = () => {
                 {link.name}
               </button>
             ) : (
-              <Link
-                key={link.name}
-                to={link.path || '#'}
-                className="text-primary-dark/70 hover:text-primary font-bold text-sm tracking-tight transition-colors"
-              >
-                {link.name}
-              </Link>
+                <Link
+                  key={link.name}
+                  to={link.path || '#'}
+                  className="relative text-primary-dark/70 hover:text-primary font-bold text-sm tracking-tight transition-colors group"
+                >
+                  {link.name}
+                  <span className="absolute -bottom-1 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full group-hover:left-0" />
+                </Link>
             )
           ))}
         </div>
@@ -151,8 +153,8 @@ export const Navbar = () => {
                </div>
             </>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link to="/auth" className="bg-primary text-white px-5 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-xs md:text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+            <div className="flex items-center gap-2">
+              <Link to="/auth" className="bg-primary text-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl font-bold text-[10px] md:text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                 Get Started
               </Link>
             </div>

@@ -58,7 +58,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
             {/* Header */}
             <div className="p-8 md:p-12 border-b border-primary/5 flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic">Post Shuttle Run</h2>
+                <h2 className="text-3xl font-geist font-black text-primary-dark tracking-tighter italic">Post Shuttle Run</h2>
                 <p className="text-primary-dark/40 font-bold text-[10px] uppercase tracking-[0.2em] mt-1">Step {step} of 2 • Route Management</p>
               </div>
               <button onClick={onClose} className="p-3 bg-surface-bright text-primary-dark/20 hover:text-primary-dark rounded-2xl transition-all">
@@ -86,7 +86,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                           )}
                         >
                           <Bus className={cn("mb-4", formData.route_id === route.id ? "text-primary" : "text-primary-dark/20")} size={24} />
-                          <h4 className="font-manrope font-black text-primary-dark leading-tight">{route.name}</h4>
+                          <h4 className="font-geist font-black text-primary-dark leading-tight">{route.name}</h4>
                           <p className="text-[10px] font-bold text-primary-dark/40 uppercase mt-2">${route.price_morning} morning fare</p>
                           {formData.route_id === route.id && (
                             <div className="absolute top-4 right-4 text-primary">
@@ -101,7 +101,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                   <button 
                     disabled={!formData.route_id}
                     onClick={() => setStep(2)}
-                    className="w-full py-6 bg-primary text-white rounded-3xl font-manrope font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-20"
+                    className="w-full py-6 bg-primary text-white rounded-3xl font-geist font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-20"
                   >
                     Next: Schedule Details
                   </button>
@@ -119,7 +119,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                           type="time" 
                           value={formData.departure_time}
                           onChange={(e) => setFormData({ ...formData, departure_time: e.target.value })}
-                          className="w-full pl-16 pr-6 py-5 bg-surface-bright border-2 border-primary/5 rounded-3xl font-manrope font-black text-primary-dark outline-none focus:border-primary transition-all"
+                          className="w-full pl-16 pr-6 py-5 bg-surface-bright border-2 border-primary/5 rounded-3xl font-geist font-black text-primary-dark outline-none focus:border-primary transition-all"
                         />
                       </div>
                     </div>
@@ -133,7 +133,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                           placeholder="e.g. 15"
                           value={formData.vehicle_capacity}
                           onChange={(e) => setFormData({ ...formData, vehicle_capacity: parseInt(e.target.value) })}
-                          className="w-full pl-16 pr-6 py-5 bg-surface-bright border-2 border-primary/5 rounded-3xl font-manrope font-black text-primary-dark outline-none focus:border-primary transition-all"
+                          className="w-full pl-16 pr-6 py-5 bg-surface-bright border-2 border-primary/5 rounded-3xl font-geist font-black text-primary-dark outline-none focus:border-primary transition-all"
                         />
                       </div>
                     </div>
@@ -144,7 +144,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                       <MapPin size={20} />
                       <span className="text-[10px] font-black uppercase tracking-widest">Selected Route Summary</span>
                     </div>
-                    <h3 className="text-xl font-manrope font-black text-primary-dark">
+                    <h3 className="text-xl font-geist font-black text-primary-dark">
                       {routes.find(r => r.id === formData.route_id)?.name}
                     </h3>
                     <p className="text-sm text-primary-dark/40 mt-1 font-bold">Operating today at {formData.departure_time} ({formData.vehicle_capacity} seats max)</p>
@@ -155,7 +155,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                     <button 
                       onClick={handleSubmit}
                       disabled={isSubmitting}
-                      className="flex-1 py-6 bg-primary text-white rounded-3xl font-manrope font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                      className="flex-1 py-6 bg-primary text-white rounded-3xl font-geist font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
                       {isSubmitting ? 'Posting...' : 'Go Live Now'}
                       {!isSubmitting && <CheckCircle2 size={18} />}
@@ -169,7 +169,7 @@ export const PostShuttleModal = ({ isOpen, onClose }: PostShuttleModalProps) => 
                   <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white mx-auto shadow-xl shadow-green-500/20">
                     <CheckCircle2 size={48} />
                   </div>
-                  <h3 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter">Shuttle is Live!</h3>
+                  <h3 className="text-4xl font-geist font-black text-primary-dark tracking-tighter">Shuttle is Live!</h3>
                   <p className="text-primary-dark/40 font-bold text-sm">Students can now book seats for this run.</p>
                 </div>
               )}

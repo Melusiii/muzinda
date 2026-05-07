@@ -64,7 +64,7 @@ export const PropertyDetail = () => {
   if (error || !property) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-surface-bright">
-        <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter italic">Property not found</h2>
+        <h2 className="text-2xl font-geist font-black text-primary-dark tracking-tighter italic">Property not found</h2>
         <button onClick={() => navigate('/explorer')} className="text-primary font-black uppercase tracking-widest text-[10px] hover:underline">Back to Explorer</button>
       </div>
     )
@@ -97,7 +97,7 @@ export const PropertyDetail = () => {
   ]
 
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <div className="flex bg-surface-bright min-h-screen font-geist">
       
       <main className="flex-1 md:ml-64 pb-24 relative pt-32 md:pt-32">
         {/* Cinematic Gallery Overhaul */}
@@ -163,7 +163,7 @@ export const PropertyDetail = () => {
                           <span className="text-[10px] font-black uppercase tracking-widest leading-none">{property.likes_count || 0} Saved</span>
                        </div>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-manrope font-extrabold text-white tracking-tighter leading-none italic uppercase">
+                    <h1 className="text-4xl md:text-6xl font-geist font-extrabold text-white tracking-tighter leading-none italic uppercase">
                        {property.name || property.title}
                     </h1>
                     <div className="flex items-center gap-2 text-white/60 font-bold text-sm tracking-tight">
@@ -196,7 +196,7 @@ export const PropertyDetail = () => {
                       </div>
                       <div>
                          <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-                         <p className="text-sm font-manrope font-black text-primary-dark capitalize leading-tight">{item.value}</p>
+                         <p className="text-sm font-geist font-black text-primary-dark capitalize leading-tight">{item.value}</p>
                       </div>
                    </div>
                  ))}
@@ -205,8 +205,8 @@ export const PropertyDetail = () => {
               {/* Description Bento */}
               <div className="bg-white p-8 md:p-12 rounded-[3rem] border border-primary/5 shadow-sm relative overflow-hidden group">
                  <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                 <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic mb-8 uppercase">The Experience</h3>
-                 <div className="text-primary-dark/50 font-dm-sans text-lg leading-relaxed max-w-none italic">
+                 <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter italic mb-8 uppercase">The Experience</h3>
+                 <div className="text-primary-dark/50 font-geist text-lg leading-relaxed max-w-none italic">
                     <p className="whitespace-pre-line leading-loose">"{property.description}"</p>
                  </div>
               </div>
@@ -214,7 +214,7 @@ export const PropertyDetail = () => {
               {/* Amenities Grid */}
               <div className="space-y-8">
                  <div className="flex items-center gap-4 px-4 overflow-hidden">
-                    <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase shrink-0">Premium Hubs</h3>
+                    <h3 className="text-2xl font-geist font-black text-primary-dark tracking-tighter italic uppercase shrink-0">Premium Hubs</h3>
                     <div className="h-[2px] bg-primary/5 w-full rounded-full" />
                  </div>
                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -243,7 +243,7 @@ export const PropertyDetail = () => {
                       <div className="flex justify-between items-start mb-12">
                          <div className="space-y-1">
                             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-2 leading-none">Yield Value</p>
-                            <h2 className="text-6xl font-manrope font-black tracking-tighter leading-none italic">${property.price}</h2>
+                            <h2 className="text-6xl font-geist font-black tracking-tighter leading-none italic">${property.price}</h2>
                             <p className="text-[11px] font-bold text-white/30 pt-3 italic uppercase tracking-widest">per month • fully inclusive</p>
                          </div>
                          <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 shadow-xl"><ShieldCheck size={28} className="text-accent-gold" /></div>
@@ -276,11 +276,11 @@ export const PropertyDetail = () => {
                                 <span className="text-sm font-black uppercase tracking-widest italic leading-none">Contract Requested</span>
                              </div>
                              <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest leading-relaxed">
-                                Current Status: <span className="text-white bg-primary/20 px-2 py-0.5 rounded-lg capitalize font-manrope">{existingApp?.status || applied ? 'Protocol Sent' : 'Active Integration'}</span>
+                                Current Status: <span className="text-white bg-primary/20 px-2 py-0.5 rounded-lg capitalize font-geist">{existingApp?.status || applied ? 'Protocol Sent' : 'Active Integration'}</span>
                              </p>
                              <Link 
                                 to="/dashboard" 
-                                className="block w-full text-center py-4 bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all font-manrope shadow-inner border border-white/5"
+                                className="block w-full text-center py-4 bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all font-geist shadow-inner border border-white/5"
                              >
                                 Portal Center
                              </Link>
@@ -288,7 +288,7 @@ export const PropertyDetail = () => {
                        ) : (
                           <button 
                             onClick={handleApplyClick}
-                            className="w-full bg-white text-primary-dark py-6 rounded-3xl font-manrope font-black text-xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group/btn italic uppercase"
+                            className="w-full bg-white text-primary-dark py-6 rounded-3xl font-geist font-black text-xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.95] transition-all flex items-center justify-center gap-4 group/btn italic uppercase"
                           >
                             Apply for House
                             <ArrowRight size={24} className="group-hover/btn:translate-x-1 transition-transform" />
@@ -371,8 +371,8 @@ export const PropertyDetail = () => {
               {!applied ? (
                 <div className="p-10 md:p-14 space-y-10">
                   <div className="space-y-4">
-                    <h2 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase leading-none">Interest Protocol</h2>
-                    <p className="text-primary-dark/40 font-dm-sans text-sm leading-relaxed italic">
+                    <h2 className="text-4xl font-geist font-black text-primary-dark tracking-tighter italic uppercase leading-none">Interest Protocol</h2>
+                    <p className="text-primary-dark/40 font-geist text-sm leading-relaxed italic">
                       Verified Muzinda students receive prioritization. Mention your semester start date and university affiliation.
                     </p>
                   </div>
@@ -386,14 +386,14 @@ export const PropertyDetail = () => {
                          value={message}
                          onChange={(e) => setMessage(e.target.value)}
                          placeholder="Introduce yourself to the Haven owner..."
-                         className="w-full p-8 rounded-[2.5rem] bg-surface-bright border border-primary/5 focus:bg-white focus:border-primary/30 outline-none font-dm-sans transition-all resize-none shadow-inner italic text-sm"
+                         className="w-full p-8 rounded-[2.5rem] bg-surface-bright border border-primary/5 focus:bg-white focus:border-primary/30 outline-none font-geist transition-all resize-none shadow-inner italic text-sm"
                        />
                     </div>
 
                     <button 
                       type="submit"
                       disabled={applying}
-                      className="w-full bg-primary-dark text-white py-6 rounded-3xl font-manrope font-black text-xl shadow-2xl shadow-primary-dark/20 flex items-center justify-center gap-4 group italic uppercase active:scale-95 transition-all"
+                      className="w-full bg-primary-dark text-white py-6 rounded-3xl font-geist font-black text-xl shadow-2xl shadow-primary-dark/20 flex items-center justify-center gap-4 group italic uppercase active:scale-95 transition-all"
                     >
                       {applying ? (
                          <>
@@ -415,8 +415,8 @@ export const PropertyDetail = () => {
                       <CheckCircle2 size={48} className="text-primary" />
                    </div>
                    <div className="space-y-4">
-                      <h2 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter italic leading-tight uppercase">Intent Recorded</h2>
-                      <p className="text-primary-dark/50 font-dm-sans italic">
+                      <h2 className="text-4xl font-geist font-black text-primary-dark tracking-tighter italic leading-tight uppercase">Intent Recorded</h2>
+                      <p className="text-primary-dark/50 font-geist italic">
                         Your protocol has been logged at Muzinda Hub. The owner will respond via secure messenger.
                       </p>
                    </div>

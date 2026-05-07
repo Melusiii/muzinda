@@ -2,14 +2,14 @@ import { Megaphone, Plus, Info } from 'lucide-react'
 
 export const PropertyAds = () => {
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <div className="flex bg-surface-bright min-h-screen font-geist">
       <main className="flex-1 md:ml-64 p-6 md:p-8 min-h-screen pt-32 md:pt-32 relative z-10 flex flex-col">
          <header className="mb-12 flex justify-between items-center">
             <div>
-               <h1 className="text-4xl font-extrabold tracking-tighter text-primary-dark font-manrope">Property Ads</h1>
-               <p className="text-white/40 text-xs font-dm-sans mb-8 leading-relaxed">Your property portfolio is fully protected by Muzinda verification standards.</p>
+               <h1 className="text-4xl font-extrabold tracking-tighter text-primary-dark font-geist">Property Ads</h1>
+               <p className="text-white/40 text-xs font-geist mb-8 leading-relaxed">Your property portfolio is fully protected by Muzinda verification standards.</p>
             </div>
-            <button className="bg-primary text-white px-6 py-3 rounded-2xl font-bold font-manrope flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+            <button className="bg-primary text-white px-6 py-3 rounded-2xl font-bold font-geist flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                <Plus size={20} />
                Create Ad Campaign
             </button>
@@ -19,8 +19,8 @@ export const PropertyAds = () => {
             <div className="w-20 h-20 bg-accent-gold/10 rounded-[2rem] flex items-center justify-center text-accent-gold mb-8 shadow-xl shadow-accent-gold/5">
                <Megaphone size={40} />
             </div>
-            <h2 className="text-2xl font-extrabold tracking-tighter text-primary-dark font-manrope">No Active Ad Campaigns</h2>
-            <p className="text-primary-dark/40 max-w-sm mt-2 font-dm-sans">
+            <h2 className="text-2xl font-extrabold tracking-tighter text-primary-dark font-geist">No Active Ad Campaigns</h2>
+            <p className="text-primary-dark/40 max-w-sm mt-2 font-geist">
                Promote your properties to the top of the search results to increase visibility.
             </p>
             

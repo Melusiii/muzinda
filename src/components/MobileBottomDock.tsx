@@ -11,6 +11,27 @@ export const MobileBottomDock = () => {
   const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
+
+  useEffect(() => {
+    // Detect keyboard visibility on mobile
+    const handleResize = () => {
+      const isVisible = window.innerHeight < window.outerHeight * 0.75
+      setIsKeyboardVisible(isVisible)
+    }
+
+    if (window.visualViewport) {
+      const handleViewportResize = () => {
+        const isVisible = window.visualViewport!.height < window.innerHeight * 0.75
+        setIsKeyboardVisible(isVisible)
+      }
+      window.visualViewport.addEventListener('resize', handleViewportResize)
+      return () => window.visualViewport?.removeEventListener('resize', handleViewportResize)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (location.pathname === '/messages') {
@@ -79,7 +100,7 @@ export const MobileBottomDock = () => {
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isVisible && !isKeyboardVisible && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

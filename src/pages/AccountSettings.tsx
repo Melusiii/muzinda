@@ -155,7 +155,7 @@ export const AccountSettings = () => {
   ]
 
   return (
-    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-x-hidden">
+    <div className="flex bg-[#F8F9F8] min-h-screen font-geist overflow-x-hidden">
 
       <main className="flex-1 md:ml-64 p-4 sm:p-6 md:p-8 min-h-screen relative z-10 pb-32 pt-32 md:pt-32">
         <div className="max-w-4xl space-y-10">
@@ -261,7 +261,7 @@ export const AccountSettings = () => {
                         />
                       </div>
                       <div className="text-center md:text-left space-y-2">
-                        <h3 className="text-xl font-manrope font-black text-primary-dark tracking-tight italic uppercase">Identity Card</h3>
+                        <h3 className="text-xl font-geist font-black text-primary-dark tracking-tight italic uppercase">Identity Card</h3>
                         <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-widest"> institutional avatar and visual presence</p>
                       </div>
                     </div>
@@ -321,7 +321,7 @@ export const AccountSettings = () => {
                   className="space-y-6"
                 >
                   <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
-                    <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Access Protocol</h3>
+                    <h3 className="text-md font-geist font-black text-primary-dark uppercase tracking-tight italic">Access Protocol</h3>
                     
                     <div className="space-y-4">
                       <form onSubmit={handlePasswordUpdate} className="space-y-4 bg-[#F8F9F8] p-6 rounded-2xl border border-primary/5">
@@ -371,7 +371,7 @@ export const AccountSettings = () => {
 
                   <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Session Terminal</h3>
+                      <h3 className="text-md font-geist font-black text-primary-dark uppercase tracking-tight italic">Session Terminal</h3>
                       <span className="px-3 py-1 bg-primary/10 text-primary text-[8px] font-black uppercase rounded-full tracking-widest">1 Active</span>
                     </div>
                     
@@ -406,7 +406,7 @@ export const AccountSettings = () => {
                   className="space-y-6"
                 >
                   <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-8">
-                     <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Communications Protocol</h3>
+                     <h3 className="text-md font-geist font-black text-primary-dark uppercase tracking-tight italic">Communications Protocol</h3>
                      
                       <div className="space-y-6">
                         {[
@@ -451,7 +451,7 @@ export const AccountSettings = () => {
                 >
                   <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-8">
                      <div className="flex justify-between items-center">
-                        <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Treasury Control</h3>
+                        <h3 className="text-md font-geist font-black text-primary-dark uppercase tracking-tight italic">Treasury Control</h3>
                         <button className="text-[9px] font-black text-primary uppercase tracking-widest">View History</button>
                      </div>
                      
@@ -464,7 +464,7 @@ export const AccountSettings = () => {
                                  <span className="text-[8px] font-black uppercase tracking-[0.4em] opacity-40 italic">Muzinda Pass</span>
                               </div>
                               <div className="space-y-1">
-                                 <p className="text-2xl font-manrope font-bold tracking-[0.2em]">**** **** **** 4022</p>
+                                 <p className="text-2xl font-geist font-bold tracking-[0.2em]">**** **** **** 4022</p>
                                  <div className="flex justify-between text-[8px] font-black uppercase tracking-[0.2em] opacity-40">
                                     <span>{user.name}</span>
                                     <span>EXP 08/25</span>
@@ -489,7 +489,7 @@ export const AccountSettings = () => {
                   className="space-y-6"
                 >
                    <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-primary/5 shadow-sm space-y-10">
-                     <h3 className="text-md font-manrope font-black text-primary-dark uppercase tracking-tight italic">Global Directives</h3>
+                     <h3 className="text-md font-geist font-black text-primary-dark uppercase tracking-tight italic">Global Directives</h3>
                      
                      <div className="space-y-8">
                         <div className="flex items-center justify-between">

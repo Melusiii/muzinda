@@ -40,7 +40,7 @@ export const Profile = () => {
   ]
 
   return (
-    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
+    <div className="flex bg-[#F8F9F8] min-h-screen font-geist overflow-hidden">
       
       <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative z-10 pb-32">
         {/* Header Section */}
@@ -73,7 +73,7 @@ export const Profile = () => {
              </div>
 
              <div className="space-y-2">
-                <h1 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter uppercase">{user.name}</h1>
+                <h1 className="text-4xl font-geist font-black text-primary-dark tracking-tighter uppercase">{user.name}</h1>
                 <div className="flex items-center justify-center gap-3">
                    <span className="px-4 py-1.5 bg-primary/5 text-primary rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/10">
                       Muzinda {user.role}
@@ -95,7 +95,7 @@ export const Profile = () => {
                    <Calendar size={18} />
                 </div>
                 <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-widest leading-none">Member Since</p>
-                <p className="text-sm font-manrope font-black text-primary-dark capitalize italic">April 2026</p>
+                <p className="text-sm font-geist font-black text-primary-dark capitalize italic">April 2026</p>
              </div>
              <div className="bg-primary-dark p-6 rounded-[2.5rem] shadow-xl space-y-2 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-primary/20 rounded-full -mr-8 -mt-8 blur-2xl group-hover:scale-150 transition-transform" />
@@ -103,13 +103,13 @@ export const Profile = () => {
                    <ShieldCheck size={18} />
                 </div>
                 <p className="text-[10px] font-black text-white/20 uppercase tracking-widest leading-none">Trust Level</p>
-                <p className="text-sm font-manrope font-black text-white italic">Institutional</p>
+                <p className="text-sm font-geist font-black text-white italic">Institutional</p>
              </div>
           </div>
 
           {/* Premium Bento Menu */}
           <div className="space-y-4">
-             <h3 className="text-xs font-black text-primary-dark/20 uppercase tracking-[0.3em] font-manrope pl-4">Account Navigator</h3>
+             <h3 className="text-xs font-black text-primary-dark/20 uppercase tracking-[0.3em] font-geist pl-4">Account Navigator</h3>
              <div className="grid grid-cols-1 gap-3">
                 {menuItems.map((item, idx) => (
                   <button
@@ -151,7 +151,7 @@ export const Profile = () => {
           <div className="pt-8 space-y-6">
              <button 
                 onClick={() => { logout(); navigate('/'); }}
-                className="w-full py-6 bg-red-500/5 text-red-500 border-2 border-dashed border-red-500/10 rounded-[2.5rem] font-manrope font-black text-xs uppercase tracking-[0.3em] hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-4 active:scale-95 shadow-xl shadow-red-500/5"
+                className="w-full py-6 bg-red-500/5 text-red-500 border-2 border-dashed border-red-500/10 rounded-[2.5rem] font-geist font-black text-xs uppercase tracking-[0.3em] hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-4 active:scale-95 shadow-xl shadow-red-500/5"
              >
                 <LogOut size={18} /> Kill Session / Log Out
              </button>

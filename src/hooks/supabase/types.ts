@@ -72,6 +72,8 @@ export interface Property {
   nearby_university?: string
   walk_minutes_to_campus?: number
   likes_count?: number
+  lat?: number
+  lng?: number
 }
 
 export interface Application {

@@ -63,9 +63,9 @@ const StatusTrackingTile = ({ app }: { app: any }) => {
         <div className="space-y-4 text-center md:text-left">
            <div className="inline-flex items-center gap-2 bg-accent-gold/10 text-accent-gold px-4 py-2 rounded-2xl border border-accent-gold/20">
               <Clock size={14} />
-              <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verification in Progress</span>
+              <span className="text-[10px] font-black uppercase tracking-widest font-geist">Verification in Progress</span>
            </div>
-           <h2 className="text-3xl font-manrope font-black tracking-tighter text-primary-dark uppercase italic">Hold tight, {app.profiles?.full_name?.split(' ')[0] || 'Student'}!</h2>
+           <h2 className="text-3xl font-geist font-black tracking-tighter text-primary-dark uppercase italic">Hold tight, {app.profiles?.full_name?.split(' ')[0] || 'Student'}!</h2>
            <p className="text-primary-dark/40 text-xs font-bold leading-relaxed max-w-md">Your application for <span className="text-primary">{app.service?.name}</span> is being reviewed by the provider. Secure boarding is our priority.</p>
         </div>
 
@@ -110,10 +110,10 @@ const PremiumPassBento = ({ app, onManage }: { app: any, onManage: () => void })
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest font-manrope">Verified Active Pass</span>
+              <span className="text-[10px] font-black uppercase tracking-widest font-geist">Verified Active Pass</span>
            </div>
            <div>
-              <h2 className="text-5xl font-manrope font-black tracking-tighter leading-none">{app.service?.name}</h2>
+              <h2 className="text-5xl font-geist font-black tracking-tighter leading-none">{app.service?.name}</h2>
               <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em] mt-3">Muzinda Institutional Network</p>
            </div>
         </div>
@@ -123,12 +123,12 @@ const PremiumPassBento = ({ app, onManage }: { app: any, onManage: () => void })
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-8 mt-auto">
         <div className="flex gap-12">
           <div className="space-y-1">
-            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest font-manrope">Verification ID</p>
-            <p className="text-sm font-manrope font-black tracking-tight leading-none uppercase italic font-mono text-primary">#MZ-{app.id.slice(0, 8)}</p>
+            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest font-geist">Verification ID</p>
+            <p className="text-sm font-geist font-black tracking-tight leading-none uppercase italic font-mono text-primary">#MZ-{app.id.slice(0, 8)}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest font-manrope">Next Boarding</p>
-            <p className="text-sm font-manrope font-black tracking-tight leading-none text-accent-gold uppercase italic">
+            <p className="text-white/40 text-[8px] font-bold uppercase tracking-widest font-geist">Next Boarding</p>
+            <p className="text-sm font-geist font-black tracking-tight leading-none text-accent-gold uppercase italic">
                {expiryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase()}
             </p>
           </div>
@@ -139,7 +139,7 @@ const PremiumPassBento = ({ app, onManage }: { app: any, onManage: () => void })
           </a>
           <button 
             onClick={onManage}
-            className="px-10 py-5 bg-primary text-white rounded-[2.5rem] font-black font-manrope transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-2xl flex items-center gap-3 text-[10px] uppercase tracking-widest border border-white/20"
+            className="px-10 py-5 bg-primary text-white rounded-[2.5rem] font-black font-geist transition-all hover:bg-primary-dark hover:scale-105 active:scale-95 shadow-2xl flex items-center gap-3 text-[10px] uppercase tracking-widest border border-white/20"
           >
             Manage Membership
           </button>
@@ -202,7 +202,7 @@ export const StudentTransport = () => {
   const pendingApp = myApps.find(a => a.status === 'pending')
 
   return (
-    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
+    <div className="flex bg-[#F8F9F8] min-h-screen font-geist overflow-hidden">
       
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
@@ -230,7 +230,7 @@ export const StudentTransport = () => {
           </div>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h1 className="text-7xl font-black tracking-tighter text-primary-dark font-manrope leading-none mb-2">
+              <h1 className="text-7xl font-black tracking-tighter text-primary-dark font-geist leading-none mb-2">
                 Transit <span className="text-primary italic">Hub</span>
               </h1>
               <p className="text-primary-dark/30 font-bold uppercase tracking-widest text-[11px] ml-1">
@@ -260,7 +260,7 @@ export const StudentTransport = () => {
                {approvedApp ? (
                  <>
                    <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tight uppercase">Current Membership</h2>
+                      <h2 className="text-2xl font-geist font-black text-primary-dark tracking-tight uppercase">Current Membership</h2>
                       <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Digital Badge ID: #MZ-{approvedApp.id.slice(0,6)}</span>
                    </div>
                    <PremiumPassBento app={approvedApp} onManage={() => setIsManageModalOpen(true)} />
@@ -268,7 +268,7 @@ export const StudentTransport = () => {
                ) : pendingApp ? (
                  <>
                    <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-manrope font-black text-primary-dark tracking-tight italic uppercase">Processing Application</h2>
+                      <h2 className="text-2xl font-geist font-black text-primary-dark tracking-tight italic uppercase">Processing Application</h2>
                    </div>
                    <StatusTrackingTile app={pendingApp} />
                  </>
@@ -276,7 +276,7 @@ export const StudentTransport = () => {
                  <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary/10 transition-colors" />
                     <div className="relative z-10 max-w-xl">
-                       <h2 className="text-4xl font-manrope font-black text-primary-dark tracking-tighter leading-tight mb-4">Reliable Boarding for Africa <span className="italic text-primary">University.</span></h2>
+                       <h2 className="text-4xl font-geist font-black text-primary-dark tracking-tighter leading-tight mb-4">Reliable Boarding for Africa <span className="italic text-primary">University.</span></h2>
                        <p className="text-primary-dark/40 font-bold text-sm leading-relaxed mb-8">Join the elite network of student transit. Doorstep pickups, verified institutional drivers, and transparent monthly pricing.</p>
                        <div className="flex gap-6">
                           <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ export const StudentTransport = () => {
             {/* MARKETPLACE FLEET */}
             <section className="space-y-10">
                <div className="flex items-center gap-4">
-                  <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase">Institutional <span className="italic text-primary">Fleets</span></h3>
+                  <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase">Institutional <span className="italic text-primary">Fleets</span></h3>
                   <div className="h-0.5 flex-1 bg-primary/5 rounded-full" />
                </div>
 
@@ -344,13 +344,13 @@ export const StudentTransport = () => {
                            </div>
 
                            <div className="absolute bottom-6 right-6 bg-primary-dark/95 backdrop-blur-lg px-6 py-4 rounded-3xl border border-white/10 shadow-2xl">
-                             <span className="text-lg font-manrope font-black text-white italic">${s.price}<span className="text-[10px] text-white/50 not-italic ml-1 uppercase font-dm-sans tracking-widest">/mo</span></span>
+                             <span className="text-lg font-geist font-black text-white italic">${s.price}<span className="text-[10px] text-white/50 not-italic ml-1 uppercase font-geist tracking-widest">/mo</span></span>
                            </div>
                         </div>
 
                         <div className="p-8 space-y-6">
                            <div>
-                              <h4 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase leading-none">{s.name}</h4>
+                              <h4 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase leading-none">{s.name}</h4>
                               <div className="text-[11px] font-bold text-primary-dark/30 uppercase mt-3 tracking-widest flex items-center gap-2">
                                  <span className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                                  {s.profiles?.full_name || 'Verified Provider'}
@@ -372,11 +372,11 @@ export const StudentTransport = () => {
 
                            <div className="flex gap-4 pt-2">
                               {isCurrentApproved ? (
-                                <button disabled className="flex-1 py-5 bg-primary/5 text-primary rounded-[2.5rem] font-manrope font-black text-[11px] uppercase tracking-[0.2em] border border-primary/10 cursor-not-allowed">
+                                <button disabled className="flex-1 py-5 bg-primary/5 text-primary rounded-[2.5rem] font-geist font-black text-[11px] uppercase tracking-[0.2em] border border-primary/10 cursor-not-allowed">
                                    Seat Secured
                                 </button>
                               ) : isCurrentPending ? (
-                                <button disabled className="flex-1 py-5 bg-accent-gold/5 text-accent-gold rounded-[2.5rem] font-manrope font-black text-[11px] uppercase tracking-[0.2em] border border-accent-gold/10 flex items-center justify-center gap-2">
+                                <button disabled className="flex-1 py-5 bg-accent-gold/5 text-accent-gold rounded-[2.5rem] font-geist font-black text-[11px] uppercase tracking-[0.2em] border border-accent-gold/10 flex items-center justify-center gap-2">
                                    Pending Approval
                                 </button>
                               ) : (
@@ -384,7 +384,7 @@ export const StudentTransport = () => {
                                   disabled={isFull || !!approvedApp}
                                   onClick={() => handleApplyClick(s)}
                                   className={cn(
-                                    "flex-1 py-6 rounded-[2.5rem] font-manrope font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-xl",
+                                    "flex-1 py-6 rounded-[2.5rem] font-geist font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-xl",
                                     (isFull || !!approvedApp) 
                                       ? "bg-[#F0F2F0] text-primary-dark/20 border-2 border-dashed border-primary/10" 
                                       : "bg-primary-dark text-white hover:bg-primary shadow-primary/20 hover:scale-[1.02] active:scale-95"
@@ -414,7 +414,7 @@ export const StudentTransport = () => {
              {/* CONTEXTUAL TILE: TRUST SCORE */}
              <div className="bg-white p-10 rounded-[4rem] border border-primary/5 shadow-sm">
                 <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary mb-6"><ShieldCheck size={24} /></div>
-                <h4 className="text-xl font-manrope font-black text-primary-dark uppercase italic mb-2">Network Safety</h4>
+                <h4 className="text-xl font-geist font-black text-primary-dark uppercase italic mb-2">Network Safety</h4>
                 <p className="text-xs text-primary-dark/40 font-bold leading-relaxed mb-6">Every driver in the Muzinda network undergoes a rigorous biometric and vehicle inspection process.</p>
                 <div className="flex items-center gap-2 text-primary">
                    <Star size={14} className="fill-primary" />
@@ -429,7 +429,7 @@ export const StudentTransport = () => {
              {/* PROTOCOL GUIDE */}
              <div className="bg-primary-dark p-12 rounded-[4.5rem] text-white shadow-2xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/10 rounded-full -mr-16 -mt-16 blur-2xl pointer-events-none" />
-                <h4 className="text-2xl font-manrope font-black italic tracking-tight mb-10 uppercase">Hub Protocol</h4>
+                <h4 className="text-2xl font-geist font-black italic tracking-tight mb-10 uppercase">Hub Protocol</h4>
                 <div className="space-y-10">
                    {[
                      { step: 'Select Fleet', icon: Bus },

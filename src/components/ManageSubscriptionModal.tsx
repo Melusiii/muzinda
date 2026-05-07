@@ -48,7 +48,7 @@ export const ManageSubscriptionModal = ({ isOpen, onClose, app, onCancel }: Mana
            </button>
 
            <div className="text-center space-y-2">
-              <h2 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Manage Membership</h2>
+              <h2 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase italic">Manage Membership</h2>
               <p className="text-xs font-bold text-primary-dark/30 uppercase tracking-[0.2em]">{app.service?.name}</p>
            </div>
 
@@ -58,7 +58,7 @@ export const ManageSubscriptionModal = ({ isOpen, onClose, app, onCancel }: Mana
                     <Calendar size={14} className="opacity-40" />
                     <span className="text-[10px] font-black uppercase tracking-widest leading-none">Last Payment</span>
                  </div>
-                 <p className="text-lg font-manrope font-black text-primary-dark leading-none">
+                 <p className="text-lg font-geist font-black text-primary-dark leading-none">
                     {approvedDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                  </p>
               </div>
@@ -67,7 +67,7 @@ export const ManageSubscriptionModal = ({ isOpen, onClose, app, onCancel }: Mana
                     <CreditCard size={14} className="opacity-40" />
                     <span className="text-[10px] font-black uppercase tracking-widest leading-none">Next Payment</span>
                  </div>
-                 <p className="text-lg font-manrope font-black text-primary-dark leading-none">
+                 <p className="text-lg font-geist font-black text-primary-dark leading-none">
                     {nextPaymentDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                  </p>
               </div>
@@ -84,13 +84,13 @@ export const ManageSubscriptionModal = ({ isOpen, onClose, app, onCancel }: Mana
            <div className="space-y-3 pt-2">
               <button 
                 onClick={onCancel}
-                className="w-full py-5 bg-white text-accent-amber border-2 border-accent-amber/10 rounded-2xl font-black font-manrope text-[10px] uppercase tracking-widest hover:bg-accent-amber hover:text-white transition-all shadow-sm flex items-center justify-center gap-2"
+                className="w-full py-5 bg-white text-accent-amber border-2 border-accent-amber/10 rounded-2xl font-black font-geist text-[10px] uppercase tracking-widest hover:bg-accent-amber hover:text-white transition-all shadow-sm flex items-center justify-center gap-2"
               >
                 <Ban size={16} /> Cancel Membership
               </button>
               <button 
                 onClick={onClose}
-                className="w-full py-5 bg-primary-dark text-white rounded-2xl font-black font-manrope text-[10px] uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-primary/20"
+                className="w-full py-5 bg-primary-dark text-white rounded-2xl font-black font-geist text-[10px] uppercase tracking-widest hover:bg-primary transition-all shadow-xl shadow-primary/20"
               >
                 Close Dashboard
               </button>

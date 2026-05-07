@@ -10,7 +10,7 @@ export const StudentFavorites = () => {
   const { favorites, toggleFavorite, loading } = useFavorites()
 
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <div className="flex bg-surface-bright min-h-screen font-geist">
       
       <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative pb-32">
         <PageHeader 
@@ -69,13 +69,13 @@ export const StudentFavorites = () => {
                        <div className="p-8 flex flex-col flex-grow">
                          <div className="flex justify-between items-start mb-6 gap-4">
                             <div className="min-w-0 flex-1">
-                               <h3 className="text-xl font-black font-manrope text-primary-dark tracking-tight leading-none group-hover/card:text-primary transition-colors">{prop.title}</h3>
+                               <h3 className="text-xl font-black font-geist text-primary-dark tracking-tight leading-none group-hover/card:text-primary transition-colors">{prop.title}</h3>
                                <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-widest mt-2.5 flex items-center gap-1.5 leading-none">
                                   <MapPin size={10} className="text-primary" /> {prop.location?.split(',')[0]}
                                </p>
                             </div>
                             <div className="text-right shrink-0">
-                               <span className="text-xl font-black text-primary-dark tracking-tighter font-manrope leading-none">${prop.price}</span>
+                               <span className="text-xl font-black text-primary-dark tracking-tighter font-geist leading-none">${prop.price}</span>
                                <p className="text-[9px] font-black text-primary-dark/20 uppercase tracking-widest mt-1">USD/mo</p>
                             </div>
                          </div>
@@ -103,8 +103,8 @@ export const StudentFavorites = () => {
               <div className="w-24 h-24 bg-white rounded-[2rem] shadow-xl flex items-center justify-center mx-auto text-primary/10 mb-8 border border-primary/5">
                 <Heart size={48} />
               </div>
-              <h2 className="text-4xl font-black font-manrope text-primary-dark mb-4 tracking-tighter italic leading-none">The House is Empty</h2>
-              <p className="text-primary-dark/40 font-dm-sans mb-10 text-md max-w-md mx-auto leading-relaxed">You haven't saved any verified properties yet. Start your journey by exploring the Mutare District.</p>
+              <h2 className="text-4xl font-black font-geist text-primary-dark mb-4 tracking-tighter italic leading-none">The House is Empty</h2>
+              <p className="text-primary-dark/40 font-geist mb-10 text-md max-w-md mx-auto leading-relaxed">You haven't saved any verified properties yet. Start your journey by exploring the Mutare District.</p>
               <button 
                 onClick={() => navigate('/explorer')}
                 className="px-10 py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto"

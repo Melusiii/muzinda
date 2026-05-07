@@ -14,9 +14,19 @@ export const Auth = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'landlord' | 'provider'>('student')
   const [showPortal, setShowPortal] = useState(false)
   
+  const { login, isAuthenticated, user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, isAuthenticated, user, loading: authLoading } = useAuth()
+
+  // Handle role param from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const roleParam = params.get('role')
+    if (roleParam === 'landlord' || roleParam === 'provider' || roleParam === 'student') {
+      setSelectedRole(roleParam as any)
+      setShowPortal(true)
+    }
+  }, [location.search])
 
   // Automated redirection once authenticated
   useEffect(() => {
@@ -66,7 +76,7 @@ export const Auth = () => {
           
           {/* Left Column: Role Selection */}
           <div className={cn("flex flex-col gap-6", showPortal ? "hidden lg:flex" : "flex")}>
-            <h2 className="text-2xl font-manrope font-extrabold text-primary-dark mb-1 px-2">Access Portal</h2>
+            <h2 className="text-2xl font-geist font-extrabold text-primary-dark mb-1 px-2">Access Portal</h2>
             <div className="grid gap-6 flex-1">
               {roleOptions.map((role) => (
                 <button
@@ -98,9 +108,9 @@ export const Auth = () => {
                   
                   <div className="flex justify-between items-end">
                     <div>
-                      <h3 className="text-xl font-manrope font-extrabold mb-0.5">{role.title}</h3>
+                      <h3 className="text-xl font-geist font-extrabold mb-0.5">{role.title}</h3>
                       <p className={cn(
-                        "text-sm font-dm-sans leading-tight",
+                        "text-sm font-geist leading-tight",
                         selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
                       )}>{role.desc}</p>
                     </div>
@@ -112,9 +122,10 @@ export const Auth = () => {
               ))}
             </div>
 
+
             {/* Guest CTA for Signup visibility */}
             <div className="lg:hidden text-center py-4 bg-white/50 rounded-3xl border border-primary/5">
-                <p className="text-primary-dark/40 text-xs font-dm-sans">
+                <p className="text-primary-dark/40 text-xs font-geist">
                   Don't have an account? <button onClick={() => navigate('/signup', { state: { role: selectedRole } })} className="text-[#4F7C2C] font-black underline ml-1">Join Muzinda</button>
                 </p>
             </div>
@@ -139,9 +150,9 @@ export const Auth = () => {
                        <div className="w-8 h-[2px] bg-current opacity-20" />
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Welcome Back</span>
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-manrope font-extrabold text-primary-dark tracking-tighter">
+                    <h1 className="text-3xl md:text-4xl font-geist font-extrabold text-primary-dark tracking-tighter">
                       Login to <br />
-                      <span className="text-primary-dark/40 font-manrope">Muzinda Portal</span>
+                      <span className="text-primary-dark/40 font-geist">Muzinda Portal</span>
                     </h1>
                   </div>
 
@@ -155,7 +166,7 @@ export const Auth = () => {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-16 pr-8 py-3.5 rounded-xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-3.5 rounded-xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-geist transition-all"
                         />
                       </div>
                       <div className="relative">
@@ -166,7 +177,7 @@ export const Auth = () => {
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full pl-16 pr-8 py-3.5 rounded-xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-3.5 rounded-xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none font-geist transition-all"
                         />
                       </div>
                     </div>
@@ -174,7 +185,7 @@ export const Auth = () => {
                     <div className="flex items-center justify-between px-2">
                        <label className="flex items-center gap-2 cursor-pointer group">
                           <input type="checkbox" className="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20" />
-                          <span className="text-sm font-dm-sans text-primary-dark/50 group-hover:text-primary-dark transition-colors">Remember me</span>
+                          <span className="text-sm font-geist text-primary-dark/50 group-hover:text-primary-dark transition-colors">Remember me</span>
                        </label>
                        <Link to="/auth" className="text-sm font-bold text-primary-dark/40 hover:text-primary transition-colors">Forgot Password?</Link>
                     </div>
@@ -182,7 +193,7 @@ export const Auth = () => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#1E3011] text-white py-4.5 rounded-xl font-manrope font-extrabold text-lg shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
+                      className="w-full bg-[#1E3011] text-white py-4.5 rounded-xl font-geist font-extrabold text-lg shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
                     >
                       Log In
                       <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
@@ -190,7 +201,7 @@ export const Auth = () => {
                   </form>
 
                   <div className="text-center pt-8 border-t border-primary/5 space-y-4">
-                     <p className="text-primary-dark/40 font-dm-sans">
+                     <p className="text-primary-dark/40 font-geist">
                        First time at Muzinda? <button onClick={() => navigate('/signup', { state: { role: selectedRole } })} className="text-[#4F7C2C] font-black hover:underline ml-1">Create Account</button>
                      </p>
                      <button 
@@ -213,8 +224,8 @@ export const Auth = () => {
                     <div className="absolute inset-0 border-4 border-t-primary rounded-full animate-spin" />
                   </div>
                   <div className="space-y-4">
-                    <h2 className="text-3xl font-manrope font-black text-primary-dark">Authenticating...</h2>
-                    <p className="text-primary-dark/40 font-dm-sans max-w-xs mx-auto">Verifying your credentials with premium security protocols.</p>
+                    <h2 className="text-3xl font-geist font-black text-primary-dark">Authenticating...</h2>
+                    <p className="text-primary-dark/40 font-geist max-w-xs mx-auto">Verifying your credentials with premium security protocols.</p>
                   </div>
                 </motion.div>
               )}

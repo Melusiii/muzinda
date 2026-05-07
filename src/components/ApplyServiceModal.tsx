@@ -41,7 +41,7 @@ export const ApplyServiceModal = ({ isOpen, onClose, service, onSuccess }: Apply
           >
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h2 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic">Apply for Transport</h2>
+                <h2 className="text-3xl font-geist font-black text-primary-dark tracking-tighter italic">Apply for Transport</h2>
                 <p className="text-[10px] font-black text-primary-dark/30 uppercase tracking-widest mt-1">Join {service?.name}'s monthly roster</p>
               </div>
               <button onClick={onClose} className="p-3 bg-surface-bright text-primary-dark/20 hover:text-primary-dark rounded-2xl transition-all">
@@ -93,7 +93,7 @@ export const ApplyServiceModal = ({ isOpen, onClose, service, onSuccess }: Apply
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full py-5 bg-primary text-white rounded-[2rem] font-manrope font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                className="w-full py-5 bg-primary text-white rounded-[2rem] font-geist font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
               >
                 {loading ? 'Submitting Application...' : 'Apply for Monthly Subscription'}
               </button>

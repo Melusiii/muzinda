@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../useAuth'
 import type { Property } from './types'
 import { withLockRetry } from './shared'
 
@@ -32,8 +31,8 @@ export const useProperties = () => {
         const { data, error: fetchError } = await withLockRetry<any>(() => 
           supabase
             .from('properties')
-            .select('id, title, type, price, location, distance, image_url, verified')
-            .order('created_at', { ascending: false })
+            .select('id, title, type, price, location, distance, image_url, verified, likes_count, lat, lng')
+            .order('likes_count', { ascending: false })
         );
  
         if (fetchError) throw fetchError;
@@ -111,80 +110,3 @@ export const useProperty = (id?: string) => {
   return { property, loading, error };
 }
 
-export const useFavorites = () => {
-  const { user } = useAuth()
-  const [favorites, setFavorites] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchFavorites = useCallback(async () => {
-    if (!user) return
-    try {
-      const { data, error: favError } = await supabase
-        .from('favorites')
-        .select('id, user_id, property_id, property:properties(id, title, location, image_url, price, likes_count)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-      if (favError) throw favError;
-      setFavorites(data || [])
-    } catch (err) { console.error(err); } finally { setLoading(false) }
-  }, [user])
-
-  useEffect(() => {
-    fetchFavorites()
-  }, [user, fetchFavorites])
-
-  const toggleFavorite = async (propertyId: string) => {
-    if (!user) return
-    const existing = favorites.find(f => f.property_id === propertyId)
-    
-    try {
-      if (existing) {
-        const { error } = await supabase.from('favorites').delete().eq('id', existing.id)
-        if (error) throw error
-        setFavorites(prev => prev.filter(f => f.id !== existing.id))
-      } else {
-        const { data, error } = await supabase.from('favorites')
-          .insert([{ user_id: user.id, property_id: propertyId }])
-          .select('id, user_id, property_id, property:properties(id, title, location, image_url, price, likes_count)')
-          .single()
-        if (error) throw error
-        setFavorites(prev => [data, ...prev])
-      }
-    } catch (err) {
-      console.error('Favorite Toggle Error:', err)
-      // Allow parent components to handle if needed
-      throw err;
-    }
-  }
-
-  const isFavorited = useCallback((propertyId: string) => {
-    return favorites.some(f => f.property_id === propertyId)
-  }, [favorites])
-
-  return { favorites, toggleFavorite, isFavorited, loading, refetch: fetchFavorites }
-}
-
-/**
- * Sync function to handle 'Liking' which is unified with 'Favoriting' in Phase 6.
- * The database trigger 'favorite_count_trigger' takes care of the atomic count.
- */
-export const likeProperty = async (propertyId: string) => {
-  // Since likes and favorites are unified, we trigger the favorite toggle.
-  // This function is kept for backward compatibility and to signal 'Like' intent.
-  // In the unified UI, this will be called by toggleFavorite.
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
-
-  const { data: existing } = await supabase
-    .from('favorites')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('property_id', propertyId)
-    .single()
-
-  if (existing) {
-    await supabase.from('favorites').delete().eq('id', existing.id)
-  } else {
-    await supabase.from('favorites').insert([{ user_id: user.id, property_id: propertyId }])
-  }
-}

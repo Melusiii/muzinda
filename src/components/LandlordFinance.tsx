@@ -63,12 +63,12 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
   };
 
   return (
-    <div className="space-y-12 font-dm-sans">
+    <div className="space-y-12 font-geist">
       {/* Human-Centric Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-4">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-             <h2 className="text-3xl md:text-4xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase">Earnings Dashboard</h2>
+             <h2 className="text-3xl md:text-4xl font-geist font-black text-primary-dark tracking-tighter italic uppercase">Earnings Dashboard</h2>
           </div>
           <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.4em]">Your Financial History • Live Balance</p>
         </div>
@@ -101,7 +101,7 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
             </div>
             <div className="relative flex-1 min-w-0">
               <p className="text-[8px] md:text-[9px] font-black text-primary-dark/30 uppercase tracking-[0.2em] mb-1 truncate">{stat.label}</p>
-              <h4 className="text-xl md:text-2xl font-manrope font-black text-primary-dark tracking-tighter italic leading-none truncate">{stat.value}</h4>
+              <h4 className="text-xl md:text-2xl font-geist font-black text-primary-dark tracking-tighter italic leading-none truncate">{stat.value}</h4>
             </div>
           </motion.div>
         ))}
@@ -114,7 +114,7 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative gap-6">
             <div>
-              <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter italic uppercase">Revenue History</h3>
+              <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter italic uppercase">Revenue History</h3>
               <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.5em] mt-1">Growth trends over the last 6 months</p>
             </div>
             <div className="flex p-2 glass bg-white/40 rounded-2xl border border-white shadow-lg">
@@ -216,7 +216,7 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
           
           <div className="p-6 flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
              <div className="space-y-1">
-                <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Payment Records</h3>
+                <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter uppercase italic">Payment Records</h3>
                 <p className="text-[10px] text-primary-dark/30 font-bold uppercase tracking-[0.4em]">Historical tracking of all earnings</p>
              </div>
              <div className="flex gap-4 w-full md:w-auto">
@@ -259,12 +259,12 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
                             {tx.student_name.charAt(0)}
                           </div>
                           <div className="flex flex-col">
-                             <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{tx.student_name}</span>
+                             <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-geist">{tx.student_name}</span>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white">
-                        <span className="text-xl font-black text-primary-dark font-manrope italic leading-none group-hover:text-primary transition-colors">${tx.amount.toLocaleString()}</span>
+                        <span className="text-xl font-black text-primary-dark font-geist italic leading-none group-hover:text-primary transition-colors">${tx.amount.toLocaleString()}</span>
                       </td>
                       <td className="px-8 py-8 glass bg-white/60 border-t border-b border-white text-center">
                         <div className={cn(
@@ -308,7 +308,7 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
                         {tx.student_name.charAt(0)}
                       </div>
                       <div className="flex flex-col">
-                         <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{tx.student_name}</span>
+                         <span className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-geist">{tx.student_name}</span>
                          <span className="text-[8px] font-black text-primary-dark/30 uppercase tracking-widest">{tx.date}</span>
                       </div>
                     </div>
@@ -325,7 +325,7 @@ export const LandlordFinance: React.FC<LandlordFinanceProps> = ({ data, loading 
                   <div className="flex justify-between items-end border-t border-primary/5 pt-4">
                     <div className="flex flex-col">
                       <span className="text-[8px] font-black text-primary-dark/20 uppercase tracking-[0.3em] mb-1">Total Amount</span>
-                      <span className="text-2xl font-black text-primary-dark font-manrope italic">${tx.amount.toLocaleString()}</span>
+                      <span className="text-2xl font-black text-primary-dark font-geist italic">${tx.amount.toLocaleString()}</span>
                     </div>
                     <button className="h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 active:scale-95 transition-all">
                        <ArrowUpRight size={18}/>

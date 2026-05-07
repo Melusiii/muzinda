@@ -51,10 +51,10 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                  className="md:hidden p-2 -ml-2 text-primary hover:bg-primary/5 rounded-xl flex items-center gap-1 transition-all"
                >
                  <ChevronLeft size={20} />
-                 <span className="text-xs font-bold font-manrope uppercase tracking-tight">Back</span>
+                 <span className="text-xs font-bold font-geist uppercase tracking-tight">Back</span>
                </button>
                <div>
-                 <h2 className="text-xl md:text-2xl font-manrope font-extrabold text-primary-dark tracking-tight">Edit Profile</h2>
+                 <h2 className="text-xl md:text-2xl font-geist font-extrabold text-primary-dark tracking-tight">Edit Profile</h2>
                  <p className="hidden md:block text-[10px] text-primary/40 font-bold uppercase tracking-widest mt-1">Institutional Identity • {user.role}</p>
                </div>
             </div>
@@ -122,7 +122,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                   />
                   <label 
                     htmlFor="avatar-upload"
-                    className="text-[10px] font-black text-primary px-6 py-4 bg-primary/5 rounded-2xl hover:bg-primary hover:text-white transition-all cursor-pointer inline-block uppercase tracking-widest font-manrope shadow-md hover:shadow-primary/20"
+                    className="text-[10px] font-black text-primary px-6 py-4 bg-primary/5 rounded-2xl hover:bg-primary hover:text-white transition-all cursor-pointer inline-block uppercase tracking-widest font-geist shadow-md hover:shadow-primary/20"
                   >
                     Change Profile Photo
                   </label>
@@ -166,7 +166,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                       type="text" 
                       name="full_name"
                       defaultValue={user?.name}
-                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark transition-all"
+                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-geist text-sm font-bold text-primary-dark transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -176,7 +176,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                       name="phone"
                       defaultValue={user?.phone || ''}
                       placeholder="+263 ..."
-                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark transition-all"
+                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-geist text-sm font-bold text-primary-dark transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -184,7 +184,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                      <select 
                        name="gender"
                        defaultValue={user?.gender || 'preferred_not_to_say'}
-                       className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark transition-all appearance-none"
+                       className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-geist text-sm font-bold text-primary-dark transition-all appearance-none"
                      >
                        <option value="male">Male</option>
                        <option value="female">Female</option>
@@ -200,12 +200,12 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                       defaultValue={user?.bio || ''}
                       rows={4}
                       placeholder="Share your experience with the community..."
-                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-dm-sans text-sm font-bold text-primary-dark resize-none transition-all"
+                      className="w-full p-5 rounded-2xl bg-surface-bright border border-primary/5 focus:border-primary/20 outline-none font-geist text-sm font-bold text-primary-dark resize-none transition-all"
                     />
                 </div>
 
                 <div className="flex justify-end pt-6">
-                  <button type="submit" className="w-full md:w-auto bg-primary text-white px-10 py-5 rounded-[1.5rem] font-bold font-manrope shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-widest">
+                  <button type="submit" className="w-full md:w-auto bg-primary text-white px-10 py-5 rounded-[1.5rem] font-bold font-geist shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-widest">
                     Update Professional Hub
                   </button>
                 </div>
@@ -218,7 +218,7 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                       <Shield size={20} />
                    </div>
                    <div>
-                     <h3 className="text-sm font-manrope font-black text-primary-dark uppercase tracking-tight">Security & Sessions</h3>
+                     <h3 className="text-sm font-geist font-black text-primary-dark uppercase tracking-tight">Security & Sessions</h3>
                      <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-widest">Institutional Integrity Guard</p>
                    </div>
                 </div>

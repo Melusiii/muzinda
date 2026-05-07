@@ -28,16 +28,16 @@ export const TransportDashboard = () => {
   const seatsAvailable = Math.max(0, totalCapacity - seatsTaken)
 
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <div className="flex bg-surface-bright min-h-screen font-geist">
       <main className="flex-1 md:ml-64 p-6 md:p-8 pt-32 md:pt-32 min-h-screen relative z-10 pb-32">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/10">
               <ShieldCheck size={14} fill="currentColor" />
-              <span className="text-[10px] font-extrabold uppercase tracking-widest font-manrope">Verified Provider</span>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest font-geist">Verified Provider</span>
             </div>
-            <h1 className="text-5xl font-extrabold tracking-tighter text-primary-dark font-manrope">Partner Dashboard</h1>
-            <p className="text-primary-dark/50 font-dm-sans max-w-xl">
+            <h1 className="text-5xl font-extrabold tracking-tighter text-primary-dark font-geist">Partner Dashboard</h1>
+            <p className="text-primary-dark/50 font-geist max-w-xl">
               Manage your monthly car subscription service and your student roster.
             </p>
           </div>
@@ -52,7 +52,7 @@ export const TransportDashboard = () => {
                  <div className="flex justify-between items-start mb-10">
                    <div>
                      <h2 className="text-[10px] font-black text-accent-gold uppercase tracking-[0.3em] mb-3">Service Profile</h2>
-                     <h3 className="text-4xl font-manrope font-black tracking-tighter">
+                     <h3 className="text-4xl font-geist font-black tracking-tighter">
                        {service?.name || "Your Car Service"}
                      </h3>
                    </div>
@@ -67,11 +67,11 @@ export const TransportDashboard = () => {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                    <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm">
                       <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Monthly Fee</p>
-                      <p className="text-4xl font-manrope font-black text-accent-gold">${service?.price || '0'}</p>
+                      <p className="text-4xl font-geist font-black text-accent-gold">${service?.price || '0'}</p>
                    </div>
                    <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm">
                       <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Seats Taken</p>
-                      <p className="text-4xl font-manrope font-black text-white">{seatsTaken}<span className="text-lg text-white/20 font-black">/{totalCapacity}</span></p>
+                      <p className="text-4xl font-geist font-black text-white">{seatsTaken}<span className="text-lg text-white/20 font-black">/{totalCapacity}</span></p>
                    </div>
                    <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 backdrop-blur-sm relative group">
                       {service?.image_url ? (
@@ -93,7 +93,7 @@ export const TransportDashboard = () => {
             {/* CAPACITY OVERVIEW */}
             <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
               <div className="flex items-center justify-between mb-10">
-                <h3 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tight">Vehicle Availability</h3>
+                <h3 className="text-2xl font-geist font-extrabold text-primary-dark tracking-tight">Vehicle Availability</h3>
                 <div className="flex items-center gap-2 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">
                   <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">{seatsAvailable} Seats Left</span>
                 </div>
@@ -115,7 +115,7 @@ export const TransportDashboard = () => {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-lg font-manrope font-black text-primary-dark">Monthly Capacity Usage</h4>
+                  <h4 className="text-lg font-geist font-black text-primary-dark">Monthly Capacity Usage</h4>
                   <p className="text-xs font-bold text-primary-dark/40 mt-1 italic">
                     {seatsTaken} active subscriptions out of {totalCapacity} total seats
                   </p>
@@ -133,7 +133,7 @@ export const TransportDashboard = () => {
             {/* PENDING APPLICATIONS */}
             <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-xl font-manrope font-extrabold text-primary-dark">New Applicants</h3>
+                  <h3 className="text-xl font-geist font-extrabold text-primary-dark">New Applicants</h3>
                   <span className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">{pendingApps.length} New</span>
                </div>
                <div className="space-y-4">
@@ -184,7 +184,7 @@ export const TransportDashboard = () => {
             <section className="bg-white p-8 rounded-[2.5rem] border border-primary/5 shadow-sm">
                <div className="flex items-center gap-4 mb-8">
                   <Users className="text-primary" size={20} />
-                  <h3 className="text-xl font-manrope font-extrabold text-primary-dark">Monthly Roster</h3>
+                  <h3 className="text-xl font-geist font-extrabold text-primary-dark">Monthly Roster</h3>
                </div>
                <div className="space-y-3">
                   {approvedCustomers.map((app) => (

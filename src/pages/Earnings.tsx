@@ -9,19 +9,19 @@ export const Earnings = () => {
   ]
 
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <div className="flex bg-surface-bright min-h-screen font-geist">
       <main className="flex-1 md:ml-64 p-6 md:p-8 pt-32 md:pt-32 min-h-screen relative z-10 space-y-12">
          <header className="flex justify-between items-center bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm">
             <div>
-               <h1 className="text-3xl font-extrabold tracking-tighter text-primary-dark font-manrope">Earnings Hub</h1>
-               <p className="text-primary-dark/50 font-dm-sans">Track your service revenue and payouts.</p>
+               <h1 className="text-3xl font-extrabold tracking-tighter text-primary-dark font-geist">Earnings Hub</h1>
+               <p className="text-primary-dark/50 font-geist">Track your service revenue and payouts.</p>
             </div>
             <div className="flex items-center gap-6">
                 <div className="text-right">
                    <p className="text-[10px] font-extrabold text-primary-dark/40 uppercase tracking-widest leading-none">Net Balance</p>
-                   <p className="text-3xl font-black text-primary font-manrope mt-1">$180.50</p>
+                   <p className="text-3xl font-black text-primary font-geist mt-1">$180.50</p>
                 </div>
-                <button className="bg-primary text-white px-8 py-4 rounded-2xl font-bold font-manrope shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                <button className="bg-primary text-white px-8 py-4 rounded-2xl font-bold font-geist shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                    Withdraw
                 </button>
             </div>
@@ -29,7 +29,7 @@ export const Earnings = () => {
 
          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <section className="lg:col-span-8 space-y-6">
-               <h3 className="text-2xl font-manrope font-extrabold text-primary-dark px-4">Recent Payouts</h3>
+               <h3 className="text-2xl font-geist font-extrabold text-primary-dark px-4">Recent Payouts</h3>
                <div className="space-y-4">
                   {transactions.map((t) => (
                     <div key={t.id} className="bg-white p-6 rounded-[2.5rem] border border-primary/5 flex items-center justify-between shadow-sm group hover:shadow-md transition-all">
@@ -61,8 +61,8 @@ export const Earnings = () => {
                <div className="bg-primary-dark p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-110 transition-transform" />
                   <Wallet size={32} className="text-accent-gold mb-6" />
-                  <h4 className="text-xl font-manrope font-extrabold mb-2">Automated Payouts</h4>
-                  <p className="text-white/40 text-xs font-dm-sans leading-relaxed mb-8">
+                  <h4 className="text-xl font-geist font-extrabold mb-2">Automated Payouts</h4>
+                  <p className="text-white/40 text-xs font-geist leading-relaxed mb-8">
                     Muzinda settles all maintenance and shuttle accounts every Friday at 17:00 CAT.
                   </p>
                   <button className="flex items-center gap-2 text-accent-gold text-xs font-bold hover:underline">

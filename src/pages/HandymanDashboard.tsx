@@ -29,7 +29,7 @@ export const HandymanDashboard = () => {
   const pendingBids = (jobs || []).filter(j => j.status === 'pending')
   
   return (
-    <div className="flex bg-surface-bright min-h-screen font-dm-sans">
+    <div className="flex bg-surface-bright min-h-screen font-geist">
       
       <main className="flex-1 md:ml-64 p-6 md:p-12 overflow-x-hidden pt-32 md:pt-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -38,7 +38,7 @@ export const HandymanDashboard = () => {
           <section className="lg:col-span-8 space-y-10">
             <div className="flex justify-between items-center bg-white/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white shadow-xl">
               <div>
-                <h2 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tighter uppercase italic">Marketplace Feed</h2>
+                <h2 className="text-2xl font-geist font-extrabold text-primary-dark tracking-tighter uppercase italic">Marketplace Feed</h2>
                 <p className="text-primary-dark/30 font-bold text-[10px] uppercase tracking-[0.4em] mt-1">Live Requests • Mutare District</p>
               </div>
               <button 
@@ -74,18 +74,18 @@ export const HandymanDashboard = () => {
                         <div className="flex-1 space-y-4">
                           <div className="flex justify-between items-start">
                             <div>
-                               <h3 className="text-2xl font-manrope font-extrabold text-primary-dark tracking-tight leading-none mb-1 italic uppercase">{request.title}</h3>
+                               <h3 className="text-2xl font-geist font-extrabold text-primary-dark tracking-tight leading-none mb-1 italic uppercase">{request.title}</h3>
                                <div className="flex items-center gap-2 text-[10px] font-black text-primary-dark/30 uppercase tracking-[0.2em]">
                                   <MapPin size={12} className="text-primary" /> {request.property?.title} • {request.property?.location}
                                </div>
                             </div>
                             <div className="text-right">
-                               <p className="text-2xl font-manrope font-extrabold text-primary italic leading-none">${request.budget || '0'}</p>
+                               <p className="text-2xl font-geist font-extrabold text-primary italic leading-none">${request.budget || '0'}</p>
                                <p className="text-[10px] font-black text-primary-dark/20 uppercase tracking-widest mt-1">Est. Value</p>
                             </div>
                           </div>
                           
-                          <p className="text-primary-dark/60 font-dm-sans text-sm leading-relaxed line-clamp-2 italic">"{request.description}"</p>
+                          <p className="text-primary-dark/60 font-geist text-sm leading-relaxed line-clamp-2 italic">"{request.description}"</p>
                           
                           <div className="flex items-center justify-between pt-6 border-t border-primary/5 mt-4">
                             <div className="flex gap-6">
@@ -104,7 +104,7 @@ export const HandymanDashboard = () => {
                             <button 
                               onClick={() => handleClaimJob(request.id)}
                               disabled={!!isSubmitting}
-                              className="px-12 py-5 bg-primary text-white rounded-[1.5rem] font-black font-manrope text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
+                              className="px-12 py-5 bg-primary text-white rounded-[1.5rem] font-black font-geist text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 disabled:opacity-50"
                             >
                                {isSubmitting === request.id ? <Loader2 size={18} className="animate-spin" /> : <><CheckCircle2 size={18} /> Accept Job</>}
                             </button>
@@ -132,7 +132,7 @@ export const HandymanDashboard = () => {
                     <div className="w-12 h-12 bg-accent-gold/10 text-accent-gold rounded-2xl flex items-center justify-center shadow-inner">
                        <Clock size={24} className="animate-shiver" />
                     </div>
-                    <h3 className="text-2xl font-manrope font-black text-primary-dark italic uppercase tracking-tighter leading-none">Job Tracker</h3>
+                    <h3 className="text-2xl font-geist font-black text-primary-dark italic uppercase tracking-tighter leading-none">Job Tracker</h3>
                   </div>
 
                   {activeJobs.length > 0 ? (
@@ -140,7 +140,7 @@ export const HandymanDashboard = () => {
                       {activeJobs.map((job) => (
                         <div key={job.id} className="space-y-8 bg-surface-bright p-8 rounded-[2.5rem] border border-primary/5 shadow-inner">
                           <div>
-                            <h4 className="text-xl font-manrope font-black text-primary-dark italic leading-tight uppercase mb-2">{job.request?.title}</h4>
+                            <h4 className="text-xl font-geist font-black text-primary-dark italic leading-tight uppercase mb-2">{job.request?.title}</h4>
                             <div className="flex items-center gap-2 text-[10px] font-black text-primary-dark/30 uppercase tracking-widest">
                                <MapPin size={12} className="text-primary" /> {job.request?.property?.title}
                             </div>
@@ -162,7 +162,7 @@ export const HandymanDashboard = () => {
                           </div>
 
                           <div className="pt-4 space-y-3">
-                             <button className="w-full bg-primary-dark text-white py-4 rounded-xl font-manrope font-extrabold text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary-dark/40 hover:scale-[1.02] active:scale-95 transition-all">
+                             <button className="w-full bg-primary-dark text-white py-4 rounded-xl font-geist font-extrabold text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-primary-dark/40 hover:scale-[1.02] active:scale-95 transition-all">
                                 Complete & Invoice
                              </button>
                              <button className="w-full py-4 text-[10px] font-black text-primary-dark/20 uppercase tracking-widest hover:text-red-500 transition-colors">

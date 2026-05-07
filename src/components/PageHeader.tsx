@@ -29,7 +29,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     <header className={cn("mb-12", className)}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-4 md:px-0">
         <div className="space-y-2">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-primary-dark font-manrope leading-tight uppercase">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-primary-dark font-geist leading-tight uppercase">
             {renderTitle(title)}
           </h1>
           {subtitle && (

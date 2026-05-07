@@ -101,19 +101,52 @@ export const useMessages = (conversationId?: string) => {
     fetchMessages()
     const uniqueId = Math.random().toString(36).substring(7);
     const channel = supabase.channel(`msgs-${conversationId}-${uniqueId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, (p: any) => setMessages(prev => [...prev, p.new as Message]))
+      .on('postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, 
+        (p: any) => setMessages(prev => [...prev, p.new as Message])
+      )
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
+        (p: any) => setMessages(prev => prev.map(m => m.id === p.new.id ? { ...m, ...p.new } : m))
+      )
       .subscribe()
     return () => { channel.unsubscribe(); }
   }, [conversationId, fetchMessages])
 
-  return { messages, loading, setMessages }
+  const markAsRead = async () => {
+    if (!conversationId) return
+    const { error } = await supabase
+      .from('messages')
+      .update({ is_read: true })
+      .eq('conversation_id', conversationId)
+      .eq('is_read', false)
+    if (error) console.error('Error marking as read:', error)
+  }
+
+  return { messages, loading, setMessages, markAsRead }
 }
 
 export const sendMessage = async (conversationId: string, content: string) => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Unauthorized")
-  const { data, error } = await supabase.from('messages').insert([{ conversation_id: conversationId, sender_id: user.id, content }]).select().single()
+  
+  // Insert message
+  const { data, error } = await supabase
+    .from('messages')
+    .insert([{ conversation_id: conversationId, sender_id: user.id, content }])
+    .select()
+    .single()
+  
   if (error) throw error
-  await supabase.from('conversations').update({ last_message: content, last_message_at: new Date().toISOString() }).eq('id', conversationId);
+  
+  // Update conversation last message (this should ideally be a DB trigger)
+  await supabase
+    .from('conversations')
+    .update({ 
+      last_message: content, 
+      last_message_at: new Date().toISOString() 
+    })
+    .eq('id', conversationId);
+    
   return data
 }

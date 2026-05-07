@@ -1,17 +1,25 @@
 import type { ReactNode } from 'react'
+import { Outlet } from 'react-router-dom'
+import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { MobileBottomDock } from './MobileBottomDock'
+import { cn } from '../utils/cn'
 
 interface LayoutProps {
-  children: ReactNode
+  children?: ReactNode
+  isAuthenticated?: boolean
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, isAuthenticated }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col bg-surface-bright pb-24 md:pb-0">
-      <main className="flex-grow">
+    <div className="min-h-screen bg-surface-bright overflow-x-hidden">
+      <Navbar />
+      <main className={cn(isAuthenticated && "md:pl-64")}>
+        <Outlet />
         {children}
       </main>
       <Footer />
+      <MobileBottomDock />
     </div>
   )
 }

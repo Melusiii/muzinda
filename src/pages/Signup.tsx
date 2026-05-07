@@ -86,7 +86,7 @@ export const Signup = () => {
           
           {/* Left Column: Role Selection */}
           <div className={cn("flex flex-col gap-6", (step > 1) ? "hidden lg:flex" : "flex")}>
-            <h2 className="text-3xl font-manrope font-black text-primary-dark mb-2 px-2">Join Muzinda</h2>
+            <h2 className="text-3xl font-geist font-black text-primary-dark mb-2 px-2">Join Muzinda</h2>
             <div className="grid gap-6 flex-1">
               {roleOptions.map((role) => (
                 <button
@@ -122,9 +122,9 @@ export const Signup = () => {
                   
                   <div className="flex justify-between items-end">
                     <div>
-                      <h3 className="text-2xl font-manrope font-black mb-1">{role.title}</h3>
+                      <h3 className="text-2xl font-geist font-black mb-1">{role.title}</h3>
                       <p className={cn(
-                        "text-sm font-dm-sans leading-tight",
+                        "text-sm font-geist leading-tight",
                         selectedRole === role.id ? "text-white/60" : "text-primary-dark/40"
                       )}>{role.desc}</p>
                     </div>
@@ -156,13 +156,13 @@ export const Signup = () => {
                        <div className="w-8 h-[2px] bg-current opacity-20" />
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Step 01 / 02</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-manrope font-black text-primary-dark tracking-tighter">
+                    <h1 className="text-4xl md:text-5xl font-geist font-black text-primary-dark tracking-tighter">
                       Confirm your <br />
                       <span className="text-primary-dark/40">identity role</span>
                     </h1>
                   </div>
 
-                  <p className="text-primary-dark/50 text-lg font-dm-sans leading-relaxed">
+                  <p className="text-primary-dark/50 text-lg font-geist leading-relaxed">
                     You've selected <span className="text-primary-dark font-black capitalize">{selectedRole}</span>. 
                     {selectedRole === 'student' ? " You will need a verified student email to complete registration." : " You will need to provide business verification details later."}
                   </p>
@@ -172,14 +172,14 @@ export const Signup = () => {
                       if (selectedRole === 'provider') setStep(2)
                       else setStep(3)
                     }}
-                    className="w-full bg-[#1E3011] text-white py-6 rounded-2xl font-manrope font-black text-xl shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
+                    className="w-full bg-[#1E3011] text-white py-6 rounded-2xl font-geist font-black text-xl shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
                   >
                     Continue
                     <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
                   </button>
 
                   <div className="text-center pt-8 border-t border-primary/5">
-                     <p className="text-primary-dark/40 font-dm-sans">
+                     <p className="text-primary-dark/40 font-geist">
                        Already a member? <Link to="/auth" className="text-[#4F7C2C] font-black hover:underline ml-1">Sign In</Link>
                      </p>
                   </div>
@@ -199,7 +199,7 @@ export const Signup = () => {
                        </button>
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Step 02 / 03</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-manrope font-black text-primary-dark tracking-tighter">
+                    <h1 className="text-4xl md:text-5xl font-geist font-black text-primary-dark tracking-tighter">
                       Service <br />
                       <span className="text-primary-dark/40">Specialization</span>
                     </h1>
@@ -219,8 +219,8 @@ export const Signup = () => {
                              <cat.icon size={28} />
                           </div>
                           <div className="text-left">
-                             <h4 className="text-xl font-manrope font-black text-primary-dark">{cat.title}</h4>
-                             <p className="text-sm font-dm-sans text-primary-dark/40">{cat.desc}</p>
+                             <h4 className="text-xl font-geist font-black text-primary-dark">{cat.title}</h4>
+                             <p className="text-sm font-geist text-primary-dark/40">{cat.desc}</p>
                           </div>
                        </button>
                     ))}
@@ -241,7 +241,7 @@ export const Signup = () => {
                        </button>
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Final Step</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-manrope font-black text-primary-dark tracking-tighter">
+                    <h1 className="text-4xl md:text-5xl font-geist font-black text-primary-dark tracking-tighter">
                       Create your <br />
                       <span className="text-primary-dark/40">Credentials</span>
                     </h1>
@@ -257,7 +257,7 @@ export const Signup = () => {
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-geist transition-all"
                         />
                       </div>
                       <div className="relative">
@@ -268,7 +268,7 @@ export const Signup = () => {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-geist transition-all"
                         />
                       </div>
                       <div className="relative">
@@ -279,7 +279,7 @@ export const Signup = () => {
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-dm-sans transition-all"
+                          className="w-full pl-16 pr-8 py-5 rounded-2xl bg-[#F8F9F8] border border-primary/5 focus:bg-white focus:border-primary/20 outline-none font-geist transition-all"
                         />
                       </div>
 
@@ -291,7 +291,7 @@ export const Signup = () => {
                               type="button"
                               onClick={() => setGender('male')}
                               className={cn(
-                                "py-4 rounded-2xl border transition-all font-manrope font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2",
+                                "py-4 rounded-2xl border transition-all font-geist font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2",
                                 gender === 'male' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "bg-[#F8F9F8] text-primary-dark/40 border-primary/5 hover:border-primary/20"
                               )}
                             >
@@ -301,7 +301,7 @@ export const Signup = () => {
                               type="button"
                               onClick={() => setGender('female')}
                               className={cn(
-                                "py-4 rounded-2xl border transition-all font-manrope font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2",
+                                "py-4 rounded-2xl border transition-all font-geist font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2",
                                 gender === 'female' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "bg-[#F8F9F8] text-primary-dark/40 border-primary/5 hover:border-primary/20"
                               )}
                             >
@@ -315,7 +315,7 @@ export const Signup = () => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#1E3011] text-white py-6 rounded-2xl font-manrope font-black text-xl shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
+                      className="w-full bg-[#1E3011] text-white py-6 rounded-2xl font-geist font-black text-xl shadow-2xl shadow-[#1E3011]/20 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-4 group"
                     >
                       {loading ? "Creating Account..." : "Complete Registration"}
                       <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />

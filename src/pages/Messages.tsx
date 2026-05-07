@@ -59,7 +59,7 @@ export const Messages = () => {
   }
 
   return (
-    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
+    <div className="flex bg-[#F8F9F8] min-h-screen font-geist">
       <main className="flex-1 md:ml-64 flex flex-col min-h-screen relative z-10 pt-32 md:pt-32">
 
         <div className="flex-1 flex overflow-hidden relative">
@@ -131,7 +131,7 @@ export const Messages = () => {
                          {selectedContact.name[0]}
                        </div>
                        <div>
-                          <h3 className="font-manrope font-black text-primary-dark tracking-tight">{selectedContact.name}</h3>
+                          <h3 className="font-geist font-black text-primary-dark tracking-tight">{selectedContact.name}</h3>
                           <p className="text-[10px] text-[#4F7C2C] font-black uppercase tracking-widest">Online</p>
                        </div>
                     </div>
@@ -156,7 +156,7 @@ export const Messages = () => {
                                 ? "bg-primary-dark text-white rounded-tr-none" 
                                 : "bg-white text-primary-dark rounded-tl-none border border-primary/5"
                             )}>
-                               <p className="text-sm font-dm-sans leading-relaxed">{msg.content}</p>
+                               <p className="text-sm font-geist leading-relaxed">{msg.content}</p>
                             </div>
                             <span className="text-[9px] font-bold text-primary-dark/20 uppercase tracking-widest mt-2 px-2">
                               {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -175,7 +175,7 @@ export const Messages = () => {
                              value={input}
                              onChange={(e) => setInput(e.target.value)}
                              placeholder="Type your message..."
-                             className="w-full pl-6 pr-14 py-5 rounded-[1.5rem] bg-[#F8F9F8] border border-primary/5 outline-none font-dm-sans text-sm focus:bg-white focus:border-primary/20 transition-all"
+                             className="w-full pl-6 pr-14 py-5 rounded-[1.5rem] bg-[#F8F9F8] border border-primary/5 outline-none font-geist text-sm focus:bg-white focus:border-primary/20 transition-all"
                            />
                            <button 
                              type="submit"
@@ -193,8 +193,8 @@ export const Messages = () => {
                    <div className="w-24 h-24 rounded-[3.5rem] bg-white shadow-2xl flex items-center justify-center text-primary/10 mb-8 border border-primary/5">
                       <MessageSquare size={48} />
                    </div>
-                   <h3 className="text-3xl font-manrope font-black text-primary-dark tracking-tighter">Select a Conversation</h3>
-                   <p className="max-w-xs text-sm font-dm-sans text-primary-dark/40 mt-4 leading-relaxed">
+                   <h3 className="text-3xl font-geist font-black text-primary-dark tracking-tighter">Select a Conversation</h3>
+                   <p className="max-w-xs text-sm font-geist text-primary-dark/40 mt-4 leading-relaxed">
                      Pick a contact from the list on the left to start chatting with verified landlords and providers.
                    </p>
                 </div>

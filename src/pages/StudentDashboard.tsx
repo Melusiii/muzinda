@@ -58,7 +58,7 @@ export const StudentDashboard = () => {
   }
 
   return (
-    <div className="flex bg-[#F4F8F5] min-h-screen font-dm-sans overflow-x-hidden">
+    <div className="flex bg-[#F4F8F5] min-h-screen font-geist overflow-x-hidden">
       
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
@@ -101,9 +101,9 @@ export const StudentDashboard = () => {
                               <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
                                  <Building size={16} />
                               </div>
-                              <span className="text-[10px] font-black uppercase tracking-[0.2em] font-manrope">Current Residence</span>
+                              <span className="text-[10px] font-black uppercase tracking-[0.2em] font-geist">Current Residence</span>
                            </div>
-                           <h2 className="text-2xl md:text-4xl font-manrope font-extrabold tracking-tighter leading-none italic uppercase">{residency.property.title}</h2>
+                           <h2 className="text-2xl md:text-4xl font-geist font-extrabold tracking-tighter leading-none italic uppercase">{residency.property.title}</h2>
                            <p className="text-sm text-white/60 mt-2 font-medium flex items-center gap-2">
                              <MapPin size={14} className="text-primary" /> {residency.property.location}
                            </p>
@@ -128,11 +128,11 @@ export const StudentDashboard = () => {
                            <div className="grid grid-cols-2 gap-4 mb-10">
                               <div className="p-6 bg-white rounded-3xl border border-primary/5 shadow-sm">
                                  <p className="text-[9px] font-black text-primary-dark/30 uppercase tracking-widest mb-1.5">Monthly Rent</p>
-                                 <p className="text-2xl font-black text-primary-dark tracking-tighter italic font-manrope">${residency.property.price}</p>
+                                 <p className="text-2xl font-black text-primary-dark tracking-tighter italic font-geist">${residency.property.price}</p>
                               </div>
                               <div className="p-6 bg-white rounded-3xl border border-primary/5 shadow-sm">
                                  <p className="text-[9px] font-black text-primary-dark/30 uppercase tracking-widest mb-1.5">Due Date</p>
-                                 <p className="text-2xl font-black text-primary-dark tracking-tighter italic font-manrope">1st</p>
+                                 <p className="text-2xl font-black text-primary-dark tracking-tighter italic font-geist">1st</p>
                               </div>
                            </div>
                         </div>
@@ -140,7 +140,7 @@ export const StudentDashboard = () => {
                         <div className="space-y-4 relative z-10">
                            <button 
                              onClick={() => setIsMaintModalOpen(true)}
-                             className="w-full py-4 bg-primary text-white rounded-2xl font-manrope font-extrabold text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                             className="w-full py-4 bg-primary text-white rounded-2xl font-geist font-extrabold text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
                            >
                              <Wrench size={18} /> Report Maintenance Issue
                            </button>
@@ -158,7 +158,7 @@ export const StudentDashboard = () => {
                     <div className="flex justify-between items-end px-2">
                        <div>
                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Curated</p>
-                          <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tight">Saved <span className="italic text-primary text-3xl font-serif">Houses</span></h3>
+                          <h3 className="text-2xl font-geist font-black text-primary-dark tracking-tight">Saved <span className="italic text-primary text-3xl font-serif">Houses</span></h3>
                        </div>
                        <Link to="/explorer" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">View All</Link>
                     </div>
@@ -193,7 +193,7 @@ export const StudentDashboard = () => {
               <motion.aside variants={itemVariants} className="lg:col-span-4 space-y-6 md:space-y-8">
                 <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm space-y-6">
                    <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-manrope font-extrabold text-primary-dark tracking-tight">Quick <span className="italic text-primary">Services</span></h3>
+                    <h3 className="text-lg font-geist font-extrabold text-primary-dark tracking-tight">Quick <span className="italic text-primary">Services</span></h3>
                     <div className="w-10 h-1 bg-primary/10 rounded-full" />
                    </div>
                    <div className="grid grid-cols-1 gap-4">
@@ -225,7 +225,7 @@ export const StudentDashboard = () => {
                       className="bg-white p-6 md:p-8 rounded-[2rem] border border-primary/5 shadow-sm"
                     >
                         <div className="flex items-center justify-between mb-6">
-                           <h4 className="text-sm font-manrope font-extrabold text-primary-dark tracking-tight flex items-center gap-2">
+                           <h4 className="text-sm font-geist font-extrabold text-primary-dark tracking-tight flex items-center gap-2">
                               <Bus size={18} className="text-primary" /> Active Trips
                            </h4>
                            <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-full text-[11px] font-black uppercase">{(tickets || []).length}</span>
@@ -257,7 +257,7 @@ export const StudentDashboard = () => {
                   <div className="flex justify-between items-end mb-8 md:mb-10 relative z-10">
                     <div className="space-y-1">
                        <p className="text-[11px] font-black text-primary uppercase tracking-[0.3em]">House Explorer</p>
-                       <h3 className="text-2xl md:text-3xl font-manrope font-extrabold text-primary-dark tracking-tighter leading-none">Featured <span className="italic text-primary">Stays</span></h3>
+                       <h3 className="text-2xl md:text-3xl font-geist font-extrabold text-primary-dark tracking-tighter leading-none">Featured <span className="italic text-primary">Stays</span></h3>
                     </div>
                     <Link to="/explorer" className="flex items-center gap-2 text-[10px] font-black text-primary-dark/40 hover:text-primary transition-all uppercase tracking-[0.2em]">
                       Explore <ArrowRight size={14} />
@@ -313,7 +313,7 @@ export const StudentDashboard = () => {
                     <div className="flex justify-between items-end px-2">
                        <div>
                           <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Personal Collection</p>
-                          <h3 className="text-xl font-manrope font-extrabold text-primary-dark tracking-tight">Saved <span className="italic text-primary text-2xl font-serif">Houses</span></h3>
+                          <h3 className="text-xl font-geist font-extrabold text-primary-dark tracking-tight">Saved <span className="italic text-primary text-2xl font-serif">Houses</span></h3>
                        </div>
                        <Link to="/explorer" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">See Hearted</Link>
                     </div>
@@ -372,7 +372,7 @@ export const StudentDashboard = () => {
                        <div className="flex justify-between items-start mb-8 md:mb-10">
                           <div className="space-y-1">
                              <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">Lifecycle</p>
-                             <h3 className="text-lg md:text-xl font-manrope font-extrabold text-white tracking-tighter uppercase">My Journey</h3>
+                             <h3 className="text-lg md:text-xl font-geist font-extrabold text-white tracking-tighter uppercase">My Journey</h3>
                           </div>
                           <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/5"><Zap size={20} className="text-accent-gold" /></div>
                        </div>
@@ -416,7 +416,7 @@ export const StudentDashboard = () => {
                        <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl flex items-center justify-center text-primary shadow-inner"><Users size={20} /></div>
                        <div>
                           <p className="text-[10px] font-black text-primary-dark leading-none uppercase tracking-widest">Active Community</p>
-                          <p className="text-[11px] font-black text-primary-dark/20 uppercase mt-1.5 tracking-widest font-dm-sans">5K+ Verified AU Students</p>
+                          <p className="text-[11px] font-black text-primary-dark/20 uppercase mt-1.5 tracking-widest font-geist">5K+ Verified AU Students</p>
                        </div>
                     </div>
                     <div className="flex -space-x-3 pt-1">
@@ -515,7 +515,7 @@ const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void
               <ShieldCheck size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-manrope font-black text-primary-dark tracking-tighter uppercase italic">Maintenance <span className="text-primary italic">Hub</span></h3>
+              <h3 className="text-2xl font-geist font-black text-primary-dark tracking-tighter uppercase italic">Maintenance <span className="text-primary italic">Hub</span></h3>
               <p className="text-[10px] text-primary-dark/40 font-bold uppercase tracking-[0.4em] mt-1">{residency?.property?.title || 'Private Report'} • Official Request</p>
             </div>
           </div>
@@ -548,7 +548,7 @@ const MaintenanceModal = ({ onClose, tickets, residency }: { onClose: () => void
                           <div className="flex items-center gap-3">
                              <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary capitalize font-black text-[10px]">{t.category[0]}</div>
                              <div>
-                                <p className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-manrope">{t.category}</p>
+                                <p className="text-sm font-black text-primary-dark uppercase tracking-tight italic font-geist">{t.category}</p>
                                 <p className="text-[9px] font-bold text-primary-dark/30 uppercase tracking-widest">{new Date(t.created_at).toLocaleDateString()}</p>
                              </div>
                           </div>

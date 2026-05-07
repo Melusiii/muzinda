@@ -3,7 +3,7 @@ import { Hero } from '../components/Hero'
 import { VerifiedListings } from '../components/VerifiedListings'
 import { BentoServices } from '../components/BentoServices'
 import { Neighborhoods } from '../components/Neighborhoods'
-import { StudentFavorites } from '../components/StudentFavorites'
+import { HowItWorks } from '../components/HowItWorks'
 import { motion } from 'framer-motion'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
@@ -25,13 +25,13 @@ export const Home = () => {
       <Hero />
       
       <VerifiedListings />
+      
+      <HowItWorks />
 
       <Neighborhoods />
 
       <BentoServices />
       
-      <StudentFavorites />
-
       {/* Final CTA */}
       <section className="py-32 px-6 bg-white overflow-hidden relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent" />

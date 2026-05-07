@@ -28,7 +28,7 @@ export const StudentApplications = () => {
   }
 
   return (
-    <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans">
+    <div className="flex bg-[#F8F9F8] min-h-screen font-geist">
       
       <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative pb-32">
         <header className="mb-12">
@@ -36,7 +36,7 @@ export const StudentApplications = () => {
              <div className="w-8 h-[2px] bg-current opacity-20" />
              <span className="text-[10px] font-black uppercase tracking-[0.3em]">Track Progress</span>
           </div>
-          <h1 className="text-5xl font-black tracking-tighter text-primary-dark font-manrope leading-none">
+          <h1 className="text-5xl font-black tracking-tighter text-primary-dark font-geist leading-none">
             My Applications
           </h1>
         </header>
@@ -76,7 +76,7 @@ export const StudentApplications = () => {
                     </div>
 
                     <div className="absolute bottom-6 left-8 right-8">
-                       <h3 className="text-xl font-black font-manrope text-white tracking-tight leading-tight truncate">{app.property?.title}</h3>
+                       <h3 className="text-xl font-black font-geist text-white tracking-tight leading-tight truncate">{app.property?.title}</h3>
                        <p className="text-[10px] text-white/60 font-bold uppercase tracking-widest mt-1 flex items-center gap-1.5">
                           <MapPin size={10} className="text-primary-light" /> {app.property?.location}
                        </p>
@@ -112,9 +112,9 @@ export const StudentApplications = () => {
           <div className="bg-white p-12 rounded-[3rem] text-center max-w-2xl shadow-sm border border-primary/5 mt-12 overflow-hidden relative">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
             <AlertCircle size={48} className="mx-auto text-primary/20 mb-6" />
-            <h2 className="text-3xl font-black font-manrope text-primary-dark mb-4 tracking-tighter">Start your journey</h2>
-            <p className="text-primary-dark/50 font-dm-sans max-w-sm mx-auto mb-10">You haven't applied for any units yet. Browse the Explorer to find your verified campus home.</p>
-            <button className="px-12 py-5 bg-primary text-white rounded-2xl font-black font-manrope transition-all hover:scale-105 shadow-xl shadow-primary/20">
+            <h2 className="text-3xl font-black font-geist text-primary-dark mb-4 tracking-tighter">Start your journey</h2>
+            <p className="text-primary-dark/50 font-geist max-w-sm mx-auto mb-10">You haven't applied for any units yet. Browse the Explorer to find your verified campus home.</p>
+            <button className="px-12 py-5 bg-primary text-white rounded-2xl font-black font-geist transition-all hover:scale-105 shadow-xl shadow-primary/20">
               Browse Properties
             </button>
           </div>
@@ -156,7 +156,7 @@ export const StudentApplications = () => {
                        </div>
 
                        <div className="space-y-2">
-                          <h2 className="text-4xl font-black font-manrope text-primary-dark tracking-tighter">{selectedApp.property?.title}</h2>
+                          <h2 className="text-4xl font-black font-geist text-primary-dark tracking-tighter">{selectedApp.property?.title}</h2>
                           <div className="flex items-center gap-2 text-primary-dark/40 font-bold uppercase tracking-widest text-xs">
                              <MapPin size={14} className="text-primary" /> {selectedApp.property?.location}
                           </div>
@@ -180,7 +180,7 @@ export const StudentApplications = () => {
                           <div className="flex items-center gap-2 text-primary-dark/40 font-black uppercase text-[10px] tracking-widest">
                              <Info size={14} /> My Message to Landlord
                           </div>
-                          <div className="bg-white p-8 rounded-[2rem] border border-primary/5 relative italic text-primary-dark/60 font-dm-sans leading-relaxed">
+                          <div className="bg-white p-8 rounded-[2rem] border border-primary/5 relative italic text-primary-dark/60 font-geist leading-relaxed">
                              "{selectedApp.message || "Hello, I am interested in this property."}"
                           </div>
                        </div>
@@ -190,7 +190,7 @@ export const StudentApplications = () => {
                             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/10 border-dashed">
                                <p className="text-xs text-primary font-bold text-center">Your application has been approved! Proceed to the next step to secure your spot.</p>
                             </div>
-                            <button className="w-full py-6 bg-primary text-white rounded-2xl font-black font-manrope text-lg shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                            <button className="w-full py-6 bg-primary text-white rounded-2xl font-black font-geist text-lg shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                               Pay Security Deposit
                             </button>
                          </div>
@@ -200,7 +200,7 @@ export const StudentApplications = () => {
                          <button 
                           onClick={(e) => handleWithdraw(selectedApp.id, e)}
                           disabled={isDeleting}
-                          className="w-full py-5 bg-white text-red-500 rounded-2xl font-black font-manrope text-xs border border-red-500/10 hover:bg-red-500/5 transition-all uppercase tracking-widest"
+                          className="w-full py-5 bg-white text-red-500 rounded-2xl font-black font-geist text-xs border border-red-500/10 hover:bg-red-500/5 transition-all uppercase tracking-widest"
                          >
                            Withdraw Application
                          </button>

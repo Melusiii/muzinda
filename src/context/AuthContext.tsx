@@ -127,16 +127,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let mounted = true;
 
+    // Restore session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      if (session?.user) {
+        fetchProfile(session.user).catch(err => {
+          console.error("AuthContext: Initial session profile fetch failed", err);
+        });
+      } else {
+        setLoading(false);
+      }
+    });
+
     // Use onAuthStateChange as the primary source of truth for sessions
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
       
       if (session?.user) {
         fetchProfile(session.user).catch(err => {
-          console.error("AuthContext: Async profile fetch failed", err);
+          console.error("AuthContext: Auth change profile fetch failed", err);
         });
       } else {
-        if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION' || event === 'USER_DELETED') {
           profilePromiseRef.current = null;
           currentProfileUserIdRef.current = null;
           setUser(null);
