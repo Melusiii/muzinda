@@ -13,7 +13,7 @@ export const useNotifications = () => {
   const fetchNotifications = useCallback(async () => {
     if (!user) return
     try {
-      const { data } = await withLockRetry<Notification[]>(() => 
+      const { data } = await withLockRetry<{ data: Notification[] | null; error: any }>(() => 
         supabase
           .from('notifications')
           .select('*')
