@@ -8,9 +8,10 @@ import { cn } from '../utils/cn'
 interface LayoutProps {
   children?: ReactNode
   isAuthenticated?: boolean
+  showFooter?: boolean
 }
 
-export const Layout = ({ children, isAuthenticated }: LayoutProps) => {
+export const Layout = ({ children, isAuthenticated, showFooter = true }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-surface-bright overflow-x-hidden">
       <Navbar />
@@ -18,7 +19,7 @@ export const Layout = ({ children, isAuthenticated }: LayoutProps) => {
         <Outlet />
         {children}
       </main>
-      <Footer />
+      {showFooter && <Footer />}
       <MobileBottomDock />
     </div>
   )

@@ -195,9 +195,6 @@ function App() {
 
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Navbar />
-          <Sidebar />
-          <MobileBottomDock />
         </Suspense>
       </AuthProvider>
     </ErrorBoundary>

@@ -23,6 +23,7 @@ import { PropertyCard } from '../components/PropertyCard'
 import { ExplorerMap } from '../components/ExplorerMap'
 import { PropertyCardSkeleton } from '../components/ui/Skeleton'
 import { EmptyState } from '../components/ui/EmptyState'
+import { Layout } from '../components/Layout'
 
 const AMENITY_LIST = [
   { id: 'wifi', label: 'Fiber Wifi', icon: Wifi },
@@ -140,7 +141,8 @@ export const Explorer = () => {
   )
 
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden font-dm-sans">
+    <Layout showFooter={false}>
+      <div className="h-[calc(100vh-80px)] mt-20 flex flex-col lg:flex-row overflow-hidden relative">
       
       {/* Top Navigation & Quick Filters */}
       <header className="flex-shrink-0 pt-28 pb-6 px-6 md:px-10 border-b border-primary/5 bg-white/80 backdrop-blur-xl z-40">
@@ -435,7 +437,8 @@ export const Explorer = () => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </Layout>
   )
 }
 
