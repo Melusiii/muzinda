@@ -2,7 +2,6 @@ import { Heart, MapPin, ArrowRight, Compass } from 'lucide-react'
 import { useFavorites } from '../hooks/supabase/useProperties'
 import { useNavigate } from 'react-router-dom'
 import { getImageUrl } from '../utils/supabase-helpers'
-import { Sidebar } from '../components/Sidebar'
 import { PageHeader } from '../components/PageHeader'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -12,7 +11,6 @@ export const StudentFavorites = () => {
 
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <Sidebar />
       
       <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative pb-32">
         <PageHeader 

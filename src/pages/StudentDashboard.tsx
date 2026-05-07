@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Sidebar } from '../components/Sidebar'
 import { 
   Bus, 
   ArrowRight, 
@@ -60,7 +59,6 @@ export const StudentDashboard = () => {
 
   return (
     <div className="flex bg-[#F4F8F5] min-h-screen font-dm-sans overflow-x-hidden">
-      <Sidebar />
       
       {/* Background Decor */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />

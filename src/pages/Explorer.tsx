@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Sidebar } from '../components/Sidebar'
 import { 
   Wifi, 
   Zap, 
@@ -215,7 +214,6 @@ export const Explorer = () => {
 
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <Sidebar />
       
       <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative pb-safe md:pb-8">
         <div className="max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8">

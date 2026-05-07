@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { Sidebar } from '../components/Sidebar'
 import { useAuth } from '../hooks/useAuth'
 import { 
   User, 
@@ -42,7 +41,6 @@ export const Profile = () => {
 
   return (
     <div className="flex bg-[#F8F9F8] min-h-screen font-dm-sans overflow-hidden">
-      <Sidebar />
       
       <main className="flex-1 md:ml-64 p-6 pt-32 md:pt-32 md:p-8 min-h-screen relative z-10 pb-32">
         {/* Header Section */}

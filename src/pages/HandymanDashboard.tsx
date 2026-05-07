@@ -1,4 +1,3 @@
-import { Sidebar } from '../components/Sidebar'
 import { Wrench, CheckCircle2, Clock, MapPin, Loader2, RefreshCw } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
@@ -31,7 +30,6 @@ export const HandymanDashboard = () => {
   
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <Sidebar />
       
       <main className="flex-1 md:ml-64 p-6 md:p-12 overflow-x-hidden pt-32 md:pt-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">

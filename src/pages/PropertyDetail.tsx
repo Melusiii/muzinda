@@ -1,5 +1,4 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { Sidebar } from '../components/Sidebar'
 import { useProperty, useFavorites, useUserApplications, type Application } from '../hooks/useSupabase'
 import { submitApplication } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
@@ -99,7 +98,6 @@ export const PropertyDetail = () => {
 
   return (
     <div className="flex bg-surface-bright min-h-screen font-dm-sans">
-      <Sidebar />
       
       <main className="flex-1 md:ml-64 pb-24 relative pt-32 md:pt-32">
         {/* Cinematic Gallery Overhaul */}
