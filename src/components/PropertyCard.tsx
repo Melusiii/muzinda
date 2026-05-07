@@ -57,6 +57,7 @@ export const PropertyCard = ({ property, isFavorited, onToggleFavorite }: Proper
                 "w-full h-full object-cover",
                 property.available_rooms === 0 && "grayscale contrast-125 opacity-50"
               )}
+              loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop';

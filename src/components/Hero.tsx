@@ -105,6 +105,8 @@ export const Hero = () => {
               src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1935&auto=format&fit=crop"
               alt="Muzinda Student Housing"
               className="w-full h-full object-cover"
+              loading="eager"
+              fetchPriority="high"
             />
           </motion.div>
 
@@ -148,6 +150,8 @@ export const Hero = () => {
               src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1935&auto=format&fit=crop"
               alt="Muzinda Student Housing"
               className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-1000"
+              loading="eager"
+              fetchPriority="high"
             />
           </div>
 

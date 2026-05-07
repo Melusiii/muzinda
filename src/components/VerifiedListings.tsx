@@ -56,6 +56,7 @@ export const VerifiedListings = () => {
                       src={getImageUrl(prop.image_url)} 
                       alt={prop.title} 
                       className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop';
