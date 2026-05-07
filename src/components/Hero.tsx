@@ -40,7 +40,7 @@ export const Hero = () => {
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Verified Student Hub</span>
             </div>
 
-            <h1 className="font-manrope text-5xl sm:text-6xl md:text-8xl font-black tracking-tight text-primary-dark leading-[0.95] md:leading-[0.9]">
+            <h1 className="font-manrope text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-primary-dark leading-[0.95] md:leading-[0.9]">
               Find your room<br />
               <span className="text-primary italic">near campus.</span>
             </h1>
@@ -99,7 +99,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="lg:hidden w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl"
+            className="lg:hidden w-full aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl"
           >
             <img
               src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1935&auto=format&fit=crop"
@@ -145,7 +145,7 @@ export const Hero = () => {
           transition={{ duration: 1, ease: 'easeOut' }}
           className="relative hidden lg:block"
         >
-          <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3)] border-[12px] border-white">
+          <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3)]">
             <img
               src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=1935&auto=format&fit=crop"
               alt="Muzinda Student Housing"
