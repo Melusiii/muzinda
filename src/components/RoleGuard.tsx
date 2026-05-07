@@ -18,7 +18,7 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
     return <Navigate to="/auth" replace />
   }
 
-  if (!allowedRoles.includes(user.role)) {
+  if (!allowedRoles.includes(user.role as any)) {
     // If user is authenticated but doesn't have the right role, redirect to their default dashboard
     const redirectPath = user.role === 'student' ? '/explorer' : 
                         user.role === 'landlord' ? '/landlord' : 

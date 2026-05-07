@@ -35,7 +35,7 @@ export const useFavorites = () => {
         .eq('user_id', user.id)
       
       if (error) throw error
-      return data.map(f => f.property_id)
+      return data.map((f: any) => f.property_id)
     },
     enabled: !!user,
   })
@@ -77,7 +77,7 @@ export const useFavorites = () => {
 
       return { previousIds }
     },
-    onError: (err, variables, context) => {
+    onError: (_err: any, _variables: any, context: any) => {
       if (context?.previousIds) {
         queryClient.setQueryData(['favorites-ids', user?.id], context.previousIds)
       }

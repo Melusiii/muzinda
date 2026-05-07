@@ -1,5 +1,5 @@
 import { Heart, MapPin, ArrowRight, Compass } from 'lucide-react'
-import { useFavorites } from '../hooks/supabase/useProperties'
+import { useFavorites } from '../hooks/supabase/useFavorites'
 import { useNavigate } from 'react-router-dom'
 import { getImageUrl } from '../utils/supabase-helpers'
 import { PageHeader } from '../components/PageHeader'
@@ -27,7 +27,7 @@ export const StudentFavorites = () => {
         ) : favorites.length > 0 ? (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
              <AnimatePresence mode="popLayout">
-               {favorites.map((fav, idx) => {
+               {favorites.map((fav: any, idx: number) => {
                  const prop = fav.property;
                  if (!prop) return null;
    

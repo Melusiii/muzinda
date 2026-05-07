@@ -26,7 +26,6 @@ import { useUserApplications, useUserTickets, useProperties, useFavorites } from
 import { useMaintenance, submitMaintenanceRequest, useStudentResidency, uploadMaintenanceImage } from '../hooks/supabase/useMaintenance'
 import { getImageUrl } from '../utils/supabase-helpers'
 import { PageHeader } from '../components/PageHeader'
-import { Logo } from '../components/Logo'
 import { LoadingScreen } from '../components/LoadingScreen'
 
 export const StudentDashboard = () => {

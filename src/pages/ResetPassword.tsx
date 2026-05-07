@@ -12,7 +12,7 @@ export const ResetPassword = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any) => {
       if (event === 'PASSWORD_RECOVERY') {
         // User is in a recovery session
         toast.info('You can now set a new password.')
